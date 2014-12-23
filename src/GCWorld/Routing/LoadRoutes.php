@@ -45,11 +45,11 @@ class LoadRoutes
 			}
 		}
 
-		$base = dirname(__FILE__).'/Generated/*.php';
-		$files = glob($base);
+		$base = dirname(__FILE__).'/Generated/';
+		$files = scandir($base);
 		foreach($files as $file)
 		{
-			if(is_file($file))
+			if(file_exists($file) && is_file($file))
 			{
 				$time = filemtime($file);
 				if($time > self::$lastClassTime)
