@@ -61,7 +61,6 @@ class LoadRoutes
 
 		if(self::$highestTime > self::$lastClassTime)
 		{
-			dd('Rebuilding Route Files');
 			$routes = array();
 			foreach(self::$classes as $fullClass)
 			{
