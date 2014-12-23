@@ -103,7 +103,7 @@ class Processor
 		$php .= "\t\t return array(\n";
 		foreach($this->routes_straight as $k => $v)
 		{
-			$temp = explode('\\',$k);
+			$temp = explode('/',$k);
 			if($temp['0'] != $master)
 			{
 				continue;
@@ -158,7 +158,7 @@ class Processor
 		$php .= "\t\t return array(\n";
 		foreach($this->routes_straight as $k => $v)
 		{
-			$temp = explode('\\',$k);
+			$temp = explode('/',$k);
 			if(in_array($temp['0'], $this->routes_master))
 			{
 				continue;
