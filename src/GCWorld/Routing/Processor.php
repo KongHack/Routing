@@ -10,7 +10,7 @@ class Processor
 
 	public function __construct()
 	{
-		$this->storage = dirname(__FILE__).'/../Generated/';
+		$this->storage = dirname(__FILE__).'/Generated/';
 		if(!is_dir($this->storage))
 		{
 			mkdir($this->storage, 0755, true);

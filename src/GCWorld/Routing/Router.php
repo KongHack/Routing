@@ -29,10 +29,10 @@ class Router
 	    if(count($temp)>2)
 	    {
 		    $master = strtoupper($temp[1]);
-		    $className = '\GCWorld\Routing\MasterRoute_'.$master;
+		    $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
 		    if(!class_exists($className))
 		    {
-			    $className = '\GCWorld\Routing\MasterRoute_MISC';
+			    $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
 			    if(!class_exists($className))
 			    {
 				    throw new \Exception('No Route Class Found For Base (1)');
@@ -41,7 +41,7 @@ class Router
 	    }
 	    else
 	    {
-		    $className = '\GCWorld\Routing\MasterRoute_MISC';
+		    $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
 		    if(!class_exists($className))
 		    {
 			    throw new \Exception('No Route Class Found For Base (2)');
