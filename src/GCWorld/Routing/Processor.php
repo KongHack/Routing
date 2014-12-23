@@ -72,13 +72,15 @@ class Processor
 				$this->addMasterRoute($key);
 			}
 		}
-
+		
 		//Generate some files.
 		foreach($this->routes_master as $master)
 		{
 			$this->generateMaster($master);
 		}
 		$this->generateMisc();
+
+		d($this);
 	}
 
 	private function generateMaster($master)
@@ -94,7 +96,7 @@ class Processor
 		//Get File Time Function
 		$php .= "\t public function getFileTime()\n";
 		$php .= "\t{\n";
-		$php .= "\t\treturn ".time().";\n";
+		$php .= "\t\treturn filemtime(__FILE__);\n";
 		$php .= "\t}\n\n";
 
 		//Get Forward Routes Function
@@ -173,7 +175,7 @@ class Processor
 		$php .= "\t public function getReverseRoutes()\n";
 		$php .= "\t{\n";
 		$php .= "\t\t return array(\n";
-		foreach($this->routes_straight as $k => $v)
+		foreach($this->routes_reverse as $k => $v)
 		{
 			$temp = explode('\\',$k);
 			if(in_array($temp['0'], $this->routes_master))
