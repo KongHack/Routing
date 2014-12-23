@@ -94,13 +94,13 @@ class Processor
 		$php .= "{\n";
 
 		//Get File Time Function
-		$php .= "\t public function getFileTime()\n";
+		$php .= "\tpublic function getFileTime()\n";
 		$php .= "\t{\n";
 		$php .= "\t\treturn filemtime(__FILE__);\n";
 		$php .= "\t}\n\n";
 
 		//Get Forward Routes Function
-		$php .= "\t public function getForwardRoutes()\n";
+		$php .= "\tpublic function getForwardRoutes()\n";
 		$php .= "\t{\n";
 		$php .= "\t\t return array(\n";
 		foreach($this->routes_straight as $k => $v)
@@ -117,7 +117,7 @@ class Processor
 
 
 		//Get Reverse Routes Function
-		$php .= "\t public function getReverseRoutes()\n";
+		$php .= "\tpublic function getReverseRoutes()\n";
 		$php .= "\t{\n";
 		$php .= "\t\t return array(\n";
 		foreach($this->routes_reverse as $k => $v)
@@ -149,13 +149,13 @@ class Processor
 		$php .= "{\n";
 
 		//Get File Time Function
-		$php .= "\t public function getFileTime()\n";
+		$php .= "\tpublic function getFileTime()\n";
 		$php .= "\t{\n";
 		$php .= "\t\treturn filemtime(__FILE__);\n";
 		$php .= "\t}\n\n";
 
 		//Get Forward Routes Function
-		$php .= "\t public function getForwardRoutes()\n";
+		$php .= "\tpublic function getForwardRoutes()\n";
 		$php .= "\t{\n";
 		$php .= "\t\t return array(\n";
 		foreach($this->routes_straight as $k => $v)
@@ -172,9 +172,9 @@ class Processor
 
 
 		//Get Reverse Routes Function
-		$php .= "\t public function getReverseRoutes()\n";
+		$php .= "\tpublic function getReverseRoutes()\n";
 		$php .= "\t{\n";
-		$php .= "\t\t return array(\n";
+		$php .= "\t\treturn array(\n";
 		foreach($this->routes_reverse as $k => $v)
 		{
 			$temp = explode('_',$k);
