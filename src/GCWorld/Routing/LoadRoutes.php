@@ -45,7 +45,7 @@ class LoadRoutes
 			}
 		}
 
-		$base = dirname(__FILE__).'/Generated/*';
+		$base = dirname(__FILE__).'/Generated/*.php';
 		$files = glob($base);
 		foreach($files as $file)
 		{
