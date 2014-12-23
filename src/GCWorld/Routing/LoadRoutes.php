@@ -3,10 +3,22 @@ namespace GCWorld\Routing;
 
 class LoadRoutes
 {
-	private $classes        = array();
-	private $highestTime    = 0;
-	private $lastClassTime  = 0;
+	private static $instance       = null;
+	private static $classes        = array();
+	private static $highestTime    = 0;
+	private static $lastClassTime  = 0;
 
+	private function __clone(){}
+	private function __construct(){}
+
+	public function getInstance()
+	{
+		if(self::$instance == null)
+		{
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
 	public function addRoute($fullClass)
 	{
@@ -14,28 +26,43 @@ class LoadRoutes
 		{
 			throw new \Exception('Class Not Found: '.$fullClass);
 		}
-
-		$this->classes[] = $fullClass;
+		self::$classes[] = $fullClass;
+		return $this;
 	}
 
 	public function generateRoutes()
 	{
-		foreach($this->classes as $fullClass)
+		foreach(self::$classes as $fullClass)
 		{
 			$cTemp = new $fullClass;
 			if($cTemp instanceof \GCWorld\Routing\RawRoutesInterface)
 			{
 				$time = $cTemp->getFileTime();
-				if($time > $this->$highestTime)
+				if($time > self::$highestTime)
 				{
-					$this->$highestTime = $time;
+					self::$highestTime = $time;
 				}
 			}
 		}
-		if($this->$highestTime > $$this->lastClassTime)
+
+		$base = dirname(__FILE__).'/../Generated/';
+		$files = glob($base);
+		foreach($files as $file)
+		{
+			if(is_file($file))
+			{
+				$time = filemtime($file);
+				if($time > self::$lastClassTime)
+				{
+					self::$lastClassTime = $time;
+				}
+			}
+		}
+
+		if(self::$highestTime > self::$lastClassTime)
 		{
 			$routes = array();
-			foreach($this->classes as $fullClass)
+			foreach(self::$classes as $fullClass)
 			{
 				$cTemp = new $fullClass;
 				if($cTemp instanceof \GCWorld\Routing\RawRoutesInterface)
@@ -48,5 +75,4 @@ class LoadRoutes
 			$processor->run($routes);
 		}
 	}
-
 }
