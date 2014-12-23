@@ -49,22 +49,19 @@ class LoadRoutes
 		$files = self::glob_recursive($base);
 		foreach($files as $file)
 		{
-			d($file);
 			if(is_file($file))
 			{
 				$time = filemtime($file);
-				d($time);
 				if($time > self::$lastClassTime)
 				{
 					self::$lastClassTime = $time;
 				}
 			}
 		}
-		d($base);
-		d($files);
-		dd($this);
+
 		if(self::$highestTime > self::$lastClassTime)
 		{
+			dd('Rebuilding Route Files');
 			$routes = array();
 			foreach(self::$classes as $fullClass)
 			{
