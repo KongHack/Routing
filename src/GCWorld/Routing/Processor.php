@@ -72,7 +72,8 @@ class Processor
 				$this->addMasterRoute($key);
 			}
 		}
-		
+		dd($this);
+
 		//Generate some files.
 		foreach($this->routes_master as $master)
 		{
@@ -80,7 +81,6 @@ class Processor
 		}
 		$this->generateMisc();
 
-		d($this);
 	}
 
 	private function generateMaster($master)
