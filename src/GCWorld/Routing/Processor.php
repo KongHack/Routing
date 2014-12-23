@@ -106,7 +106,7 @@ class Processor
 		foreach($this->routes_straight as $k => $v)
 		{
 			$temp = explode('/',$k);
-			if(strtoupper($temp[1]) != $master)
+			if($temp[1] != $master)
 			{
 				continue;
 			}
@@ -123,7 +123,7 @@ class Processor
 		foreach($this->routes_reverse as $k => $v)
 		{
 			$temp = explode('_',$k);
-			if(strtoupper($temp[0]) != $master)
+			if($temp[0] != $master)
 			{
 				continue;
 			}
@@ -161,7 +161,7 @@ class Processor
 		foreach($this->routes_straight as $k => $v)
 		{
 			$temp = explode('/',$k);
-			if(in_array(strtoupper($temp[1]), $this->routes_master))
+			if(in_array($temp[1], $this->routes_master))
 			{
 				continue;
 			}
@@ -178,7 +178,7 @@ class Processor
 		foreach($this->routes_reverse as $k => $v)
 		{
 			$temp = explode('_',$k);
-			if(in_array(strtoupper($temp[0]), $this->routes_master))
+			if(in_array($temp[0], $this->routes_master))
 			{
 				continue;
 			}
