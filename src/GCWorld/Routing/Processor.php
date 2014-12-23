@@ -79,8 +79,6 @@ class Processor
 			$this->generateMaster($master);
 		}
 		$this->generateMisc();
-
-		dd($this);
 	}
 
 	private function generateMaster($master)

@@ -59,6 +59,7 @@ class LoadRoutes
 			}
 		}
 
+		dd($this);
 		if(self::$highestTime > self::$lastClassTime)
 		{
 			$routes = array();
