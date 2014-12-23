@@ -54,7 +54,7 @@ class Processor
 		$hits = array();
 		foreach($this->routes_straight as $path => $junk)
 		{
-			$temp = explode('\\',$path);
+			$temp = explode('/',$path);
 			d($temp);
 			if(isset($temp[1]))
 			{
