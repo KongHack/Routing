@@ -141,7 +141,7 @@ class Processor
 
 		//Get File Time Function
 		$php .= "\t public function getFileTime()\n";
-		$php .= "\t{\n"
+		$php .= "\t{\n";
 		$php .= "\t\treturn ".time().";\n";
 		$php .= "\t}\n\n";
 
@@ -183,6 +183,4 @@ class Processor
 
 		file_put_contents($this->storage.'MasterRoute/MISC.php', $php);
 	}
-
-
 }
