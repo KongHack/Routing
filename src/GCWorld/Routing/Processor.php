@@ -45,7 +45,7 @@ class Processor
 			{
 				throw new \Exception('Named Route Already Exists: '.$v['class']);
 			}
-
+			
 			$this->routes_straight[$k]          = $v['class'];
 			$this->routes_reverse[$v['name']]   = $k;
 		}

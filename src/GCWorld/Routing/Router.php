@@ -51,7 +51,6 @@ class Router
 	    $loader = new $className();
 	    $routes = $loader->getForwardRoutes();
 
-
         $discovered_handler = null;
         $regex_matches = array();
 
