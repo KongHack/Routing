@@ -150,7 +150,7 @@ class Processor
 		//Get File Time Function
 		$php .= "\t public function getFileTime()\n";
 		$php .= "\t{\n";
-		$php .= "\t\treturn ".time().";\n";
+		$php .= "\t\treturn filemtime(__FILE__);\n";
 		$php .= "\t}\n\n";
 
 		//Get Forward Routes Function
