@@ -3,18 +3,7 @@ namespace GCWorld\Routing;
 
 class Router
 {
-    public static function jsonServe($path)
-    {
-        if(!file_exists($path))
-        {
-            die('Routing Path Not Found');
-        }
-
-        $routes = json_decode($path);
-        self::serve($routes);
-    }
-
-    public static function serve($routes)
+    public static function forward()
     {
         Hook::fire('before_request', compact('routes'));
 
@@ -35,7 +24,34 @@ class Router
                 $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr($_SERVER['REQUEST_URI'], '?', true) : $_SERVER['REQUEST_URI'];
             }
         }
-        
+
+	    $temp = explode('/',$path_info);
+	    if(count($temp)>2)
+	    {
+		    $master = strtoupper($temp[1]);
+		    $className = '\GCWorld\Routing\MasterRoute_'.$master;
+		    if(!class_exists($className))
+		    {
+			    $className = '\GCWorld\Routing\MasterRoute_MISC';
+			    if(!class_exists($className))
+			    {
+				    throw new \Exception('No Route Class Found For Base (1)');
+			    }
+		    }
+	    }
+	    else
+	    {
+		    $className = '\GCWorld\Routing\MasterRoute_MISC';
+		    if(!class_exists($className))
+		    {
+			    throw new \Exception('No Route Class Found For Base (2)');
+		    }
+	    }
+
+	    $loader = new $className();
+	    $routes = $loader->getForwardRoutes();
+
+
         $discovered_handler = null;
         $regex_matches = array();
 
@@ -136,8 +152,47 @@ class Router
         Hook::fire('after_request', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
     }
 
+	public static function reverse($name, $params = array())
+	{
+		$temp = explode('_',$name);
+		if(strtoupper($temp[0])===$temp[0])
+		{
+			$master = $temp[0];
+		}
+		else
+		{
+			$master = 'MISC';
+		}
+		$master = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
+
+		$cTemp = new $master();
+		$routes = $cTemp->getRoutes();
+
+		if(array_key_exists($name,$routes))
+		{
+			$route = $routes[$name];
+			if(count($params) > 0)
+			{
+				$temp = explode('/',$route);
+				$index = 0;
+				foreach($temp as $k => $v)
+				{
+					if(substr($v,0,1)==':')
+					{
+						$temp[$k] = $params[$index];
+						++$index;
+					}
+				}
+				$route = implode('/',$temp);
+			}
+			return $route;
+		}
+		return false;
+	}
+
     private static function is_xhr_request()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
+
 }
