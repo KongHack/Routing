@@ -65,7 +65,7 @@ class Processor
 				++$hits[$temp[1]];
 			}
 		}
-
+		d($hits);
 		d($this->routes_straight);
 		dd($this);
 
