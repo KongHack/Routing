@@ -1,4 +1,10 @@
 {
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://gc.ourterraria.com:9081/gcrepos"
+        }
+    ],
     "name": "GCWorld/Routing",
     "description": "GCWorld Industries Routing",
     "authors": [
@@ -9,6 +15,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "gcworld/interfaces": "dev-master",
         "php": ">=5.4.0"
     },
     "autoload": {

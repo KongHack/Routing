@@ -1,8 +1,6 @@
 <?php
 namespace GCWorld\Routing;
 
-use \GCWorld\Routing\Hook;
-
 class Router
 {
     public static function jsonServe($path)
