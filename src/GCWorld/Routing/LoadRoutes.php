@@ -49,9 +49,11 @@ class LoadRoutes
 		$files = scandir($base);
 		foreach($files as $file)
 		{
-			if(file_exists($file) && is_file($file))
+			d($file);
+			if(is_file($file))
 			{
 				$time = filemtime($file);
+				d($time);
 				if($time > self::$lastClassTime)
 				{
 					self::$lastClassTime = $time;
