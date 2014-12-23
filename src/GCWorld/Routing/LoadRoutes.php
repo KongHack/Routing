@@ -58,7 +58,8 @@ class LoadRoutes
 				}
 			}
 		}
-
+		d($base);
+		d($files);
 		dd($this);
 		if(self::$highestTime > self::$lastClassTime)
 		{
