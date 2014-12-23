@@ -38,7 +38,10 @@ class LoadRoutes
 			foreach($this->classes as $fullClass)
 			{
 				$cTemp = new $fullClass;
-				$routes = array_merge($routes,$cTemp->getRoutes());
+				if($cTemp instanceof \GCWorld\Routing\RawRoutesInterface)
+				{
+					$routes = array_merge($routes, $cTemp->getRoutes());
+				}
 			}
 
 			$processor = new Processor();
