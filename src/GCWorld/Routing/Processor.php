@@ -55,7 +55,6 @@ class Processor
 		foreach($this->routes_straight as $path => $junk)
 		{
 			$temp = explode('/',$path);
-			d($temp);
 			if(isset($temp[1]))
 			{
 				if(!array_key_exists($temp[1], $hits))
@@ -65,13 +64,10 @@ class Processor
 				++$hits[$temp[1]];
 			}
 		}
-		d($hits);
-		d($this->routes_straight);
-		dd($this);
 
 		foreach($hits as $key => $count)
 		{
-			if($count > 5)
+			if($count >= 3)
 			{
 				$this->addMasterRoute($key);
 			}
