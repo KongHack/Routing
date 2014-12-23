@@ -55,7 +55,11 @@ class Processor
 		foreach($this->routes_straight as $path => $junk)
 		{
 			$temp = explode('\\',$path);
-			++$hits[$temp[0]];
+			if(!array_key_exists($temp[1],$hits))
+			{
+				$hits[$temp[1]] = 0;
+			}
+			++$hits[$temp[1]];
 		}
 
 		foreach($hits as $key => $count)
