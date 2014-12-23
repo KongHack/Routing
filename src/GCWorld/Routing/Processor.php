@@ -65,6 +65,7 @@ class Processor
 			}
 		}
 
+		dd($hits);
 		foreach($hits as $key => $count)
 		{
 			if($count > 5)
@@ -118,7 +119,7 @@ class Processor
 		$php .= "\t public function getReverseRoutes()\n";
 		$php .= "\t{\n";
 		$php .= "\t\t return array(\n";
-		foreach($this->routes_straight as $k => $v)
+		foreach($this->routes_reverse as $k => $v)
 		{
 			$temp = explode('\\',$k);
 			if($temp['0'] != $master)
