@@ -45,7 +45,7 @@ class LoadRoutes
 			}
 		}
 
-		$base = dirname(__FILE__).'/Generated/';
+		$base = dirname(__FILE__).'/Generated/*';
 		$files = self::glob_recursive($base);
 		foreach($files as $file)
 		{
