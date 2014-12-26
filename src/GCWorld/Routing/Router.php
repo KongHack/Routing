@@ -165,7 +165,7 @@ class Router
 		$master = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
 
 		$cTemp = new $master();
-		$routes = $cTemp->getRoutes();
+		$routes = $cTemp->getReverseRoutes();
 
 		if(array_key_exists($name,$routes))
 		{
