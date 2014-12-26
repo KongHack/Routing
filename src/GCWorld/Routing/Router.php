@@ -26,7 +26,7 @@ class Router
         }
 
 	    $temp = explode('/',$path_info);
-	    if(count($temp)>2)
+	    if(count($temp)>1)
 	    {
 		    $master = strtoupper($temp[1]);
 		    $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
