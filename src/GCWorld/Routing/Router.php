@@ -159,7 +159,7 @@ class Router
 		{
 			$master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
 		}
-		
+
 		$cTemp = new $master();
 		$routes = $cTemp->getReverseRoutes();
 
