@@ -154,21 +154,15 @@ class Router
 	public static function reverse($name, $params = array())
 	{
 		$temp = explode('_',$name);
-		if(strtoupper($temp[0])===$temp[0])
+		$master = '\GCWorld\Routing\Generated\MasterRoute_'.strtoupper($temp[0]);
+		if(!class_exists($master))
 		{
-			$master = $temp[0];
+			$master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
 		}
-		else
-		{
-			$master = 'MISC';
-		}
-		$master = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
-
-		d($master);
+		
 		$cTemp = new $master();
 		$routes = $cTemp->getReverseRoutes();
-		d($routes);
-		
+
 		if(array_key_exists($name,$routes))
 		{
 			$route = $routes[$name];
