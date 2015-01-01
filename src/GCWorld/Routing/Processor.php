@@ -52,7 +52,21 @@ class Processor
 		//Cycle base routes, look for "groups" with 5 or more to create master groups.
 
 		$hits = array();
+		//Need to build up some bases.
+		$bases = array();
+		foreach($this->routes_reverse as $path => $junk)
+		{
+			$bases[] = $path;
+		}
 		foreach($this->routes_straight as $path => $junk)
+		{
+			if(!in_array($path, $bases))
+			{
+				$bases[] = $path;
+			}
+		}
+
+		foreach($bases as $path)
 		{
 			$temp = explode('/',$path);
 			if(isset($temp[1]))
