@@ -146,7 +146,7 @@ class Router
         }
         else
         {
-            Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master','temp'));
+            Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master', 'temp', 'className'));
         }
         Hook::fire('after_request', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
     }
