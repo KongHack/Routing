@@ -207,6 +207,6 @@ class Processor
 
 	public static function cleanClassName($master)
 	{
-		return str_replace('-','_',strtoupper($master));
+		return str_replace('-','',strtoupper($master));
 	}
 }
