@@ -102,7 +102,7 @@ class Processor
 		$php = "<?php\n";
 		$php .= "namespace GCWorld\\Routing\\Generated;\n";
 		$php .= "\n";
-		$php .= "class MasterRoute_".strtoupper($master)." Implements \\GCWorld\\Routing\\RoutesInterface\n";
+		$php .= "class MasterRoute_".self::cleanClassName($master)." Implements \\GCWorld\\Routing\\RoutesInterface\n";
 		$php .= "{\n";
 
 		//Get File Time Function
@@ -147,7 +147,7 @@ class Processor
 		//End of file
 		$php .= "}\n";
 
-		file_put_contents($this->storage.'MasterRoute/'.strtoupper($master).'.php', $php);
+		file_put_contents($this->storage.'MasterRoute/'.self::cleanClassName($master).'.php', $php);
 	}
 
 	private function generateMisc()
@@ -203,5 +203,10 @@ class Processor
 		$php .= "}\n";
 
 		file_put_contents($this->storage.'MasterRoute/MISC.php', $php);
+	}
+
+	public static function cleanClassName($master)
+	{
+		return str_replace('-','_',strtoupper($master));
 	}
 }

@@ -28,7 +28,7 @@ class Router
 	    $temp = explode('/',$path_info);
 	    if(count($temp)>1)
 	    {
-		    $master = strtoupper($temp[1]);
+		    $master = Processor::cleanClassName($temp[1]);
 		    $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
 		    if(!class_exists($className))
 		    {
@@ -154,7 +154,7 @@ class Router
 	public static function reverse($name, $params = array())
 	{
 		$temp = explode('_',$name);
-		$master = '\GCWorld\Routing\Generated\MasterRoute_'.strtoupper($temp[0]);
+		$master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
 		if(!class_exists($master))
 		{
 			$master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
