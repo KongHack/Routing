@@ -20,11 +20,14 @@ class LoadRoutes
 		return self::$instance;
 	}
 
-	public function addRoute($fullClass)
+	public function addRoute($fullClass, $skipCheck = false)
 	{
-		if(!class_exists($fullClass))
+		if(!$skipCheck)
 		{
-			throw new \Exception('Class Not Found: '.$fullClass);
+			if(!class_exists($fullClass))
+			{
+				throw new \Exception('Class Not Found: '.$fullClass);
+			}
 		}
 		self::$classes[] = $fullClass;
 		return $this;
