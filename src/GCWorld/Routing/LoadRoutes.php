@@ -59,7 +59,7 @@ class LoadRoutes
 			}
 		}
 
-		if(self::$highestTime > self::$lastClassTime || count($files) < count(self::$classes))
+		if(self::$highestTime > self::$lastClassTime)
 		{
 			$routes = array();
 			foreach(self::$classes as $fullClass)
