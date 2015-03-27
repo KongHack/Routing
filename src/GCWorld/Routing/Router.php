@@ -137,6 +137,7 @@ class Router
             {
                 Hook::fire('before_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
+	            /*
 	            $matches = count($regex_matches);
 	            switch($matches)
 	            {
@@ -159,6 +160,8 @@ class Router
 			            $result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
 		            break;
 	            }
+	            */
+	            $result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
                 Hook::fire('after_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
             }
             else
