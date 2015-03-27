@@ -137,31 +137,31 @@ class Router
             {
                 Hook::fire('before_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-	            /*
-	            $matches = count($regex_matches);
-	            switch($matches)
+	            $args = array_values($regex_matches);
+	            $argCount = count($args);
+	            switch($argCount)
 	            {
 		            case 0:
 			            $result = $handler_instance->$request_method();
 		            break;
 		            case 1:
-			            $result = $handler_instance->$request_method($regex_matches[1]);
+			            $result = $handler_instance->$request_method($args[0]);
 		            break;
 		            case 2:
-			            $result = $handler_instance->$request_method($regex_matches[1],$regex_matches[2]);
+			            $result = $handler_instance->$request_method($args[0],$args[1]);
 		            break;
 		            case 3:
-			            $result = $handler_instance->$request_method($regex_matches[1],$regex_matches[2],$regex_matches[3]);
+			            $result = $handler_instance->$request_method($args[0],$args[1],$args[2]);
 		            break;
 		            case 4:
-			            $result = $handler_instance->$request_method($regex_matches[1],$regex_matches[2],$regex_matches[3],$regex_matches[4]);
+			            $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3]);
 		            break;
 		            default:
-			            $result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
+			            $result = call_user_func_array(array($handler_instance, $request_method), $args);
 		            break;
 	            }
-	            */
-	            $result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
+
+	            //$result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
                 Hook::fire('after_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
             }
             else
