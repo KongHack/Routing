@@ -65,6 +65,7 @@ class Router
                 ':number'     => '([0-9]+)',
                 ':alpha'      => '([a-zA-Z0-9-_]+)',
                 ':anything'   => '([^/]+)',
+	            ':consume'    => '([.*]+)',
             );
             foreach ($routes as $pattern => $handler_name)
             {
