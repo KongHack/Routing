@@ -6,7 +6,7 @@ class LoadRoutes
 	private static $instance       = null;
 	private static $classes        = array();
 	private static $highestTime    = 0;
-	private static $lastClassTime  = 0;
+	private static $lastClassTime  = PHP_INT_MAX;
 
 	private function __clone(){}
 	private function __construct(){}
@@ -52,7 +52,7 @@ class LoadRoutes
 			if(is_file($file))
 			{
 				$time = filemtime($file);
-				if($time > self::$lastClassTime)
+				if($time < self::$lastClassTime)
 				{
 					self::$lastClassTime = $time;
 				}
