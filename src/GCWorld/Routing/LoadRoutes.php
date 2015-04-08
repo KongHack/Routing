@@ -33,7 +33,7 @@ class LoadRoutes
 		return $this;
 	}
 
-	public function generateRoutes($force = false)
+	public function generateRoutes($force = false, $debug = false)
 	{
 		foreach(self::$classes as $fullClass)
 		{
@@ -74,7 +74,7 @@ class LoadRoutes
 				}
 			}
 
-			$processor = new Processor();
+			$processor = new Processor($debug);
 			$processor->run($routes);
 		}
 	}

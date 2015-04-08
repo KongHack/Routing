@@ -7,9 +7,11 @@ class Processor
 	private $routes_reverse = array();
 	private $routes_master  = array();
 	private $storage        = array();
+	private $debug          = false;
 
-	public function __construct()
+	public function __construct($debug = false)
 	{
+		$this->debug = $debug;
 		$this->storage = dirname(__FILE__).'/Generated/';
 		if(!is_dir($this->storage))
 		{
@@ -31,6 +33,20 @@ class Processor
 
 	public function run($routes)
 	{
+		if($this->debug)
+		{
+			if(function_exists('d'))
+			{
+				d($routes);
+			}
+			else
+			{
+				echo '<pre><b>$routes</b><br>';
+				print_r($routes);
+				echo '</pre>';
+			}
+		}
+
 		foreach($routes as $k => $v)
 		{
 			if(strlen($k) < 1)
@@ -49,6 +65,25 @@ class Processor
 			$this->routes_straight[$k]          = $v['class'];
 			$this->routes_reverse[$v['name']]   = $k;
 		}
+
+		if($this->debug)
+		{
+			if(function_exists('d'))
+			{
+				d($this->routes_straight);
+				d($this->routes_reverse);
+			}
+			else
+			{
+				echo '<pre><b>straight</b><br>';
+				print_r($this->routes_straight);
+				echo '</pre>';
+				echo '<pre><b>reverse</b><br>';
+				print_r($this->routes_reverse);
+				echo '</pre>';
+			}
+		}
+
 		//Cycle base routes, look for "groups" with 5 or more to create master groups.
 
 		$hits = array();
