@@ -17,10 +17,6 @@ class Processor
 		{
 			mkdir($this->storage, 0755, true);
 		}
-		if(!is_dir($this->storage.'MasterRoute/'))
-		{
-			mkdir($this->storage.'MasterRoute/', 0755, true);
-		}
 	}
 
 	public function addMasterRoute($key)
@@ -182,7 +178,7 @@ class Processor
 		//End of file
 		$php .= "}\n";
 
-		file_put_contents($this->storage.'MasterRoute/'.self::cleanClassName($master).'.php', $php);
+		file_put_contents($this->storage.'MasterRoute_'.self::cleanClassName($master).'.php', $php);
 	}
 
 	private function generateMisc()
@@ -237,7 +233,7 @@ class Processor
 		//End of file
 		$php .= "}\n";
 
-		file_put_contents($this->storage.'MasterRoute/MISC.php', $php);
+		file_put_contents($this->storage.'MasterRoute_MISC.php', $php);
 	}
 
 	public static function cleanClassName($master)

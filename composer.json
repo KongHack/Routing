@@ -5,7 +5,7 @@
             "url": "http://gc.ourterraria.com:9081/gcrepos"
         }
     ],
-    "name": "GCWorld/Routing",
+    "name": "gcworld/routing",
     "description": "GCWorld Industries Routing",
     "authors": [
         {
@@ -13,14 +13,13 @@
             "email": "admin@gamecharmer.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "gcworld/interfaces": "dev-master",
+        "gcworld/interfaces": "1.0.*",
         "php": ">=5.4.0"
     },
     "autoload": {
-        "psr-0": {
-            "GCWorld": "src/"
+        "psr-4": {
+            "GCWorld\\Routing\\": "src/"
         }
     }
 }
