@@ -1,25 +1,24 @@
 {
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://gc.ourterraria.com:9081/gcrepos"
-        }
-    ],
-    "name": "gcworld/routing",
-    "description": "GCWorld Industries Routing",
-    "authors": [
-        {
-            "name": "GameCharmer",
-            "email": "admin@gamecharmer.com"
-        }
-    ],
-    "require": {
-        "gcworld/interfaces": "1.0.*",
-        "php": ">=5.4.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "GCWorld\\Routing\\": "src/"
-        }
+  "repositories": [
+    {"type": "composer", "url": "http://toran.konghack.com/app.php/repo/private/"},
+    {"type": "composer", "url": "http://toran.konghack.com/app.php/repo/packagist/"},
+    {"packagist": false}
+  ],
+  "name": "gcworld/routing",
+  "description": "GCWorld Industries Routing",
+  "authors": [
+    {
+      "name": "GameCharmer",
+      "email": "admin@gamecharmer.com"
     }
+  ],
+  "require": {
+    "gcworld/interfaces": "1.0.*",
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "GCWorld\\Routing\\": "src/"
+    }
+  }
 }

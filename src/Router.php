@@ -9,69 +9,52 @@ class Router
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
         $path_info = '/';
-        if (!empty($_SERVER['PATH_INFO']))
-        {
+        if (!empty($_SERVER['PATH_INFO'])) {
             $path_info = $_SERVER['PATH_INFO'];
-        }
-        else if (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php')
-        {
+        } elseif (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php') {
             $path_info = $_SERVER['ORIG_PATH_INFO'];
-        }
-        else
-        {
-            if (!empty($_SERVER['REQUEST_URI']))
-            {
+        } else {
+            if (!empty($_SERVER['REQUEST_URI'])) {
                 $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr($_SERVER['REQUEST_URI'], '?', true) : $_SERVER['REQUEST_URI'];
             }
         }
 
-	    $temp = explode('/',$path_info);
-	    if(count($temp)>1)
-	    {
-		    $master = Processor::cleanClassName($temp[1]);
-		    $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
-		    if(!class_exists($className))
-		    {
-			    $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
-			    if(!class_exists($className))
-			    {
-				    throw new \Exception('No Route Class Found For Base (1)');
-			    }
-		    }
-	    }
-	    else
-	    {
-		    $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
-		    if(!class_exists($className))
-		    {
-			    throw new \Exception('No Route Class Found For Base (2)');
-		    }
-	    }
+        $temp = explode('/', $path_info);
+        if (count($temp)>1) {
+            $master = Processor::cleanClassName($temp[1]);
+            $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
+            if (!class_exists($className)) {
+                $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+                if (!class_exists($className)) {
+                    throw new \Exception('No Route Class Found For Base (1)');
+                }
+            }
+        } else {
+            $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+            if (!class_exists($className)) {
+                throw new \Exception('No Route Class Found For Base (2)');
+            }
+        }
 
-	    $loader = new $className();
-	    $routes = $loader->getForwardRoutes();
+        $loader = new $className();
+        $routes = $loader->getForwardRoutes();
 
         $discovered_handler = null;
         $regex_matches = array();
 
-        if(isset($routes[$path_info]))
-        {
+        if (isset($routes[$path_info])) {
             $discovered_handler = $routes[$path_info];
-        }
-        elseif($routes)
-        {
+        } elseif ($routes) {
             $tokens = array(
                 ':string'     => '([a-zA-Z]+)',
                 ':number'     => '([0-9]+)',
                 ':alpha'      => '([a-zA-Z0-9-_]+)',
                 ':anything'   => '([^/]+)',
-	            ':consume'    => '(.+)',
+                ':consume'    => '(.+)',
             );
-            foreach ($routes as $pattern => $handler_name)
-            {
+            foreach ($routes as $pattern => $handler_name) {
                 $pattern = strtr($pattern, $tokens);
-                if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches))
-                {
+                if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
                     $discovered_handler = $handler_name;
                     $regex_matches = $matches;
                     break;
@@ -82,49 +65,40 @@ class Router
         $result = null;
 
         $handler_instance = null;
-        if ($discovered_handler)
-        {
-            if (is_string($discovered_handler))
-            {
-                if(class_exists($discovered_handler))
-                {
+        if ($discovered_handler) {
+            if (is_string($discovered_handler)) {
+                if (class_exists($discovered_handler)) {
                     $handler_instance = new $discovered_handler();
-                }
-                else
-                {
+                } else {
                     echo 'Class Not Found: '.$discovered_handler;
                     die();
                 }
-            }
-            elseif(is_array($discovered_handler))
-            {
+            } elseif (is_array($discovered_handler)) {
                 //Used for new reverse name search.
-                if(isset($discovered_handler['handler']) && is_string($discovered_handler['handler']))
-                {
+                if (isset($discovered_handler['session']) &&
+                    $discovered_handler['session'] == true &&
+                    session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+
+                if (isset($discovered_handler['handler']) && is_string($discovered_handler['handler'])) {
                     $discovered_handler = $discovered_handler['handler'];
-                    if(class_exists($discovered_handler))
-                    {
+                    if (class_exists($discovered_handler)) {
                         $handler_instance = new $discovered_handler();
-                    }
-                    else
-                    {
+                    } else {
                         echo 'Class Not Found: '.$discovered_handler;
                         die();
                     }
                 }
-            }
-            elseif (is_callable($discovered_handler))
-            {
+            } elseif (is_callable($discovered_handler)) {
                 $handler_instance = $discovered_handler();
             }
         }
 
-        if ($handler_instance)
-        {
+        if ($handler_instance) {
             unset($regex_matches[0]);
 
-            if (self::is_xhr_request() && method_exists($handler_instance, $request_method . '_xhr'))
-            {
+            if (self::is_xhr_request() && method_exists($handler_instance, $request_method . '_xhr')) {
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -134,86 +108,75 @@ class Router
                 $request_method .= '_xhr';
             }
 
-            if (method_exists($handler_instance, $request_method))
-            {
+            if (method_exists($handler_instance, $request_method)) {
                 Hook::fire('before_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-	            $args = array_values($regex_matches);
-	            $argCount = count($args);
-	            switch($argCount)
-	            {
-		            case 0:
-			            $result = $handler_instance->$request_method();
-		            break;
-		            case 1:
-			            $result = $handler_instance->$request_method($args[0]);
-		            break;
-		            case 2:
-			            $result = $handler_instance->$request_method($args[0],$args[1]);
-		            break;
-		            case 3:
-			            $result = $handler_instance->$request_method($args[0],$args[1],$args[2]);
-		            break;
-		            case 4:
-			            $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3]);
-		            break;
-		            default:
-			            $result = call_user_func_array(array($handler_instance, $request_method), $args);
-		            break;
-	            }
+                $args = array_values($regex_matches);
+                $argCount = count($args);
+                switch($argCount)
+                {
+                    case 0:
+                        $result = $handler_instance->$request_method();
+                        break;
+                    case 1:
+                        $result = $handler_instance->$request_method($args[0]);
+                        break;
+                    case 2:
+                        $result = $handler_instance->$request_method($args[0],$args[1]);
+                        break;
+                    case 3:
+                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2]);
+                        break;
+                    case 4:
+                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3]);
+                        break;
+                    default:
+                        $result = call_user_func_array(array($handler_instance, $request_method), $args);
+                        break;
+                }
 
-	            //$result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
+                //$result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
                 Hook::fire('after_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
-            }
-            else
-            {
+            } else {
                 Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
             }
-        }
-        else
-        {
+        } else {
             Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master', 'temp', 'className'));
         }
         Hook::fire('after_request', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
     }
 
-	public static function reverse($name, $params = array())
-	{
-		$temp = explode('_',$name);
-		$master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
-		if(!class_exists($master))
-		{
-			$master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
-		}
+    public static function reverse($name, $params = array())
+    {
+        $temp = explode('_', $name);
+        $master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
+        if (!class_exists($master)) {
+            $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+        }
 
-		$cTemp = new $master();
-		$routes = $cTemp->getReverseRoutes();
+        $cTemp = new $master();
+        $routes = $cTemp->getReverseRoutes();
 
-		if(array_key_exists($name,$routes))
-		{
-			$route = $routes[$name];
-			if(count($params) > 0)
-			{
-				$temp = explode('/',$route);
-				$index = 0;
-				foreach($temp as $k => $v)
-				{
-					if(substr($v,0,1)==':')
-					{
-						$temp[$k] = $params[$index];
-						++$index;
-					}
-				}
-				$route = implode('/',$temp);
-			}
-			return $route;
-		}
-		return false;
-	}
+        if (array_key_exists($name, $routes)) {
+            $route = $routes[$name];
+            if (count($params) > 0) {
+                $temp = explode('/', $route);
+                $index = 0;
+                foreach ($temp as $k => $v) {
+                    if (substr($v, 0, 1)==':') {
+                        $temp[$k] = $params[$index];
+                        ++$index;
+                    }
+                }
+                $route = implode('/', $temp);
+            }
+            return $route;
+        }
+        return false;
+    }
 
     private static function is_xhr_request()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
-
 }

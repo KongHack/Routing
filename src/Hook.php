@@ -1,15 +1,18 @@
 <?php
 namespace GCworld\Routing;
 
-
 class Hook
 {
     private static $instance;
 
     private $hooks = array();
 
-    private function __construct() {}
-    private function __clone() {}
+    private function __construct()
+    {
+    }
+    private function __clone()
+    {
+    }
 
     public static function add($hook_name, $fn)
     {
@@ -20,10 +23,8 @@ class Hook
     public static function fire($hook_name, $params = null)
     {
         $instance = self::getInstance();
-        if (isset($instance->hooks[$hook_name]))
-        {
-            foreach ($instance->hooks[$hook_name] as $fn)
-            {
+        if (isset($instance->hooks[$hook_name])) {
+            foreach ($instance->hooks[$hook_name] as $fn) {
                 call_user_func_array($fn, array(&$params));
             }
         }
@@ -31,8 +32,7 @@ class Hook
 
     public static function getInstance()
     {
-        if (empty(self::$instance))
-        {
+        if (empty(self::$instance)) {
             self::$instance = new self();
         }
         return self::$instance;
