@@ -98,6 +98,10 @@ class Router
         if ($handler_instance) {
             unset($regex_matches[0]);
 
+            if (property_exists($handler_instance, 'session') && $handler_instance->session) {
+                session_start();
+            }
+
             if (self::is_xhr_request() && method_exists($handler_instance, $request_method . '_xhr')) {
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
