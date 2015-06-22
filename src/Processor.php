@@ -75,10 +75,20 @@ class Processor
             }
 
             // We need to re-write name based on the number of options.  This way we can use the same name for paging
-            $v['name'].=  '_' . substr_count($v['name'],':');
+            // $v['name'].=  '_' . substr_count($v['name'],':'); And this doesn't work why?
+            $v['name'] =  $v['name'] . '_' . substr_count($v['name'],':');
 
             if (array_key_exists($v['name'], $this->routes_reverse)) {
-                throw new \Exception('Named Route Already Exists: '.$v['class']);
+                if($this->debug) {
+                    if(function_exists('d')) {
+                        d($this);
+                    } else {
+                        echo '<pre>';
+                        print_r($this->routes_reverse);
+                        echo '</pre>';
+                    }
+                }
+                throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
             }
             
             $this->routes_straight[$k]          = $v['class'];
