@@ -1,20 +1,46 @@
 <?php
 namespace GCWorld\Routing;
 
+/**
+ * Class LoadRoutes
+ * @package GCWorld\Routing
+ */
 class LoadRoutes
 {
+    /**
+     * @var null
+     */
     private static $instance       = null;
+    /**
+     * @var array
+     */
     private static $classes        = array();
+    /**
+     * @var int
+     */
     private static $highestTime    = 0;
+    /**
+     * @var int
+     */
     private static $lastClassTime  = PHP_INT_MAX;
 
+    /**
+     * Singleton Format
+     */
     private function __clone()
     {
     }
+
+    /**
+     * Singleton Format
+     */
     private function __construct()
     {
     }
 
+    /**
+     * @return \GCWorld\Routing\LoadRoutes|null
+     */
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -23,6 +49,12 @@ class LoadRoutes
         return self::$instance;
     }
 
+    /**
+     * @param      $fullClass
+     * @param bool $skipCheck
+     * @return $this
+     * @throws \Exception
+     */
     public function addRoute($fullClass, $skipCheck = false)
     {
         if (!$skipCheck) {
@@ -34,6 +66,11 @@ class LoadRoutes
         return $this;
     }
 
+    /**
+     * @param bool $force
+     * @param bool $debug
+     * @throws \Exception
+     */
     public function generateRoutes($force = false, $debug = false)
     {
         foreach (self::$classes as $fullClass) {
@@ -71,6 +108,11 @@ class LoadRoutes
         }
     }
 
+    /**
+     * @param     $pattern
+     * @param int $flags
+     * @return array
+     */
     private static function glob_recursive($pattern, $flags = 0)
     {
         $files = glob($pattern, $flags);

@@ -1,14 +1,36 @@
 <?php
 namespace GCWorld\Routing;
 
+/**
+ * Class Processor
+ * @package GCWorld\Routing
+ */
 class Processor
 {
+    /**
+     * @var array
+     */
     private $routes_straight = array();
+    /**
+     * @var array
+     */
     private $routes_reverse = array();
+    /**
+     * @var array
+     */
     private $routes_master  = array();
+    /**
+     * @var array|string
+     */
     private $storage        = array();
+    /**
+     * @var bool
+     */
     private $debug          = false;
 
+    /**
+     * @param bool $debug
+     */
     public function __construct($debug = false)
     {
         $this->debug = $debug;
@@ -18,6 +40,9 @@ class Processor
         }
     }
 
+    /**
+     * @param $key
+     */
     public function addMasterRoute($key)
     {
         if (!in_array($key, $this->routes_master)) {
@@ -25,6 +50,10 @@ class Processor
         }
     }
 
+    /**
+     * @param $routes
+     * @throws \Exception
+     */
     public function run($routes)
     {
         if ($this->debug) {
@@ -44,6 +73,10 @@ class Processor
             if (array_key_exists($k, $this->routes_straight)) {
                 throw new \Exception('Route Already Exists: '.$k);
             }
+
+            // We need to re-write name based on the number of options.  This way we can use the same name for paging
+            $v['name'].=  '_' . substr_count($v['name'],':');
+
             if (array_key_exists($v['name'], $this->routes_reverse)) {
                 throw new \Exception('Named Route Already Exists: '.$v['class']);
             }
@@ -103,6 +136,9 @@ class Processor
         $this->generateMisc();
     }
 
+    /**
+     * @param $master
+     */
     private function generateMaster($master)
     {
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
@@ -154,6 +190,9 @@ class Processor
         file_put_contents($this->storage.'MasterRoute_'.self::cleanClassName($master).'.php', $php);
     }
 
+    /**
+     *
+     */
     private function generateMisc()
     {
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
@@ -205,6 +244,10 @@ class Processor
         file_put_contents($this->storage.'MasterRoute_MISC.php', $php);
     }
 
+    /**
+     * @param $master
+     * @return mixed
+     */
     public static function cleanClassName($master)
     {
         return str_replace('-', '', strtoupper($master));

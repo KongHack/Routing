@@ -1,8 +1,15 @@
 <?php
 namespace GCWorld\Routing;
 
+/**
+ * Class Router
+ * @package GCWorld\Routing
+ */
 class Router
 {
+    /**
+     * @throws \Exception
+     */
     public static function forward()
     {
         Hook::fire('before_request', compact('routes'));
@@ -150,14 +157,23 @@ class Router
         Hook::fire('after_request', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
     }
 
+    /**
+     * @param       $name
+     * @param array $params
+     * @return bool|string
+     */
     public static function reverse($name, $params = array())
     {
+        // We now add the count of parameters to the name. See Processor.php for more info.
+        $name .= '_'.count($params);
+
         $temp = explode('_', $name);
         $master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
         if (!class_exists($master)) {
             $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
         }
 
+        /** @var \GCWorld\Routing\RoutesInterface $cTemp */
         $cTemp = new $master();
         $routes = $cTemp->getReverseRoutes();
 
@@ -179,6 +195,9 @@ class Router
         return false;
     }
 
+    /**
+     * @return bool
+     */
     private static function is_xhr_request()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';

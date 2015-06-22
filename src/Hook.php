@@ -1,25 +1,50 @@
 <?php
 namespace GCworld\Routing;
 
+/**
+ * Class Hook
+ * @package GCworld\Routing
+ */
 class Hook
 {
+    /**
+     * @var
+     */
     private static $instance;
 
+    /**
+     * @var array
+     */
     private $hooks = array();
 
+    /**
+     * Singleton Format
+     */
     private function __construct()
     {
     }
+
+    /**
+     * Singleton Format
+     */
     private function __clone()
     {
     }
 
+    /**
+     * @param $hook_name
+     * @param $fn
+     */
     public static function add($hook_name, $fn)
     {
         $instance = self::getInstance();
         $instance->hooks[$hook_name][] = $fn;
     }
 
+    /**
+     * @param      $hook_name
+     * @param null $params
+     */
     public static function fire($hook_name, $params = null)
     {
         $instance = self::getInstance();
@@ -30,6 +55,9 @@ class Hook
         }
     }
 
+    /**
+     * @return \GCWorld\Routing\Hook
+     */
     public static function getInstance()
     {
         if (empty(self::$instance)) {
