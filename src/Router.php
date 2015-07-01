@@ -64,6 +64,7 @@ class Router
                 if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
                     $discovered_handler = $handler_name;
                     $regex_matches = $matches;
+                    unset($regex_matches[0]);
                     break;
                 }
             }
@@ -75,7 +76,7 @@ class Router
         if ($discovered_handler) {
             if (is_string($discovered_handler)) {
                 if (class_exists($discovered_handler)) {
-                    $handler_instance = new $discovered_handler();
+                    $handler_instance = new $discovered_handler($regex_matches);
                 } else {
                     echo 'Class Not Found: '.$discovered_handler;
                     die();
@@ -91,7 +92,7 @@ class Router
                 if (isset($discovered_handler['handler']) && is_string($discovered_handler['handler'])) {
                     $discovered_handler = $discovered_handler['handler'];
                     if (class_exists($discovered_handler)) {
-                        $handler_instance = new $discovered_handler();
+                        $handler_instance = new $discovered_handler($regex_matches);
                     } else {
                         echo 'Class Not Found: '.$discovered_handler;
                         die();
@@ -103,8 +104,6 @@ class Router
         }
 
         if ($handler_instance) {
-            unset($regex_matches[0]);
-
             if (property_exists($handler_instance, 'session') && $handler_instance->session) {
                 session_start();
             }
