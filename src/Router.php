@@ -98,7 +98,7 @@ class Router
                 }
                 if (isset($discovered_handler['post_args']) && is_array($discovered_handler['post_args'])) {
                     foreach ($discovered_handler['post_args'] as $arg) {
-                        array_unshift($regex_matches, $arg);
+                        $regex_matches[] = $arg;
                     }
                 }
 
