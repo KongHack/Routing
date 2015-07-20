@@ -76,11 +76,11 @@ class Processor
 
             // We need to re-write name based on the number of options.  This way we can use the same name for paging
             // $v['name'].=  '_' . substr_count($v['name'],':'); And this doesn't work why?
-            $v['name'] =  $v['name'] . '_' . substr_count($k,':');
+            $v['name'] =  $v['name'] . '_' . substr_count($k, ':');
 
             if (array_key_exists($v['name'], $this->routes_reverse)) {
-                if($this->debug) {
-                    if(function_exists('d')) {
+                if ($this->debug) {
+                    if (function_exists('d')) {
                         d($this);
                     } else {
                         echo '<pre>';
@@ -91,7 +91,8 @@ class Processor
                 throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
             }
 
-            $this->routes_straight[$k]          = $v['class'];
+            // V3 accepts additional args, so straight routes are a full array.
+            $this->routes_straight[$k]          = $v;
             $this->routes_reverse[$v['name']]   = $k;
         }
 
@@ -174,7 +175,7 @@ class Processor
             if ($temp[1] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '$v',\n";
+            $php .= "\t\t\t'$k' => '".var_export($v)."',\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
@@ -228,7 +229,7 @@ class Processor
             if (in_array($temp[1], $this->routes_master)) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '$v',\n";
+            $php .= "\t\t\t'$k' => '".var_export($v)."',\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";

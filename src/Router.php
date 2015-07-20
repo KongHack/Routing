@@ -59,10 +59,10 @@ class Router
                 ':anything'   => '([^/]+)',
                 ':consume'    => '(.+)',
             );
-            foreach ($routes as $pattern => $handler_name) {
+            foreach ($routes as $pattern => $routeConfig) {
                 $pattern = strtr($pattern, $tokens);
                 if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
-                    $discovered_handler = $handler_name;
+                    $discovered_handler = $routeConfig;
                     $regex_matches = $matches;
                     unset($regex_matches[0]);
                     $regex_matches = array_values($regex_matches);
@@ -89,9 +89,21 @@ class Router
                     session_status() == PHP_SESSION_NONE) {
                     session_start();
                 }
+                //Handle pre & post handler options
+                if (isset($discovered_handler['pre_args']) && is_array($discovered_handler['pre_args'])) {
+                    $rev = array_reverse($discovered_handler['pre_args']);
+                    foreach ($rev as $arg) {
+                        array_unshift($regex_matches, $arg);
+                    }
+                }
+                if (isset($discovered_handler['post_args']) && is_array($discovered_handler['post_args'])) {
+                    foreach ($discovered_handler['post_args'] as $arg) {
+                        array_unshift($regex_matches, $arg);
+                    }
+                }
 
-                if (isset($discovered_handler['handler']) && is_string($discovered_handler['handler'])) {
-                    $discovered_handler = $discovered_handler['handler'];
+                if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
+                    $discovered_handler = $discovered_handler['class'];
                     if (class_exists($discovered_handler)) {
                         $handler_instance = new $discovered_handler($regex_matches);
                     } else {
@@ -105,7 +117,9 @@ class Router
         }
 
         if ($handler_instance) {
-            if (property_exists($handler_instance, 'session') && $handler_instance->session) {
+            if (property_exists($handler_instance, 'session') &&
+                $handler_instance->session &&
+                session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
 
