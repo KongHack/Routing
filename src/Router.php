@@ -65,6 +65,7 @@ class Router
                     $discovered_handler = $handler_name;
                     $regex_matches = $matches;
                     unset($regex_matches[0]);
+                    $regex_matches = array_values($regex_matches);
                     break;
                 }
             }
@@ -99,7 +100,7 @@ class Router
                     }
                 }
             } elseif (is_callable($discovered_handler)) {
-                $handler_instance = $discovered_handler();
+                $handler_instance = $discovered_handler($regex_matches);
             }
         }
 
@@ -121,7 +122,7 @@ class Router
             if (method_exists($handler_instance, $request_method)) {
                 Hook::fire('before_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-                $args = array_values($regex_matches);
+                $args = &$regex_matches; //Only for cleaner code
                 $argCount = count($args);
                 switch($argCount)
                 {
@@ -139,6 +140,9 @@ class Router
                         break;
                     case 4:
                         $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3]);
+                        break;
+                    case 5:
+                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3],$args[4]);
                         break;
                     default:
                         $result = call_user_func_array(array($handler_instance, $request_method), $args);
