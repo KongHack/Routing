@@ -175,7 +175,7 @@ class Processor
             if ($temp[1] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '".var_export($v)."',\n";
+            $php .= "\t\t\t'$k' => '".var_export($v,true)."',\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
@@ -229,7 +229,7 @@ class Processor
             if (in_array($temp[1], $this->routes_master)) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '".var_export($v)."',\n";
+            $php .= "\t\t\t'$k' => '".var_export($v,true)."',\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
