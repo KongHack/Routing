@@ -45,6 +45,7 @@ class Router
             }
         }
 
+        /** @var \GCWorld\Routing\RoutesInterface $loader */
         $loader = new $className();
         $routes = $loader->getForwardRoutes();
 
@@ -217,6 +218,9 @@ class Router
         return false;
     }
 
+    /**
+     * @param $base
+     */
     public static function setBase($base)
     {
         self::$base = rtrim($base, '/');
