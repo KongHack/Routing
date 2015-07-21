@@ -7,6 +7,8 @@ namespace GCWorld\Routing;
  */
 class Router
 {
+    private static $base = null;
+
     /**
      * @throws \Exception
      */
@@ -207,9 +209,17 @@ class Router
                 }
                 $route = implode('/', $temp);
             }
+            if (self::$base != null) {
+                $route = self::$base.$route;
+            }
             return $route;
         }
         return false;
+    }
+
+    public static function setBase($base)
+    {
+        self::$base = rtrim($base, '/');
     }
 
     /**
