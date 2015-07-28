@@ -8,6 +8,8 @@ namespace GCWorld\Routing;
 class Router
 {
     private static $base = null;
+    private static $userClassName = null;
+
     /**
      * @var \GCWorld\Interfaces\PEX
      */
@@ -120,18 +122,28 @@ class Router
                 }
 
                 // Security Testing!
+                if (self::$userClassName != null) {
+                    /** @var mixed $temp */
+                    $temp = self::$userClassName;
+                    self::$user = $temp::getInstance();
+                }
+
                 if (self::$user != null) {
+                    if (!self::$user instanceof \GCWorld\Interfaces\PEX) {
+                        throw new \Exception('The provided user class does not implement PEX. ('.
+                            self::$userClassName.')');
+                    }
                     $types = array('pexCheck','pexCheckAny','pexCheckExact');
-                    foreach($types as $type) {
+                    foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
-                            if(!is_array($discovered_handler[$type])) {
-                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type],$regex_matches))) {
+                            if (!is_array($discovered_handler[$type])) {
+                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches))) {
                                     Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
                                 $good = false;
-                                foreach($discovered_handler[$type] as $node) {
-                                    if(self::$user->$type(self::replacePexKeys($node,$regex_matches))) {
+                                foreach ($discovered_handler[$type] as $node) {
+                                    if (self::$user->$type(self::replacePexKeys($node, $regex_matches))) {
                                         $good = true;
                                         break;
                                     }
@@ -256,16 +268,12 @@ class Router
     }
 
     /**
-     * @param \GCWorld\Interfaces\PEX $user
+     * @param string $user
      * @throws \Exception
      */
-    public static function setUser($user)
+    public static function setUserClassName($user)
     {
-        if ($user instanceof \GCWorld\Interfaces\PEX) {
-            self::$user = $user;
-        } else {
-            throw new \Exception('User passed does not use the PEX interface');
-        }
+        self::$userClassName = $user;
     }
 
     /**
@@ -283,8 +291,8 @@ class Router
      */
     private static function replacePexKeys($pexNode, array $regexMatches)
     {
-        foreach($regexMatches as $k => $v) {
-            $pexNode = str_replace('['.$k.']',$v,$pexNode);
+        foreach ($regexMatches as $k => $v) {
+            $pexNode = str_replace('['.$k.']', $v, $pexNode);
         }
         return $pexNode;
     }
