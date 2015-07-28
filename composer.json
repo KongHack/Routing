@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "gcworld/interfaces": "1.*",
+    "gcworld/interfaces": ">=1.1",
     "php": ">=5.4.0"
   },
   "autoload": {
