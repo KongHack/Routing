@@ -255,6 +255,10 @@ class Router
         self::$base = rtrim($base, '/');
     }
 
+    /**
+     * @param \GCWorld\Interfaces\PEX $user
+     * @throws \Exception
+     */
     public static function setUser($user)
     {
         if ($user instanceof \GCWorld\Interfaces\PEX) {
