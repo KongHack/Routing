@@ -125,13 +125,13 @@ class Router
                     foreach($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if(!is_array($discovered_handler[$type])) {
-                                if (!self::$user->$type($discovered_handler[$type])) {
+                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type],$regex_matches))) {
                                     Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
                                 $good = false;
                                 foreach($discovered_handler[$type] as $node) {
-                                    if(self::$user->$type($node)) {
+                                    if(self::$user->$type(self::replacePexKeys($node,$regex_matches))) {
                                         $good = true;
                                         break;
                                     }
@@ -274,5 +274,18 @@ class Router
     private static function is_xhr_request()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+    }
+
+    /**
+     * @param string $pexNode
+     * @param array $regexMatches
+     * @return string
+     */
+    private static function replacePexKeys($pexNode, array $regexMatches)
+    {
+        foreach($regexMatches as $k => $v) {
+            $pexNode = str_replace('['.$k.']',$v,$pexNode);
+        }
+        return $pexNode;
     }
 }
