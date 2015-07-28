@@ -8,6 +8,10 @@ namespace GCWorld\Routing;
 class Router
 {
     private static $base = null;
+    /**
+     * @var \GCWorld\Interfaces\PEX
+     */
+    private static $user = null;
 
     /**
      * @throws \Exception
@@ -56,11 +60,11 @@ class Router
             $discovered_handler = $routes[$path_info];
         } elseif ($routes) {
             $tokens = array(
-                ':string'     => '([a-zA-Z]+)',
-                ':number'     => '([0-9]+)',
-                ':alpha'      => '([a-zA-Z0-9-_]+)',
-                ':anything'   => '([^/]+)',
-                ':consume'    => '(.+)',
+            ':string'     => '([a-zA-Z]+)',
+            ':number'     => '([0-9]+)',
+            ':alpha'      => '([a-zA-Z0-9-_]+)',
+            ':anything'   => '([^/]+)',
+            ':consume'    => '(.+)',
             );
             foreach ($routes as $pattern => $routeConfig) {
                 $pattern = strtr($pattern, $tokens);
@@ -88,8 +92,8 @@ class Router
             } elseif (is_array($discovered_handler)) {
                 //Used for new reverse name search.
                 if (isset($discovered_handler['session']) &&
-                    $discovered_handler['session'] == true &&
-                    session_status() == PHP_SESSION_NONE) {
+                $discovered_handler['session'] == true &&
+                session_status() == PHP_SESSION_NONE) {
                     session_start();
                 }
                 //Handle pre & post handler options
@@ -112,6 +116,31 @@ class Router
                     } else {
                         echo 'Class Not Found: '.$discovered_handler;
                         die();
+                    }
+                }
+
+                // Security Testing!
+                if (self::$user != null) {
+                    $types = array('pexCheck','pexCheckAny','pexCheckExact');
+                    foreach($types as $type) {
+                        if (isset($discovered_handler[$type])) {
+                            if(!is_array($discovered_handler[$type])) {
+                                if (!self::$user->$type($discovered_handler[$type])) {
+                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                }
+                            } else {
+                                $good = false;
+                                foreach($discovered_handler[$type] as $node) {
+                                    if(self::$user->$type($node)) {
+                                        $good = true;
+                                        break;
+                                    }
+                                }
+                                if (!$good) {
+                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                }
+                            }
+                        }
                     }
                 }
             } elseif (is_callable($discovered_handler)) {
@@ -224,6 +253,15 @@ class Router
     public static function setBase($base)
     {
         self::$base = rtrim($base, '/');
+    }
+
+    public static function setUser($user)
+    {
+        if ($user instanceof \GCWorld\Interfaces\PEX) {
+            self::$user = $user;
+        } else {
+            throw new \Exception('User passed does not use the PEX interface');
+        }
     }
 
     /**
