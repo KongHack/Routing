@@ -54,7 +54,7 @@ class Debugger
      */
     public function getOurRoot()
     {
-        return dirname(__FILE__).'../';
+        return dirname(__FILE__).'/../';
     }
 
     /**
