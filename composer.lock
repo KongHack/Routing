@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "60c4da17f674438dc8cc23ae4b5a31b8",
+    "hash": "28ff18aa2ac9bef59e8fd2df5f4226bf",
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "1.1.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.konghack.com/GCWorld/Interfaces.git",
-                "reference": "f1eb2940b7dc3246f6977a80a6ad3ca186422266"
+                "reference": "be5b02c76f6d29abb1f2d4870456e63e33c761e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://toran.konghack.com/repo/private/dists/gcworld/interfaces/1.1.0.0/f1eb2940b7dc3246f6977a80a6ad3ca186422266.zip",
-                "reference": "f1eb2940b7dc3246f6977a80a6ad3ca186422266",
+                "url": "http://toran.konghack.com/repo/private/dists/gcworld/interfaces/1.2.1.0/be5b02c76f6d29abb1f2d4870456e63e33c761e2.zip",
+                "reference": "be5b02c76f6d29abb1f2d4870456e63e33c761e2",
                 "shasum": null,
                 "mirrors": [
                     {
@@ -45,10 +45,53 @@
                 }
             ],
             "description": "GCWorld Industries Interfaces",
-            "time": "2015-07-27 20:17:12"
+            "time": "2015-08-04 14:09:58"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "gcworld/database",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.konghack.com/GCWorld/Database.git",
+                "reference": "d486606b28c6feac600d1becdf89a1bc8ac8cda5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://toran.konghack.com/repo/private/dists/gcworld/database/1.1.0.0/d486606b28c6feac600d1becdf89a1bc8ac8cda5.zip",
+                "reference": "d486606b28c6feac600d1becdf89a1bc8ac8cda5",
+                "shasum": null,
+                "mirrors": [
+                    {
+                        "url": "http://toran.konghack.com/repo/private/dists/%package%/%version%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "gcworld/interfaces": ">=1.2",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GCWorld\\Database\\": "src/"
+                }
+            },
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "GameCharmer",
+                    "email": "admin@gamecharmer.com"
+                }
+            ],
+            "description": "GCWorld Industries Database",
+            "time": "2015-08-04 14:04:25"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],

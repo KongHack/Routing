@@ -13,12 +13,19 @@
     }
   ],
   "require": {
-    "gcworld/interfaces": ">=1.1",
+    "gcworld/interfaces": ">=1.2.1",
     "php": ">=5.4.0"
+  },
+  "require-dev": {
+    "gcworld/database": ">=1.1"
+  },
+  "suggest": {
+        "gcworld/database": "the actual database class we are using for logging"
   },
   "autoload": {
     "psr-4": {
       "GCWorld\\Routing\\": "src/"
     }
-  }
+  },
+  "license":"GPL-3.0"
 }

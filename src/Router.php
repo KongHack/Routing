@@ -7,8 +7,12 @@ namespace GCWorld\Routing;
  */
 class Router
 {
-    private static $base = null;
+    private static $base          = null;
     private static $userClassName = null;
+    /**
+     * @var Debugger|null
+     */
+    private static $debugger      = null;
 
     /**
      * @var \GCWorld\Interfaces\PEX
@@ -55,18 +59,20 @@ class Router
         $loader = new $className();
         $routes = $loader->getForwardRoutes();
 
+        $pattern            = '';
         $discovered_handler = null;
-        $regex_matches = array();
+        $regex_matches      = array();
 
         if (isset($routes[$path_info])) {
+            $pattern            = $path_info;
             $discovered_handler = $routes[$path_info];
         } elseif ($routes) {
             $tokens = array(
-            ':string'     => '([a-zA-Z]+)',
-            ':number'     => '([0-9]+)',
-            ':alpha'      => '([a-zA-Z0-9-_]+)',
-            ':anything'   => '([^/]+)',
-            ':consume'    => '(.+)',
+                ':string'     => '([a-zA-Z]+)',
+                ':number'     => '([0-9]+)',
+                ':alpha'      => '([a-zA-Z0-9-_]+)',
+                ':anything'   => '([^/]+)',
+                ':consume'    => '(.+)',
             );
             foreach ($routes as $pattern => $routeConfig) {
                 $pattern = strtr($pattern, $tokens);
@@ -84,6 +90,10 @@ class Router
 
         $handler_instance = null;
         if ($discovered_handler) {
+            if (self::$debugger !== null && $pattern != '') {
+                self::$debugger->logHit($pattern);
+            }
+
             if (is_string($discovered_handler)) {
                 if (class_exists($discovered_handler)) {
                     $handler_instance = new $discovered_handler($regex_matches);
@@ -295,5 +305,13 @@ class Router
             $pexNode = str_replace('['.$k.']', $v, $pexNode);
         }
         return $pexNode;
+    }
+
+    /**
+     * @param \GCWorld\Routing\Debugger $debugger
+     */
+    public static function attachDebugger(Debugger $debugger)
+    {
+        self::$debugger = $debugger;
     }
 }

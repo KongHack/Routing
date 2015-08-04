@@ -20,9 +20,9 @@ class Processor
      */
     private $routes_master  = array();
     /**
-     * @var array|string
+     * @var string
      */
-    private $storage        = array();
+    private $storage        = null;
     /**
      * @var bool
      */
@@ -38,6 +38,14 @@ class Processor
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getStorageLocation()
+    {
+        return $this->storage;
     }
 
     /**
