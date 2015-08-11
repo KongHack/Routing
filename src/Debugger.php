@@ -1,5 +1,5 @@
 <?php
-namespace GCworld\Routing;
+namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\Database;
 
