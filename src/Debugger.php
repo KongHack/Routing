@@ -5,7 +5,7 @@ use GCWorld\Interfaces\Database;
 
 /**
  * Class Debugger
- * @package GCworld\Routing
+ * @package GCWorld\Routing
  */
 class Debugger
 {

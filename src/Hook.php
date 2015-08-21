@@ -1,9 +1,9 @@
 <?php
-namespace GCworld\Routing;
+namespace GCWorld\Routing;
 
 /**
  * Class Hook
- * @package GCworld\Routing
+ * @package GCWorld\Routing
  */
 class Hook
 {
