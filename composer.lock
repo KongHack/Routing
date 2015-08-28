@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "28ff18aa2ac9bef59e8fd2df5f4226bf",
+    "hash": "2a3c2c1f056e948afee9836a517f1f9a",
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "1.2.1",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.konghack.com/GCWorld/Interfaces.git",
-                "reference": "be5b02c76f6d29abb1f2d4870456e63e33c761e2"
+                "reference": "4ae7124a15367e945dc9020374db9aaa975db4c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://toran.konghack.com/repo/private/dists/gcworld/interfaces/1.2.1.0/be5b02c76f6d29abb1f2d4870456e63e33c761e2.zip",
-                "reference": "be5b02c76f6d29abb1f2d4870456e63e33c761e2",
+                "url": "http://toran.konghack.com/repo/private/dists/gcworld/interfaces/2.0.6.0/4ae7124a15367e945dc9020374db9aaa975db4c2.zip",
+                "reference": "4ae7124a15367e945dc9020374db9aaa975db4c2",
                 "shasum": null,
                 "mirrors": [
                     {
@@ -45,22 +45,118 @@
                 }
             ],
             "description": "GCWorld Industries Interfaces",
-            "time": "2015-08-04 14:09:58"
+            "time": "2015-08-10 15:04:19"
+        },
+        {
+            "name": "gcworld/utilities",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.konghack.com/GCWorld/Utilities.git",
+                "reference": "0d37750e879894c1a8625ad2f74fa243faaecc0d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://toran.konghack.com/repo/private/dists/gcworld/utilities/1.0.0.0/0d37750e879894c1a8625ad2f74fa243faaecc0d.zip",
+                "reference": "0d37750e879894c1a8625ad2f74fa243faaecc0d",
+                "shasum": null,
+                "mirrors": [
+                    {
+                        "url": "http://toran.konghack.com/repo/private/dists/%package%/%version%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GCWorld\\Utilities\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "GameCharmer",
+                    "email": "admin@gamecharmer.com"
+                }
+            ],
+            "description": "GCWorld Industries standard Utilities pack",
+            "time": "2015-05-18 17:34:31"
+        },
+        {
+            "name": "phpdocumentor/reflection-docblock",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
+                "reference": "d68dbdc53dc358a816f00b300704702b2eaff7b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/d68dbdc53dc358a816f00b300704702b2eaff7b8",
+                "reference": "d68dbdc53dc358a816f00b300704702b2eaff7b8",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "http://toran.konghack.com/repo/packagist/dists/%package%/%version%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "dflydev/markdown": "~1.0",
+                "erusev/parsedown": "~1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "phpDocumentor": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike van Riel",
+                    "email": "mike.vanriel@naenius.com"
+                }
+            ],
+            "time": "2015-02-03 12:10:50"
         }
     ],
     "packages-dev": [
         {
             "name": "gcworld/database",
-            "version": "1.1.0",
+            "version": "1.1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.konghack.com/GCWorld/Database.git",
-                "reference": "d486606b28c6feac600d1becdf89a1bc8ac8cda5"
+                "reference": "9a00d2de7951bfd1920d79711c85ecf0543832ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://toran.konghack.com/repo/private/dists/gcworld/database/1.1.0.0/d486606b28c6feac600d1becdf89a1bc8ac8cda5.zip",
-                "reference": "d486606b28c6feac600d1becdf89a1bc8ac8cda5",
+                "url": "http://toran.konghack.com/repo/private/dists/gcworld/database/1.1.1.6/9a00d2de7951bfd1920d79711c85ecf0543832ff.zip",
+                "reference": "9a00d2de7951bfd1920d79711c85ecf0543832ff",
                 "shasum": null,
                 "mirrors": [
                     {
@@ -89,7 +185,7 @@
                 }
             ],
             "description": "GCWorld Industries Database",
-            "time": "2015-08-04 14:04:25"
+            "time": "2015-08-11 13:25:00"
         }
     ],
     "aliases": [],

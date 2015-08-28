@@ -109,14 +109,14 @@ class Router
                     session_start();
                 }
                 //Handle pre & post handler options
-                if (isset($discovered_handler['pre_args']) && is_array($discovered_handler['pre_args'])) {
-                    $rev = array_reverse($discovered_handler['pre_args']);
+                if (isset($discovered_handler['preArgs']) && is_array($discovered_handler['preArgs'])) {
+                    $rev = array_reverse($discovered_handler['preArgs']);
                     foreach ($rev as $arg) {
                         array_unshift($regex_matches, $arg);
                     }
                 }
-                if (isset($discovered_handler['post_args']) && is_array($discovered_handler['post_args'])) {
-                    foreach ($discovered_handler['post_args'] as $arg) {
+                if (isset($discovered_handler['postArgs']) && is_array($discovered_handler['postArgs'])) {
+                    foreach ($discovered_handler['postArgs'] as $arg) {
                         $regex_matches[] = $arg;
                     }
                 }
@@ -171,12 +171,6 @@ class Router
         }
 
         if ($handler_instance) {
-            if (property_exists($handler_instance, 'session') &&
-                $handler_instance->session &&
-                session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-
             if (self::is_xhr_request() && method_exists($handler_instance, $request_method . '_xhr')) {
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

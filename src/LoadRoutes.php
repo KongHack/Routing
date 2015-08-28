@@ -1,12 +1,17 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Utilities\General;
+use phpDocumentor\Reflection\DocBlock;
+
 /**
  * Class LoadRoutes
  * @package GCWorld\Routing
  */
 class LoadRoutes
 {
+    use General;
+
     /**
      * @var null
      */
@@ -15,6 +20,10 @@ class LoadRoutes
      * @var array
      */
     private static $classes        = array();
+    /**
+     * @var array
+     */
+    private static $paths          = array();
     /**
      * @var int
      */
@@ -67,6 +76,18 @@ class LoadRoutes
     }
 
     /**
+     * Add a file system path for automatic parsing.
+     *
+     * @param $path
+     * @return $this
+     */
+    public function addPath($path)
+    {
+        self::$paths[] = $path;
+        return $this;
+    }
+
+    /**
      * @param bool $force
      * @param bool $debug
      * @throws \Exception
@@ -94,7 +115,10 @@ class LoadRoutes
             }
         }
 
-        if (self::$highestTime > self::$lastClassTime || count($files) != count(self::$classes) || $force) {
+        if ($force
+            || count(self::$paths) || self::$highestTime > self::$lastClassTime
+            || count($files) != count(self::$classes)
+        ) {
             $routes = array();
             foreach (self::$classes as $fullClass) {
                 $cTemp = new $fullClass;
@@ -103,22 +127,100 @@ class LoadRoutes
                 }
             }
 
+            $routes = array_merge($routes, self::generateAnnotatedRoutes());
+
             $processor = new Processor($debug);
             $processor->run($routes);
         }
     }
 
     /**
-     * @param     $pattern
-     * @param int $flags
      * @return array
      */
-    private static function glob_recursive($pattern, $flags = 0)
+    private static function generateAnnotatedRoutes()
     {
-        $files = glob($pattern, $flags);
-        foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
-            $files = array_merge($files, self::glob_recursive($dir.'/'.basename($pattern), $flags));
+        $return = array();
+        if (count(self::$paths)>0) {
+            foreach (self::$paths as $path) {
+                $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
+                foreach ($classFiles as $file) {
+                    $namespace = '';
+                    $className = '';
+                    $fh = fopen($file, 'r');
+                    while (($buffer = fgets($fh)) !== false) {
+                        if (substr($buffer, 0, 9)=='namespace') {
+                            $namespace = substr(trim($buffer), 10, -1);
+                        }
+                        if (substr($buffer, 0, 5)=='class') {
+                            $temp = explode(' ', $buffer);
+                            $className = $temp[1];
+                            break;
+                        }
+                    }
+                    $classString = trim('\\'.$namespace.'\\'.$className);
+                    if (class_exists($classString)) {
+                        $thisClass = new \ReflectionClass($classString);
+                        if (($comment = $thisClass->getDocComment()) !== false) {
+                            $phpDoc = new DocBlock($comment);
+                            $routes = self::processTags($classString, $phpDoc);
+                            if ($routes) {
+                                $return = array_merge($return, $routes);
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return $files;
+        return $return;
+    }
+
+    /**
+     * @param string                             $classString
+     * @param \phpDocumentor\Reflection\DocBlock $phpDoc
+     * @return array|bool
+     */
+    private static function processTags($classString, DocBlock $phpDoc)
+    {
+        if (!$phpDoc->hasTag('router-pattern') || !$phpDoc->hasTag('router-name')) {
+            return false;
+        }
+
+        $pattern = $phpDoc->getTagsByName('router-pattern');
+        $pat = $pattern[0]->getContent();
+
+        $route = array($pat => array(
+            'class' => $classString,
+            'name'  => $phpDoc->getTagsByName('router-name')[0]->getContent()
+        ));
+
+        $session = $phpDoc->getTagsByName('router-session');
+        if (count($session)>0) {
+            $sessionString = strtolower($session[0]->getContent());
+            $route['session'] = in_array($sessionString, array('true','t','y','yes'));
+        }
+
+        // Remaining items that can be both a string or an array.
+        $processingArray = array(
+            'pexCheck'      => $phpDoc->getTagsByName('router-pexCheck'),
+            'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
+            'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
+            'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
+            'postArgs'      => $phpDoc->getTagsByName('router-postArgs')
+        );
+        foreach ($processingArray as $key => $var) {
+            /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
+
+            if (count($var) == 1) {
+                $route[$pat][$key] = trim($var[0]->getContent());
+            } elseif (count($var) > 1) {
+                $temp = array();
+                foreach ($var as $t) {
+                    $temp[] = trim($t->getContent());
+                }
+                $route[$pat][$key] = $temp;
+            }
+        }
+
+        return $route;
     }
 }

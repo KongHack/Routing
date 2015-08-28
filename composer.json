@@ -13,14 +13,16 @@
     }
   ],
   "require": {
-    "gcworld/interfaces": ">=1.2.1",
-    "php": ">=5.4.0"
+    "gcworld/interfaces": "~2.0",
+    "gcworld/utilities": "~1.0",
+    "php": ">=5.4.0",
+    "phpdocumentor/reflection-docblock": "^2.0"
   },
   "require-dev": {
     "gcworld/database": ">=1.1"
   },
   "suggest": {
-        "gcworld/database": "the actual database class we are using for logging"
+    "gcworld/database": "the actual database class we are using for logging"
   },
   "autoload": {
     "psr-4": {
