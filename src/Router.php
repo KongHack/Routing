@@ -20,6 +20,8 @@ class Router
     private static $user = null;
 
     /**
+     * Run this when you want to run your route.
+     *
      * @throws \Exception
      */
     public static function forward()

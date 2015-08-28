@@ -210,7 +210,7 @@ class Processor
     }
 
     /**
-     *
+     * Generates the MISC route file
      */
     private function generateMisc()
     {
