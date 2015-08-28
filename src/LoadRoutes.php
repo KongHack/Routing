@@ -196,7 +196,7 @@ class LoadRoutes
         $session = $phpDoc->getTagsByName('router-session');
         if (count($session)>0) {
             $sessionString = strtolower($session[0]->getContent());
-            $route['session'] = in_array($sessionString, array('true','t','y','yes'));
+            $route[$pat]['session'] = in_array($sessionString, array('true','t','y','yes'));
         }
 
         // Remaining items that can be both a string or an array.
