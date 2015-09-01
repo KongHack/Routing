@@ -205,7 +205,8 @@ class LoadRoutes
             'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
             'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
             'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
-            'postArgs'      => $phpDoc->getTagsByName('router-postArgs')
+            'postArgs'      => $phpDoc->getTagsByName('router-postArgs'),
+            'title'         => $phpDoc->getTagsByName('router-title')
         );
         foreach ($processingArray as $key => $var) {
             /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
