@@ -199,7 +199,7 @@ class Processor
             if ($temp[0] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' ".var_export($v, true).",\n";
+            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
