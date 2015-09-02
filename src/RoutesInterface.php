@@ -17,4 +17,9 @@ interface RoutesInterface
      * @return array
      */
     public function getReverseRoutes();
+
+    /**
+     * @return array
+     */
+    public function getTitles();
 }

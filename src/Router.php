@@ -266,6 +266,47 @@ class Router
     }
 
     /**
+     * @param       $name
+     * @param array $params
+     * @return bool|string
+     */
+    public static function getTitle($name, $params = array())
+    {
+        // We now add the count of parameters to the name. See Processor.php for more info.
+        $name .= '_'.count($params);
+
+        $temp = explode('_', $name);
+        $master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
+        if (!class_exists($master)) {
+            $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+        }
+
+        /** @var \GCWorld\Routing\RoutesInterface $cTemp */
+        $cTemp = new $master();
+        $routes = $cTemp->getTitles();
+
+        if (array_key_exists($name, $routes)) {
+            $route = $routes[$name];
+            if (count($params) > 0) {
+                $temp = explode('/', $route);
+                $index = 0;
+                foreach ($temp as $k => $v) {
+                    if (substr($v, 0, 1)==':') {
+                        $temp[$k] = $params[$index];
+                        ++$index;
+                    }
+                }
+                $route = implode('/', $temp);
+            }
+            if (self::$base != null) {
+                $route = self::$base.$route;
+            }
+            return $route;
+        }
+        return false;
+    }
+
+    /**
      * @param $base
      */
     public static function setBase($base)
