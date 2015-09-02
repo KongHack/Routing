@@ -203,21 +203,6 @@ class Processor
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
 
-        // How about some titles!
-        $php .= "\tpublic function getTitles()\n";
-        $php .= "\t{\n";
-        $php .= "\t\t return array(\n";
-        foreach ($this->routes_straight as $k => $v) {
-            $temp = explode('/', $k);
-            if ($temp[0] != $master) {
-                continue;
-            }
-            $php .= "\t\t\t'$k' => ".(isset($v['title'])?var_export($v['title'],true):"''").",\n";
-        }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
-
-
         //End of file
         $php .= "}\n";
 
@@ -268,20 +253,6 @@ class Processor
                 continue;
             }
             $php .= "\t\t\t'$k' => '$v',\n";
-        }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
-
-        // How about some titles!
-        $php .= "\tpublic function getTitles()\n";
-        $php .= "\t{\n";
-        $php .= "\t\t return array(\n";
-        foreach ($this->routes_straight as $k => $v) {
-            $temp = explode('/', $k);
-            if (in_array($temp[1], $this->routes_master)) {
-                continue;
-            }
-            $php .= "\t\t\t'$k' => ".(isset($v['title'])?var_export($v['title'],true):"''").",\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
