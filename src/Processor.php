@@ -99,9 +99,10 @@ class Processor
                 throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
             }
 
-            // V3 accepts additional args, so straight routes are a full array.
-            $this->routes_straight[$k]          = $v;
-            $this->routes_reverse[$v['name']]   = $k;
+            $this->routes_straight[$k]   = $v;
+            $name = $v['name'];
+            unset($v['name']);
+            $this->routes_reverse[$name] = array('pattern'=>$k) + $v;
         }
 
         if ($this->debug) {
@@ -198,7 +199,7 @@ class Processor
             if ($temp[0] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '$v',\n";
+            $php .= "\t\t\t'$k' ".var_export($v, true).",\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
@@ -252,7 +253,7 @@ class Processor
             if (in_array($temp[0], $this->routes_master)) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => '$v',\n";
+            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
         }
         $php .= "\t\t);\n";
         $php .= "\t}\n\n";
