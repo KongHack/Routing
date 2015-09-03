@@ -185,43 +185,45 @@ class LoadRoutes
             return false;
         }
 
+        $routes = array();
         $pattern = $phpDoc->getTagsByName('router-pattern');
-        $pat = $pattern[0]->getContent();
+        foreach($pattern as $patMaster) {
+            $pat = $patMaster->getContent();
 
-        $route = array($pat => array(
-            'class' => $classString,
-            'name'  => $phpDoc->getTagsByName('router-name')[0]->getContent()
-        ));
+            $routes[$pat] = array(
+                'class' => $classString,
+                'name'  => $phpDoc->getTagsByName('router-name')[0]->getContent()
+            );
 
-        $session = $phpDoc->getTagsByName('router-session');
-        if (count($session)>0) {
-            $sessionString = strtolower($session[0]->getContent());
-            $route[$pat]['session'] = in_array($sessionString, array('true','t','y','yes'));
-        }
+            $session = $phpDoc->getTagsByName('router-session');
+            if (count($session) > 0) {
+                $sessionString = strtolower($session[0]->getContent());
+                $routes[$pat]['session'] = in_array($sessionString, array('true', 't', 'y', 'yes'));
+            }
 
-        // Remaining items that can be both a string or an array.
-        $processingArray = array(
-            'pexCheck'      => $phpDoc->getTagsByName('router-pexCheck'),
-            'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
-            'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
-            'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
-            'postArgs'      => $phpDoc->getTagsByName('router-postArgs'),
-            'title'         => $phpDoc->getTagsByName('router-title')
-        );
-        foreach ($processingArray as $key => $var) {
-            /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
+            // Remaining items that can be both a string or an array.
+            $processingArray = array(
+                'pexCheck'      => $phpDoc->getTagsByName('router-pexCheck'),
+                'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
+                'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
+                'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
+                'postArgs'      => $phpDoc->getTagsByName('router-postArgs'),
+                'title'         => $phpDoc->getTagsByName('router-title')
+            );
+            foreach ($processingArray as $key => $var) {
+                /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
 
-            if (count($var) == 1) {
-                $route[$pat][$key] = trim($var[0]->getContent());
-            } elseif (count($var) > 1) {
-                $temp = array();
-                foreach ($var as $t) {
-                    $temp[] = trim($t->getContent());
+                if (count($var) == 1) {
+                    $routes[$pat][$key] = trim($var[0]->getContent());
+                }elseif (count($var) > 1) {
+                    $temp = array();
+                    foreach ($var as $t) {
+                        $temp[] = trim($t->getContent());
+                    }
+                    $routes[$pat][$key] = $temp;
                 }
-                $route[$pat][$key] = $temp;
             }
         }
-
-        return $route;
+        return $routes;
     }
 }
