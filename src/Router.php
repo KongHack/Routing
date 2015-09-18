@@ -22,7 +22,7 @@ class Router
     /**
      * @var mixed
      */
-    private static $foundRouteName = null;
+    public static $foundRouteName = null;
 
     /**
      * Run this when you want to run your route.
