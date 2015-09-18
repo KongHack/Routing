@@ -270,6 +270,8 @@ class Processor
      */
     public static function cleanClassName($master)
     {
-        return str_replace(array('-',':'), array('','REPLACE'), strtoupper($master));
+        $str = str_replace('-', '', strtoupper($master));
+        $str = str_replace(':', 'COLON', $str);
+        return $str;
     }
 }
