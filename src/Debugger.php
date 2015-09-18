@@ -95,6 +95,7 @@ class Debugger
             $fileName = array_pop($tmp);
             $tmp = explode('.', $fileName);
             $className = array_shift($tmp);
+            $className = Processor::cleanClassName($className);
             unset($tmp);
             $fqcn = '\\GCWorld\\Routing\\Generated\\'.$className;
 
