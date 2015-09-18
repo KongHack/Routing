@@ -187,7 +187,7 @@ class LoadRoutes
 
         $routes = array();
         $pattern = $phpDoc->getTagsByName('router-pattern');
-        foreach($pattern as $patMaster) {
+        foreach ($pattern as $patMaster) {
             $pat = $patMaster->getContent();
 
             $routes[$pat] = array(
@@ -215,7 +215,7 @@ class LoadRoutes
 
                 if (count($var) == 1) {
                     $routes[$pat][$key] = trim($var[0]->getContent());
-                }elseif (count($var) > 1) {
+                } elseif (count($var) > 1) {
                     $temp = array();
                     foreach ($var as $t) {
                         $temp[] = trim($t->getContent());

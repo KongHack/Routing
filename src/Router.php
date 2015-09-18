@@ -20,6 +20,11 @@ class Router
     private static $user = null;
 
     /**
+     * @var mixed
+     */
+    private static $foundRouteName = null;
+
+    /**
      * Run this when you want to run your route.
      *
      * @throws \Exception
@@ -104,6 +109,10 @@ class Router
                     die();
                 }
             } elseif (is_array($discovered_handler)) {
+                if (isset($discovered_handler['name'])) {
+                    self::$foundRouteName = $discovered_handler['name'];
+                }
+
                 //Used for new reverse name search.
                 if (isset($discovered_handler['session']) &&
                 $discovered_handler['session'] == true &&
