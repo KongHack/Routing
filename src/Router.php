@@ -8,6 +8,7 @@ namespace GCWorld\Routing;
 class Router
 {
     const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+    const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
     private static $base          = null;
     private static $userClassName = null;
@@ -69,7 +70,7 @@ class Router
 
         // TODO: Clean this up.
         // I hate having to copy/paste large blocks of code like this, but I don't
-        //  have the time right now to clean & optimize.  Sorry!
+        //  have the time to clean & fix right now. :(
 
         /** @var \GCWorld\Routing\RoutesInterface $loader */
         $loader = new $className();
@@ -102,8 +103,8 @@ class Router
             }
         }
 
-        if(!$discovered_handler && $className != self::MISC) {
-            $className = self::MISC;
+        if(!$discovered_handler) {
+            $className = self::REPLACEMENT;
             /** @var \GCWorld\Routing\RoutesInterface $loader */
             $loader = new $className();
             $routes = $loader->getForwardRoutes();
