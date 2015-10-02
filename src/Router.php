@@ -50,7 +50,6 @@ class Router
             $master = Processor::cleanClassName($temp[1]);
             $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
             if (!class_exists($className)) {
-
             }
             if (!class_exists($className)) {
                 $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';

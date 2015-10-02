@@ -270,7 +270,7 @@ class Processor
      */
     public static function cleanClassName($master)
     {
-        if(strstr($master,':')) {
+        if (strstr($master, ':')) {
             return 'MISC';
         }
         return str_replace('-', '', strtoupper($master));
