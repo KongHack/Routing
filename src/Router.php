@@ -7,6 +7,8 @@ namespace GCWorld\Routing;
  */
 class Router
 {
+    const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+
     private static $base          = null;
     private static $userClassName = null;
     /**
@@ -25,44 +27,49 @@ class Router
     public static $foundRouteName = null;
 
     /**
-     * Run this when you want to run your route.
-     *
+     * Processes routes.
+     * @param null $path_info
      * @throws \Exception
      */
-    public static function forward()
+    public static function forward($path_info = null)
     {
         Hook::fire('before_request', compact('routes'));
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
-        $path_info = '/';
-        if (!empty($_SERVER['PATH_INFO'])) {
-            $path_info = $_SERVER['PATH_INFO'];
-        } elseif (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php') {
-            $path_info = $_SERVER['ORIG_PATH_INFO'];
-        } else {
-            if (!empty($_SERVER['REQUEST_URI'])) {
-                $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr($_SERVER['REQUEST_URI'], '?', true) : $_SERVER['REQUEST_URI'];
+
+        if($path_info == null) {
+            $path_info = '/';
+            if (!empty($_SERVER['PATH_INFO'])) {
+                $path_info = $_SERVER['PATH_INFO'];
+            }elseif (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php') {
+                $path_info = $_SERVER['ORIG_PATH_INFO'];
+            }else {
+                if (!empty($_SERVER['REQUEST_URI'])) {
+                    $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr($_SERVER['REQUEST_URI'], '?',
+                        true) : $_SERVER['REQUEST_URI'];
+                }
             }
         }
-
         $temp = explode('/', $path_info);
         if (count($temp)>1) {
             $master = Processor::cleanClassName($temp[1]);
             $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
             if (!class_exists($className)) {
-            }
-            if (!class_exists($className)) {
-                $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+                $className = self::MISC;
                 if (!class_exists($className)) {
                     throw new \Exception('No Route Class Found For Base (1)');
                 }
             }
         } else {
-            $className = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+            $className = self::MISC;
             if (!class_exists($className)) {
                 throw new \Exception('No Route Class Found For Base (2)');
             }
         }
+
+        // TODO: Clean this up.
+        // I hate having to copy/paste large blocks of code like this, but I don't
+        //  have the time right now to clean & optimize.  Sorry!
 
         /** @var \GCWorld\Routing\RoutesInterface $loader */
         $loader = new $className();
@@ -94,6 +101,41 @@ class Router
                 }
             }
         }
+
+        if(!$discovered_handler && $className != self::MISC) {
+            $className = self::MISC;
+            /** @var \GCWorld\Routing\RoutesInterface $loader */
+            $loader = new $className();
+            $routes = $loader->getForwardRoutes();
+
+            $pattern            = '';
+            $discovered_handler = null;
+            $regex_matches      = array();
+
+            if (isset($routes[$path_info])) {
+                $pattern            = $path_info;
+                $discovered_handler = $routes[$path_info];
+            } elseif ($routes) {
+                $tokens = array(
+                    ':string'     => '([a-zA-Z]+)',
+                    ':number'     => '([0-9]+)',
+                    ':alpha'      => '([a-zA-Z0-9-_]+)',
+                    ':anything'   => '([^/]+)',
+                    ':consume'    => '(.+)',
+                );
+                foreach ($routes as $pattern => $routeConfig) {
+                    $pattern = strtr($pattern, $tokens);
+                    if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
+                        $discovered_handler = $routeConfig;
+                        $regex_matches = $matches;
+                        unset($regex_matches[0]);
+                        $regex_matches = array_values($regex_matches);
+                        break;
+                    }
+                }
+            }
+        }
+
 
         $result = null;
 
@@ -349,4 +391,5 @@ class Router
     {
         self::$debugger = $debugger;
     }
+
 }
