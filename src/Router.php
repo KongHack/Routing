@@ -12,6 +12,7 @@ class Router
 
     private static $base          = null;
     private static $userClassName = null;
+    private static $forcedRoutes  = null;
     /**
      * @var Debugger|null
      */
@@ -38,43 +39,51 @@ class Router
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
 
-        if($path_info == null) {
+        if ($path_info == null) {
             $path_info = '/';
             if (!empty($_SERVER['PATH_INFO'])) {
                 $path_info = $_SERVER['PATH_INFO'];
-            }elseif (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php') {
+            } elseif (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['ORIG_PATH_INFO'] !== '/index.php') {
                 $path_info = $_SERVER['ORIG_PATH_INFO'];
-            }else {
+            } else {
                 if (!empty($_SERVER['REQUEST_URI'])) {
-                    $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr($_SERVER['REQUEST_URI'], '?',
-                        true) : $_SERVER['REQUEST_URI'];
+                    $path_info = (strpos($_SERVER['REQUEST_URI'], '?') > 0) ? strstr(
+                        $_SERVER['REQUEST_URI'],
+                        '?',
+                        true
+                    ) : $_SERVER['REQUEST_URI'];
                 }
             }
         }
-        $temp = explode('/', $path_info);
-        if (count($temp)>1) {
-            $master = Processor::cleanClassName($temp[1]);
-            $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
-            if (!class_exists($className)) {
+
+        if (self::$forcedRoutes == null) {
+            $temp = explode('/', $path_info);
+            if (count($temp) > 1) {
+                $master = Processor::cleanClassName($temp[1]);
+                $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
+                if (!class_exists($className)) {
+                    $className = self::MISC;
+                    if (!class_exists($className)) {
+                        throw new \Exception('No Route Class Found For Base (1)');
+                    }
+                }
+            } else {
                 $className = self::MISC;
                 if (!class_exists($className)) {
-                    throw new \Exception('No Route Class Found For Base (1)');
+                    throw new \Exception('No Route Class Found For Base (2)');
                 }
             }
+
+            // TODO: Clean this up.
+            // I hate having to copy/paste large blocks of code like this, but I don't
+            //  have the time to clean & fix right now. :(
+
+            /** @var \GCWorld\Routing\RoutesInterface $loader */
+            $loader = new $className();
+            $routes = $loader->getForwardRoutes();
         } else {
-            $className = self::MISC;
-            if (!class_exists($className)) {
-                throw new \Exception('No Route Class Found For Base (2)');
-            }
+            $routes = self::$forcedRoutes;
         }
-
-        // TODO: Clean this up.
-        // I hate having to copy/paste large blocks of code like this, but I don't
-        //  have the time to clean & fix right now. :(
-
-        /** @var \GCWorld\Routing\RoutesInterface $loader */
-        $loader = new $className();
-        $routes = $loader->getForwardRoutes();
 
         $pattern            = '';
         $discovered_handler = null;
@@ -103,7 +112,7 @@ class Router
             }
         }
 
-        if(!$discovered_handler) {
+        if (!$discovered_handler) {
             $className = self::REPLACEMENT;
             /** @var \GCWorld\Routing\RoutesInterface $loader */
             $loader = new $className();
@@ -393,4 +402,11 @@ class Router
         self::$debugger = $debugger;
     }
 
+    /**
+     * @param array $routes
+     */
+    public static function forceRoutes(array $routes)
+    {
+        $this->forceRoutes = $routes;
+    }
 }

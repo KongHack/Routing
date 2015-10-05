@@ -271,10 +271,10 @@ class Processor
     public static function cleanClassName($master)
     {
         // If we start with a replacement key
-        if (strstr($master,':')) {
+        if (strstr($master, ':')) {
             return 'REPLACEMENT_KEY';
         }
 
-        return str_replace('-','', strtoupper($master));
+        return str_replace('-', '', strtoupper($master));
     }
 }
