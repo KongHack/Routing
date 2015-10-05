@@ -407,6 +407,6 @@ class Router
      */
     public static function forceRoutes(array $routes)
     {
-        $this->forceRoutes = $routes;
+        self::$forcedRoutes = $routes;
     }
 }
