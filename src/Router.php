@@ -114,33 +114,38 @@ class Router
 
         if (!$discovered_handler) {
             $className = self::REPLACEMENT;
-            /** @var \GCWorld\Routing\RoutesInterface $loader */
-            $loader = new $className();
-            $routes = $loader->getForwardRoutes();
+            if (!class_exists($className)) {
+                $className = self::MISC;
+            }
+            if (class_exists($className)) {
+                /** @var \GCWorld\Routing\RoutesInterface $loader */
+                $loader = new $className();
+                $routes = $loader->getForwardRoutes();
 
-            $pattern            = '';
-            $discovered_handler = null;
-            $regex_matches      = array();
+                $pattern = '';
+                $discovered_handler = null;
+                $regex_matches = array();
 
-            if (isset($routes[$path_info])) {
-                $pattern            = $path_info;
-                $discovered_handler = $routes[$path_info];
-            } elseif ($routes) {
-                $tokens = array(
-                    ':string'     => '([a-zA-Z]+)',
-                    ':number'     => '([0-9]+)',
-                    ':alpha'      => '([a-zA-Z0-9-_]+)',
-                    ':anything'   => '([^/]+)',
-                    ':consume'    => '(.+)',
-                );
-                foreach ($routes as $pattern => $routeConfig) {
-                    $pattern = strtr($pattern, $tokens);
-                    if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
-                        $discovered_handler = $routeConfig;
-                        $regex_matches = $matches;
-                        unset($regex_matches[0]);
-                        $regex_matches = array_values($regex_matches);
-                        break;
+                if (isset($routes[$path_info])) {
+                    $pattern = $path_info;
+                    $discovered_handler = $routes[$path_info];
+                } elseif ($routes) {
+                    $tokens = array(
+                        ':string'   => '([a-zA-Z]+)',
+                        ':number'   => '([0-9]+)',
+                        ':alpha'    => '([a-zA-Z0-9-_]+)',
+                        ':anything' => '([^/]+)',
+                        ':consume'  => '(.+)',
+                    );
+                    foreach ($routes as $pattern => $routeConfig) {
+                        $pattern = strtr($pattern, $tokens);
+                        if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
+                            $discovered_handler = $routeConfig;
+                            $regex_matches = $matches;
+                            unset($regex_matches[0]);
+                            $regex_matches = array_values($regex_matches);
+                            break;
+                        }
                     }
                 }
             }
