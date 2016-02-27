@@ -16,7 +16,7 @@ class Router
     /**
      * @var Debugger|null
      */
-    private static $debugger      = null;
+    private static $debugger = null;
 
     /**
      * @var \GCWorld\Interfaces\PEX
@@ -26,7 +26,8 @@ class Router
     /**
      * @var mixed
      */
-    public static $foundRouteName = null;
+    public static $foundRouteName      = null;
+    public static $foundRouteNameClean = null;
 
     /**
      * Processes routes.
@@ -59,7 +60,7 @@ class Router
         if (self::$forcedRoutes == null) {
             $temp = explode('/', $path_info);
             if (count($temp) > 1) {
-                $master = Processor::cleanClassName($temp[1]);
+                $master    = Processor::cleanClassName($temp[1]);
                 $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
                 if (!class_exists($className)) {
                     $className = self::MISC;
@@ -94,17 +95,17 @@ class Router
             $discovered_handler = $routes[$path_info];
         } elseif ($routes) {
             $tokens = array(
-                ':string'     => '([a-zA-Z]+)',
-                ':number'     => '([0-9]+)',
-                ':alpha'      => '([a-zA-Z0-9-_]+)',
-                ':anything'   => '([^/]+)',
-                ':consume'    => '(.+)',
+                ':string'   => '([a-zA-Z]+)',
+                ':number'   => '([0-9]+)',
+                ':alpha'    => '([a-zA-Z0-9-_]+)',
+                ':anything' => '([^/]+)',
+                ':consume'  => '(.+)',
             );
             foreach ($routes as $pattern => $routeConfig) {
                 $pattern = strtr($pattern, $tokens);
-                if (preg_match('#^/?' . $pattern . '/?$#', $path_info, $matches)) {
+                if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                     $discovered_handler = $routeConfig;
-                    $regex_matches = $matches;
+                    $regex_matches      = $matches;
                     unset($regex_matches[0]);
                     $regex_matches = array_values($regex_matches);
                     break;
@@ -122,12 +123,12 @@ class Router
                 $loader = new $className();
                 $routes = $loader->getForwardRoutes();
 
-                $pattern = '';
+                $pattern            = '';
                 $discovered_handler = null;
-                $regex_matches = array();
+                $regex_matches      = array();
 
                 if (isset($routes[$path_info])) {
-                    $pattern = $path_info;
+                    $pattern            = $path_info;
                     $discovered_handler = $routes[$path_info];
                 } elseif ($routes) {
                     $tokens = array(
@@ -141,7 +142,7 @@ class Router
                         $pattern = strtr($pattern, $tokens);
                         if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                             $discovered_handler = $routeConfig;
-                            $regex_matches = $matches;
+                            $regex_matches      = $matches;
                             unset($regex_matches[0]);
                             $regex_matches = array_values($regex_matches);
                             break;
@@ -170,12 +171,20 @@ class Router
             } elseif (is_array($discovered_handler)) {
                 if (isset($discovered_handler['name'])) {
                     self::$foundRouteName = $discovered_handler['name'];
+                    $tmp                  = explode('_', $discovered_handler['name']);
+                    if (is_numeric($tmp[count($tmp) - 1])) {
+                        array_pop($tmp);
+                        self::$foundRouteNameClean = implode('_', $tmp);
+                    } else {
+                        self::$foundRouteNameClean = self::$foundRouteName;
+                    }
                 }
 
                 //Used for new reverse name search.
                 if (isset($discovered_handler['session']) &&
-                $discovered_handler['session'] == true &&
-                session_status() == PHP_SESSION_NONE) {
+                    $discovered_handler['session'] == true &&
+                    session_status() == PHP_SESSION_NONE
+                ) {
                     session_start();
                 }
                 //Handle pre & post handler options
@@ -204,7 +213,7 @@ class Router
                 // Security Testing!
                 if (self::$userClassName != null) {
                     /** @var mixed $temp */
-                    $temp = self::$userClassName;
+                    $temp       = self::$userClassName;
                     self::$user = $temp::getInstance();
                 }
 
@@ -213,12 +222,15 @@ class Router
                         throw new \Exception('The provided user class does not implement PEX. ('.
                             self::$userClassName.')');
                     }
-                    $types = array('pexCheck','pexCheckAny','pexCheckExact');
+                    $types = array('pexCheck', 'pexCheckAny', 'pexCheckExact');
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
-                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches))) {
-                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type],
+                                    $regex_matches))
+                                ) {
+                                    Hook::fire('403',
+                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
                                 $good = false;
@@ -229,7 +241,8 @@ class Router
                                     }
                                 }
                                 if (!$good) {
-                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                    Hook::fire('403',
+                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             }
                         }
@@ -241,10 +254,10 @@ class Router
         }
 
         if ($handler_instance) {
-            if (self::is_xhr_request() && method_exists($handler_instance, $request_method . '_xhr')) {
+            if (self::is_xhr_request() && method_exists($handler_instance, $request_method.'_xhr')) {
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
                 header('Cache-Control: no-store, no-cache, must-revalidate');
                 header('Cache-Control: post-check=0, pre-check=0', false);
                 header('Pragma: no-cache');
@@ -252,12 +265,12 @@ class Router
             }
 
             if (method_exists($handler_instance, $request_method)) {
-                Hook::fire('before_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                Hook::fire('before_handler',
+                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-                $args = &$regex_matches; //Only for cleaner code
+                $args     = &$regex_matches; //Only for cleaner code
                 $argCount = count($args);
-                switch($argCount)
-                {
+                switch ($argCount) {
                     case 0:
                         $result = $handler_instance->$request_method();
                         break;
@@ -265,16 +278,16 @@ class Router
                         $result = $handler_instance->$request_method($args[0]);
                         break;
                     case 2:
-                        $result = $handler_instance->$request_method($args[0],$args[1]);
+                        $result = $handler_instance->$request_method($args[0], $args[1]);
                         break;
                     case 3:
-                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2]);
+                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2]);
                         break;
                     case 4:
-                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3]);
+                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2], $args[3]);
                         break;
                     case 5:
-                        $result = $handler_instance->$request_method($args[0],$args[1],$args[2],$args[3],$args[4]);
+                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2], $args[3], $args[4]);
                         break;
                     default:
                         $result = call_user_func_array(array($handler_instance, $request_method), $args);
@@ -282,14 +295,18 @@ class Router
                 }
 
                 //$result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
-                Hook::fire('after_handler', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
+                Hook::fire('after_handler',
+                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
             } else {
                 Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
             }
         } else {
-            Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master', 'temp', 'className'));
+            Hook::fire('404',
+                compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master', 'temp',
+                    'className'));
         }
-        Hook::fire('after_request', compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
+        Hook::fire('after_request',
+            compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
     }
 
     /**
@@ -299,16 +316,16 @@ class Router
      */
     public static function reverse($name, $params = array())
     {
-        if (($routeArray = self::reverseAll($name, $params))===false) {
+        if (($routeArray = self::reverseAll($name, $params)) === false) {
             return false;
         }
 
         $route = $routeArray['pattern'];
         if (count($params) > 0) {
-            $temp = explode('/', $route);
+            $temp  = explode('/', $route);
             $index = 0;
             foreach ($temp as $k => $v) {
-                if (substr($v, 0, 1)==':') {
+                if (substr($v, 0, 1) == ':') {
                     $temp[$k] = $params[$index];
                     ++$index;
                 }
@@ -318,6 +335,7 @@ class Router
         if (self::$base != null) {
             $route = self::$base.$route;
         }
+
         return $route;
     }
 
@@ -331,19 +349,20 @@ class Router
         // We now add the count of parameters to the name. See Processor.php for more info.
         $name .= '_'.count($params);
 
-        $temp = explode('_', $name);
+        $temp   = explode('_', $name);
         $master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
         if (!class_exists($master)) {
             $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
         }
 
         /** @var \GCWorld\Routing\RoutesInterface $cTemp */
-        $cTemp = new $master();
+        $cTemp  = new $master();
         $routes = $cTemp->getReverseRoutes();
 
         if (array_key_exists($name, $routes)) {
             return $routes[$name];
         }
+
         return false;
     }
 
@@ -354,10 +373,11 @@ class Router
      */
     public static function reverseObject($name, $params = array())
     {
-        if (($routeArray = self::reverseAll($name, $params))===false) {
+        if (($routeArray = self::reverseAll($name, $params)) === false) {
             return false;
         }
         $className = $routeArray['class'];
+
         return new $className($params);
     }
 
@@ -388,7 +408,7 @@ class Router
 
     /**
      * @param string $pexNode
-     * @param array $regexMatches
+     * @param array  $regexMatches
      * @return string
      */
     private static function replacePexKeys($pexNode, array $regexMatches)
@@ -396,6 +416,7 @@ class Router
         foreach ($regexMatches as $k => $v) {
             $pexNode = str_replace('['.$k.']', $v, $pexNode);
         }
+
         return $pexNode;
     }
 
