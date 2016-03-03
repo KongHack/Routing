@@ -1,6 +1,8 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Interfaces\PEX;
+
 /**
  * Class Router
  * @package GCWorld\Routing
@@ -17,6 +19,11 @@ class Router
      * @var Debugger|null
      */
     private static $debugger = null;
+
+    /**
+     * @var \Redis|null
+     */
+    private static $redis = null;
 
     /**
      * @var \GCWorld\Interfaces\PEX
@@ -57,104 +64,127 @@ class Router
             }
         }
 
-        if (self::$forcedRoutes == null) {
-            $temp = explode('/', $path_info);
-            if (count($temp) > 1) {
-                $master    = Processor::cleanClassName($temp[1]);
-                $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
-                if (!class_exists($className)) {
-                    $className = self::MISC;
-                    if (!class_exists($className)) {
-                        throw new \Exception('No Route Class Found For Base (1)');
-                    }
-                }
-            } else {
-                $className = self::MISC;
-                if (!class_exists($className)) {
-                    throw new \Exception('No Route Class Found For Base (2)');
-                }
-            }
-
-            // TODO: Clean this up.
-            // I hate having to copy/paste large blocks of code like this, but I don't
-            //  have the time to clean & fix right now. :(
-
-            /** @var \GCWorld\Routing\RoutesInterface $loader */
-            $loader = new $className();
-            $routes = $loader->getForwardRoutes();
-        } else {
-            $routes = self::$forcedRoutes;
-        }
 
         $pattern            = '';
         $discovered_handler = null;
-        $regex_matches      = array();
+        $regex_matches      = [];
+        $cacheMatched       = false;
 
-        if (isset($routes[$path_info])) {
-            $pattern            = $path_info;
-            $discovered_handler = $routes[$path_info];
-        } elseif ($routes) {
-            $tokens = array(
-                ':string'   => '([a-zA-Z]+)',
-                ':number'   => '([0-9]+)',
-                ':alpha'    => '([a-zA-Z0-9-_]+)',
-                ':anything' => '([^/]+)',
-                ':consume'  => '(.+)',
-            );
-            foreach ($routes as $pattern => $routeConfig) {
-                $pattern = strtr($pattern, $tokens);
-                if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
-                    $discovered_handler = $routeConfig;
-                    $regex_matches      = $matches;
-                    unset($regex_matches[0]);
-                    $regex_matches = array_values($regex_matches);
-                    break;
-                }
+        if (self::$redis) {
+            $data = self::$redis->hGet('GCWORLD_ROUTER', $path_info);
+            if ($data) {
+                $routeData          = json_decode($data, true);
+                $pattern            = $routeData['p'];
+                $discovered_handler = $routeData['h'];
+                $regex_matches      = $routeData['m'];
+                $cacheMatched       = true;
             }
         }
 
-        if (!$discovered_handler) {
-            $className = self::REPLACEMENT;
-            if (!class_exists($className)) {
-                $className = self::MISC;
-            }
-            if (class_exists($className)) {
+
+        if ($discovered_handler == null) {
+
+            if (self::$forcedRoutes == null) {
+                $temp = explode('/', $path_info);
+                if (count($temp) > 1) {
+                    $master    = Processor::cleanClassName($temp[1]);
+                    $className = '\GCWorld\Routing\Generated\MasterRoute_'.$master;
+                    if (!class_exists($className)) {
+                        $className = self::MISC;
+                        if (!class_exists($className)) {
+                            throw new \Exception('No Route Class Found For Base (1)');
+                        }
+                    }
+                } else {
+                    $className = self::MISC;
+                    if (!class_exists($className)) {
+                        throw new \Exception('No Route Class Found For Base (2)');
+                    }
+                }
+
+                // TODO: Clean this up.
+                // I hate having to copy/paste large blocks of code like this, but I don't
+                //  have the time to clean & fix right now. :(
+
                 /** @var \GCWorld\Routing\RoutesInterface $loader */
                 $loader = new $className();
                 $routes = $loader->getForwardRoutes();
+            } else {
+                $routes = self::$forcedRoutes;
+            }
 
-                $pattern            = '';
-                $discovered_handler = null;
-                $regex_matches      = array();
+            if (isset($routes[$path_info])) {
+                $pattern            = $path_info;
+                $discovered_handler = $routes[$path_info];
+            } elseif ($routes) {
+                $tokens = array(
+                    ':string'   => '([a-zA-Z]+)',
+                    ':number'   => '([0-9]+)',
+                    ':alpha'    => '([a-zA-Z0-9-_]+)',
+                    ':anything' => '([^/]+)',
+                    ':consume'  => '(.+)',
+                );
+                foreach ($routes as $pattern => $routeConfig) {
+                    $pattern = strtr($pattern, $tokens);
+                    if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
+                        $discovered_handler = $routeConfig;
+                        $regex_matches      = $matches;
+                        unset($regex_matches[0]);
+                        $regex_matches = array_values($regex_matches);
+                        break;
+                    }
+                }
+            }
 
-                if (isset($routes[$path_info])) {
-                    $pattern            = $path_info;
-                    $discovered_handler = $routes[$path_info];
-                } elseif ($routes) {
-                    $tokens = array(
-                        ':string'   => '([a-zA-Z]+)',
-                        ':number'   => '([0-9]+)',
-                        ':alpha'    => '([a-zA-Z0-9-_]+)',
-                        ':anything' => '([^/]+)',
-                        ':consume'  => '(.+)',
-                    );
-                    foreach ($routes as $pattern => $routeConfig) {
-                        $pattern = strtr($pattern, $tokens);
-                        if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
-                            $discovered_handler = $routeConfig;
-                            $regex_matches      = $matches;
-                            unset($regex_matches[0]);
-                            $regex_matches = array_values($regex_matches);
-                            break;
+            if (!$discovered_handler) {
+                $className = self::REPLACEMENT;
+                if (!class_exists($className)) {
+                    $className = self::MISC;
+                }
+                if (class_exists($className)) {
+                    /** @var \GCWorld\Routing\RoutesInterface $loader */
+                    $loader = new $className();
+                    $routes = $loader->getForwardRoutes();
+
+                    $pattern            = '';
+                    $discovered_handler = null;
+                    $regex_matches      = array();
+
+                    if (isset($routes[$path_info])) {
+                        $pattern            = $path_info;
+                        $discovered_handler = $routes[$path_info];
+                    } elseif ($routes) {
+                        $tokens = array(
+                            ':string'   => '([a-zA-Z]+)',
+                            ':number'   => '([0-9]+)',
+                            ':alpha'    => '([a-zA-Z0-9-_]+)',
+                            ':anything' => '([^/]+)',
+                            ':consume'  => '(.+)',
+                        );
+                        foreach ($routes as $pattern => $routeConfig) {
+                            $pattern = strtr($pattern, $tokens);
+                            if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
+                                $discovered_handler = $routeConfig;
+                                $regex_matches      = $matches;
+                                unset($regex_matches[0]);
+                                $regex_matches = array_values($regex_matches);
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
+        if (!$cacheMatched && self::$redis) {
+            self::$redis->hSet('GCWORLD_ROUTER', $path_info, json_encode([
+                'p' => $pattern,
+                'h' => $discovered_handler,
+                'm' => $regex_matches
+            ]));
+        }
 
-        $result = null;
-
+        $result           = null;
         $handler_instance = null;
         if ($discovered_handler) {
             if (self::$debugger !== null && $pattern != '') {
@@ -218,7 +248,7 @@ class Router
                 }
 
                 if (self::$user != null) {
-                    if (!self::$user instanceof \GCWorld\Interfaces\PEX) {
+                    if (!self::$user instanceof PEX) {
                         throw new \Exception('The provided user class does not implement PEX. ('.
                             self::$userClassName.')');
                     }
@@ -269,32 +299,12 @@ class Router
                     compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
                 $args     = &$regex_matches; //Only for cleaner code
-                $argCount = count($args);
-                switch ($argCount) {
-                    case 0:
-                        $result = $handler_instance->$request_method();
-                        break;
-                    case 1:
-                        $result = $handler_instance->$request_method($args[0]);
-                        break;
-                    case 2:
-                        $result = $handler_instance->$request_method($args[0], $args[1]);
-                        break;
-                    case 3:
-                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2]);
-                        break;
-                    case 4:
-                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2], $args[3]);
-                        break;
-                    case 5:
-                        $result = $handler_instance->$request_method($args[0], $args[1], $args[2], $args[3], $args[4]);
-                        break;
-                    default:
-                        $result = call_user_func_array(array($handler_instance, $request_method), $args);
-                        break;
+                if(count($args) > 0) {
+                    $result = $handler_instance->$request_method(...$args);
+                } else {
+                    $result = $handler_instance->$request_method();
                 }
 
-                //$result = call_user_func_array(array($handler_instance, $request_method), $regex_matches);
                 Hook::fire('after_handler',
                     compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
             } else {
@@ -434,5 +444,10 @@ class Router
     public static function forceRoutes(array $routes)
     {
         self::$forcedRoutes = $routes;
+    }
+
+    public static function attachRedisCache(\Redis $redis)
+    {
+
     }
 }
