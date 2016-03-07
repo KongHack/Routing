@@ -35,6 +35,7 @@ class Router
      */
     public static $foundRouteName      = null;
     public static $foundRouteNameClean = null;
+    public static $foundRouteArguments = null;
 
     /**
      * Processes routes.
@@ -283,6 +284,10 @@ class Router
             }
         }
 
+        if (self::$foundRouteNameClean) {
+            self::$foundRouteArguments = $regex_matches;
+        }
+
         if ($handler_instance) {
             if (self::is_xhr_request() && method_exists($handler_instance, $request_method.'_xhr')) {
                 header('Content-type: application/json');
@@ -354,7 +359,7 @@ class Router
      * @param array $params
      * @return bool|array
      */
-    public static function reverseAll($name, $params = array())
+    public static function reverseAll($name, $params = [])
     {
         // We now add the count of parameters to the name. See Processor.php for more info.
         $name .= '_'.count($params);
