@@ -185,6 +185,8 @@ class Router
             ]));
         }
 
+        self::$foundRouteArguments = $regex_matches;
+
         $result           = null;
         $handler_instance = null;
         if ($discovered_handler) {
@@ -282,10 +284,6 @@ class Router
             } elseif (is_callable($discovered_handler)) {
                 $handler_instance = $discovered_handler($regex_matches);
             }
-        }
-
-        if (self::$foundRouteNameClean) {
-            self::$foundRouteArguments = $regex_matches;
         }
 
         if ($handler_instance) {
