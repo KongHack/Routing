@@ -391,6 +391,18 @@ class Router
         }
         $className = $routeArray['class'];
 
+        if (isset($routeArray['preArgs']) && is_array($routeArray['preArgs'])) {
+            $rev = array_reverse($routeArray['preArgs']);
+            foreach ($rev as $arg) {
+                array_unshift($params, $arg);
+            }
+        }
+        if (isset($routeArray['postArgs']) && is_array($routeArray['postArgs'])) {
+            foreach ($routeArray['postArgs'] as $arg) {
+                $params[] = $arg;
+            }
+        }
+
         return new $className($params);
     }
 
