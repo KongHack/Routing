@@ -12,6 +12,15 @@ class Router
     const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
     const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
+    private static $tokens = [
+        ':single'   => '([a-zA-Z0-9])',
+        ':string'   => '([a-zA-Z]+)',
+        ':number'   => '([0-9]+)',
+        ':alpha'    => '([a-zA-Z0-9-_]+)',
+        ':anything' => '([^/]+)',
+        ':consume'  => '(.+)',
+    ];
+
     private static $base          = null;
     private static $userClassName = null;
     private static $forcedRoutes  = null;
@@ -118,15 +127,8 @@ class Router
                 $pattern            = $path_info;
                 $discovered_handler = $routes[$path_info];
             } elseif ($routes) {
-                $tokens = array(
-                    ':string'   => '([a-zA-Z]+)',
-                    ':number'   => '([0-9]+)',
-                    ':alpha'    => '([a-zA-Z0-9-_]+)',
-                    ':anything' => '([^/]+)',
-                    ':consume'  => '(.+)',
-                );
                 foreach ($routes as $pattern => $routeConfig) {
-                    $pattern = strtr($pattern, $tokens);
+                    $pattern = strtr($pattern, self::$tokens);
                     if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                         $discovered_handler = $routeConfig;
                         $regex_matches      = $matches;
@@ -155,15 +157,8 @@ class Router
                         $pattern            = $path_info;
                         $discovered_handler = $routes[$path_info];
                     } elseif ($routes) {
-                        $tokens = array(
-                            ':string'   => '([a-zA-Z]+)',
-                            ':number'   => '([0-9]+)',
-                            ':alpha'    => '([a-zA-Z0-9-_]+)',
-                            ':anything' => '([^/]+)',
-                            ':consume'  => '(.+)',
-                        );
                         foreach ($routes as $pattern => $routeConfig) {
-                            $pattern = strtr($pattern, $tokens);
+                            $pattern = strtr($pattern, self::$tokens);
                             if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                                 $discovered_handler = $routeConfig;
                                 $regex_matches      = $matches;
