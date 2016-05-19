@@ -13,7 +13,7 @@ class Router
     const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
     private static $tokens = [
-        ':single'   => '([a-zA-Z0-9])',
+        ':single'   => '([a-zA-Z0-9]{1})',
         ':string'   => '([a-zA-Z]+)',
         ':number'   => '([0-9]+)',
         ':alpha'    => '([a-zA-Z0-9-_]+)',
