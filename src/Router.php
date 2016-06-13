@@ -228,16 +228,6 @@ class Router
                     }
                 }
 
-                if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
-                    $discovered_handler = $discovered_handler['class'];
-                    if (class_exists($discovered_handler)) {
-                        $handler_instance = new $discovered_handler($regex_matches);
-                    } else {
-                        echo 'Class Not Found: '.$discovered_handler;
-                        die();
-                    }
-                }
-
                 // Security Testing!
                 if (self::$userClassName != null) {
                     /** @var mixed $temp */
@@ -254,16 +244,13 @@ class Router
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
-                                if (!self::$user->$type(self::replacePexKeys($discovered_handler[$type],
-                                    $regex_matches))
-                                ) {
-                                    Hook::fire('403',
-                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches) < 1)) {
+                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
                                 $good = false;
                                 foreach ($discovered_handler[$type] as $node) {
-                                    if (self::$user->$type(self::replacePexKeys($node, $regex_matches))) {
+                                    if (self::$user->$type(self::replacePexKeys($node, $regex_matches)) > 0) {
                                         $good = true;
                                         break;
                                     }
@@ -276,6 +263,17 @@ class Router
                         }
                     }
                 }
+
+                if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
+                    $discovered_class = $discovered_handler['class'];
+                    if (class_exists($discovered_class)) {
+                        $handler_instance = new $discovered_class($regex_matches);
+                    } else {
+                        echo 'Class Not Found: '.$discovered_class;
+                        die();
+                    }
+                }
+
             } elseif (is_callable($discovered_handler)) {
                 $handler_instance = $discovered_handler($regex_matches);
             }
