@@ -2,6 +2,8 @@
 
 The GCWorld Router is intended as a static-only routing system for front controllers.  It comes packaged with the following features
 
+***WARNING: Versions <3.5 do not properly test against PEX nodes!  Upgrade Immediately!***
+
   - Multi-route management
   - Automatic Session Starting
   - Automated PEX Permissions testing, including access to replacement keys
