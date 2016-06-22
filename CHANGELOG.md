@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 
+## [3.5.1]
+### Fixed
+ - Possible pex check fix
+
 ## [3.5.0]
 ### Fixed
  - Massive issue with permissions
@@ -14,4 +18,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+[3.5.1]: https://gitlab.konghack.com/GCWorld/Routing/compare/3.5.0...3.5.1
 [3.5.0]: https://gitlab.konghack.com/GCWorld/Routing/compare/3.4.0.1...3.5.0
