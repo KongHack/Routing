@@ -244,7 +244,7 @@ class Router
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
-                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches) < 1)) {
+                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches)) < 1) {
                                     Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
