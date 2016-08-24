@@ -40,6 +40,13 @@ class Router
     private static $user = null;
 
     /**
+     * When set, will prepend to reversed routes and remove from forward routing
+     * @var string|null
+     */
+    private static $routePrefix = null;
+
+
+    /**
      * @var mixed
      */
     public static $foundRouteName      = null;
@@ -72,6 +79,10 @@ class Router
                     ) : $_SERVER['REQUEST_URI'];
                 }
             }
+        }
+
+        if (self::$routePrefix != null) {
+            $path_info = ltrim($path_info, self::$routePrefix);
         }
 
 
@@ -244,8 +255,11 @@ class Router
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
-                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type], $regex_matches)) < 1) {
-                                    Hook::fire('403', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type],
+                                        $regex_matches)) < 1
+                                ) {
+                                    Hook::fire('403',
+                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
                                 }
                             } else {
                                 $good = false;
@@ -294,8 +308,8 @@ class Router
                 Hook::fire('before_handler',
                     compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-                $args     = &$regex_matches; //Only for cleaner code
-                if(count($args) > 0) {
+                $args = &$regex_matches; //Only for cleaner code
+                if (count($args) > 0) {
                     $result = $handler_instance->$request_method(...$args);
                 } else {
                     $result = $handler_instance->$request_method();
@@ -338,6 +352,10 @@ class Router
             }
             $route = implode('/', $temp);
         }
+        if(self::$routePrefix != null) {
+            $route = self::$routePrefix.$route;
+        }
+
         if (self::$base != null) {
             $route = self::$base.$route;
         }
@@ -454,8 +472,27 @@ class Router
         self::$forcedRoutes = $routes;
     }
 
+    /**
+     * @param \Redis $redis
+     */
     public static function attachRedisCache(\Redis $redis)
     {
+        self::$redis = $redis;
+    }
 
+    /**
+     * @param $prefix
+     */
+    public static function setRoutePrefix($prefix)
+    {
+        self::$routePrefix = $prefix;
+    }
+
+    /**
+     * @return null|string
+     */
+    public static function getRoutePrefix()
+    {
+        return self::$routePrefix;
     }
 }
