@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.5.3](https://gitlab.konghack.com/GCWorld/Routing/compare/3.5.2...3.5.3)
+ - Fixed @GameCharmer weird ltrim bug
+
 ## [3.5.2](https://gitlab.konghack.com/GCWorld/Routing/compare/3.5.1...3.5.2)
  - Fixed @GameCharmer attachRedis is now functional
  - Added @GameCharmer Route Prefix system

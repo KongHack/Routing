@@ -13,7 +13,7 @@ The GCWorld Router is intended as a static-only routing system for front control
   - Add support for tracking route handling time (microtime before instantiation and after request handling)
 
 ### Version
-3.5.2
+3.5.3
 
 ### Additional Information
 
