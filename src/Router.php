@@ -82,7 +82,10 @@ class Router
         }
 
         if (self::$routePrefix != null) {
-            $path_info = ltrim($path_info, self::$routePrefix);
+            $pos = strpos($path_info,self::$routePrefix);
+            if ($pos === 0) {
+                $path_info = substr_replace($path_info,'',$pos,strlen(self::$routePrefix));
+            }
         }
 
 
