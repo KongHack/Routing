@@ -149,6 +149,12 @@ class Processor
             }
         }
 
+        // Empty old files
+        $oldFiles = glob($this->storage.'*.php');
+        foreach($oldFiles as $file) {
+            unlink($file);
+        }
+        
         //Generate some files.
         foreach ($this->routes_master as $master) {
             $this->generateMaster($master);
