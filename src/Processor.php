@@ -136,7 +136,6 @@ class Processor
         foreach ($bases as $path) {
             $temp = explode('/', $path);
             if (isset($temp[1])) {
-                $temp[1] = self::cleanClassName($temp[1]);
                 if (!array_key_exists($temp[1], $hits)) {
                     $hits[$temp[1]] = 0;
                 }
