@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.6.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.6.0...3.6.1)
+ - REVERTED THAT LAST THING
+
+
 ## [3.6.0](https://gitlab.konghack.com/GCWorld/Routing/compare/3.5.3...3.6.0)
  - Fixed @GameCharmer cleanup routine to empty out old / garbage route files
 

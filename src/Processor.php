@@ -136,6 +136,7 @@ class Processor
         foreach ($bases as $path) {
             $temp = explode('/', $path);
             if (isset($temp[1])) {
+                $temp[1] = self::cleanClassName($temp[1]);
                 if (!array_key_exists($temp[1], $hits)) {
                     $hits[$temp[1]] = 0;
                 }
@@ -147,12 +148,6 @@ class Processor
             if ($count >= 3) {
                 $this->addMasterRoute($key);
             }
-        }
-
-        // Empty old files
-        $oldFiles = glob($this->storage.'*.php');
-        foreach($oldFiles as $file) {
-            unlink($file);
         }
         
         //Generate some files.
