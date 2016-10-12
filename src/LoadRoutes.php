@@ -34,6 +34,11 @@ class LoadRoutes
     private static $lastClassTime  = PHP_INT_MAX;
 
     /**
+     * @var \Redis|null
+     */
+    private static $redis = null;
+
+    /**
      * Singleton Format
      */
     private function __clone()
@@ -131,6 +136,10 @@ class LoadRoutes
 
             $processor = new Processor($debug);
             $processor->run($routes);
+            
+            if(self::$redis !== null) {
+                self::$redis->del('GCWORLD_ROUTER');
+            }
         }
     }
 
@@ -225,5 +234,13 @@ class LoadRoutes
             }
         }
         return $routes;
+    }
+    
+    /**
+     * @param \Redis $redis
+     */
+    public static function attachRedisCache(\Redis $redis)
+    {
+        self::$redis = $redis;
     }
 }
