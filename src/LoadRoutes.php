@@ -207,7 +207,6 @@ class LoadRoutes
                 'class'       => $classString,
                 'name'        => $phpDoc->getTagsByName('router-name')[0]->getContent(),
                 'autoWrapper' => false,
-                'meta'        => [],
             ];
 
             $session = $phpDoc->getTagsByName('router-session');
@@ -227,6 +226,7 @@ class LoadRoutes
                 'meta'          => $phpDoc->getTagsByName('router-meta'),
                 'autoWrapper'   => $phpDoc->getTagsByName('router-autoWrapper'),
             ];
+
             foreach ($processingArray as $key => $var) {
                 /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
 
@@ -240,6 +240,7 @@ class LoadRoutes
                     $routes[$pat][$key] = $temp;
                 }
             }
+
             if (isset($routes[$pat]['meta'])) {
                 $tmp = explode(' ', $routes[$pat]['meta']);
                 // Reset and process
@@ -250,7 +251,10 @@ class LoadRoutes
                         $routes[$pat]['meta'][$tmp2[0]] = $tmp2[1];
                     }
                 }
+            } else {
+                $routes[$pat]['meta'] = [];
             }
+
             if (strlen($routes[$pat]['autoWrapper']) > 0) {
                 $routes[$pat]['autoWrapper'] = in_array($routes[$pat]['autoWrapper'], ['true', 't', 'y', 'yes']);
             }
