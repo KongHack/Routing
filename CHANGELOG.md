@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
  - @GameCharmer Optimized code
 
 
+## [3.6.3](https://gitlab.konghack.com/GCWorld/Routing/compare/3.6.2.1...3.6.3)
+ - @GameCharmer Composer Update
+
+
 ## [3.6.2.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.6.2...3.6.2.1)
  - Emergency bug fix for that thing that didn't get quite completely reverted
 
