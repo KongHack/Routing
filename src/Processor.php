@@ -10,30 +10,30 @@ class Processor
     /**
      * @var array
      */
-    private $routes_straight = array();
+    private $routes_straight = [];
     /**
      * @var array
      */
-    private $routes_reverse = array();
+    private $routes_reverse = [];
     /**
      * @var array
      */
-    private $routes_master  = array();
+    private $routes_master = [];
     /**
      * @var string
      */
-    private $storage        = null;
+    private $storage = null;
     /**
      * @var bool
      */
-    private $debug          = false;
+    private $debug = false;
 
     /**
      * @param bool $debug
      */
     public function __construct($debug = false)
     {
-        $this->debug = $debug;
+        $this->debug   = $debug;
         $this->storage = dirname(__FILE__).'/Generated/';
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
@@ -84,7 +84,7 @@ class Processor
 
             // We need to re-write name based on the number of options.  This way we can use the same name for paging
             // $v['name'].=  '_' . substr_count($v['name'],':'); And this doesn't work why?
-            $v['name'] =  $v['name'] . '_' . substr_count($k, ':');
+            $v['name'] = $v['name'].'_'.substr_count($k, ':');
 
             if (array_key_exists($v['name'], $this->routes_reverse)) {
                 if ($this->debug) {
@@ -99,10 +99,10 @@ class Processor
                 throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
             }
 
-            $this->routes_straight[$k]   = $v;
-            $name = $v['name'];
+            $this->routes_straight[$k] = $v;
+            $name                      = $v['name'];
             unset($v['name']);
-            $this->routes_reverse[$name] = array('pattern'=>$k) + $v;
+            $this->routes_reverse[$name] = ['pattern' => $k] + $v;
         }
 
         if ($this->debug) {
@@ -121,9 +121,9 @@ class Processor
 
         //Cycle base routes, look for "groups" with 5 or more to create master groups.
 
-        $hits = array();
+        $hits = [];
         //Need to build up some bases.
-        $bases = array();
+        $bases = [];
         foreach ($this->routes_reverse as $path => $junk) {
             $bases[] = $path;
         }
@@ -148,7 +148,7 @@ class Processor
                 $this->addMasterRoute($key);
             }
         }
-        
+
         //Generate some files.
         foreach ($this->routes_master as $master) {
             $this->generateMaster($master);

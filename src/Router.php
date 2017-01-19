@@ -1,6 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Interfaces\HandlerInterface;
 use GCWorld\Interfaces\PEX;
 
 /**
@@ -24,6 +25,8 @@ class Router
     private static $base          = null;
     private static $userClassName = null;
     private static $forcedRoutes  = null;
+    private static $pageWrapperName = null;
+    
     /**
      * @var Debugger|null
      */
@@ -38,6 +41,11 @@ class Router
      * @var \GCWorld\Interfaces\PEX
      */
     private static $user = null;
+
+    /**
+     * @var \GCWorld\Interfaces\PageWrapper
+     */
+    private static $pageWrapper = null;
 
     /**
      * When set, will prepend to reversed routes and remove from forward routing
@@ -165,7 +173,7 @@ class Router
 
                     $pattern            = '';
                     $discovered_handler = null;
-                    $regex_matches      = array();
+                    $regex_matches      = [];
 
                     if (isset($routes[$path_info])) {
                         $pattern            = $path_info;
@@ -311,9 +319,27 @@ class Router
                 Hook::fire('before_handler',
                     compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-                $args = &$regex_matches; //Only for cleaner code
-                if (count($args) > 0) {
-                    $result = $handler_instance->$request_method(...$args);
+                if($discovered_handler['autoWrapper']) {
+                    if ($handler_instance instanceof HandlerInterface) {
+                        $title = $handler_instance->getTitle();
+                        $handler_instance->setBreadcrumbs();
+
+
+                        if (self::$pageWrapper == null && self::$pageWrapperName != null) {
+                            /** @var mixed $temp */
+                            $temp = self::$pageWrapperName;
+                            if (class_exists($temp)) {
+                                self::$pageWrapper = $temp::getInstance();
+                            }
+                        }
+                        if (self::$pageWrapper != null) {
+                            self::$pageWrapper->setTitle($title);
+                        }
+                    }
+                }
+
+                if (count($regex_matches) > 0) {
+                    $result = $handler_instance->$request_method(...$regex_matches);
                 } else {
                     $result = $handler_instance->$request_method();
                 }
@@ -498,4 +524,21 @@ class Router
     {
         return self::$routePrefix;
     }
+
+    /**
+     * @param $name
+     */
+    public static function setPageWrapperName($name)
+    {
+        self::$pageWrapperName = $name;
+    }
+
+    /**
+     * @return null
+     */
+    public static function getPageWrapperName()
+    {
+        return self::$pageWrapperName;
+    }
+
 }

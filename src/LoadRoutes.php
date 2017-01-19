@@ -15,23 +15,23 @@ class LoadRoutes
     /**
      * @var null
      */
-    private static $instance       = null;
+    private static $instance = null;
     /**
      * @var array
      */
-    private static $classes        = array();
+    private static $classes = [];
     /**
      * @var array
      */
-    private static $paths          = array();
+    private static $paths = [];
     /**
      * @var int
      */
-    private static $highestTime    = 0;
+    private static $highestTime = 0;
     /**
      * @var int
      */
-    private static $lastClassTime  = PHP_INT_MAX;
+    private static $lastClassTime = PHP_INT_MAX;
 
     /**
      * @var \Redis|null
@@ -60,6 +60,7 @@ class LoadRoutes
         if (self::$instance == null) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
@@ -77,6 +78,7 @@ class LoadRoutes
             }
         }
         self::$classes[] = $fullClass;
+
         return $this;
     }
 
@@ -89,6 +91,7 @@ class LoadRoutes
     public function addPath($path)
     {
         self::$paths[] = $path;
+
         return $this;
     }
 
@@ -101,7 +104,7 @@ class LoadRoutes
     {
         foreach (self::$classes as $fullClass) {
             $cTemp = new $fullClass;
-            if ($cTemp instanceof \GCWorld\Routing\RawRoutesInterface) {
+            if ($cTemp instanceof RawRoutesInterface) {
                 $time = $cTemp->getFileTime();
                 if ($time > self::$highestTime) {
                     self::$highestTime = $time;
@@ -109,7 +112,7 @@ class LoadRoutes
             }
         }
 
-        $base = dirname(__FILE__).'/Generated/*';
+        $base  = dirname(__FILE__).'/Generated/*';
         $files = self::glob_recursive($base);
         foreach ($files as $file) {
             if (is_file($file)) {
@@ -124,10 +127,10 @@ class LoadRoutes
             || count(self::$paths) || self::$highestTime > self::$lastClassTime
             || count($files) != count(self::$classes)
         ) {
-            $routes = array();
+            $routes = [];
             foreach (self::$classes as $fullClass) {
                 $cTemp = new $fullClass;
-                if ($cTemp instanceof \GCWorld\Routing\RawRoutesInterface) {
+                if ($cTemp instanceof RawRoutesInterface) {
                     $routes = array_merge($routes, $cTemp->getRoutes());
                 }
             }
@@ -136,8 +139,8 @@ class LoadRoutes
 
             $processor = new Processor($debug);
             $processor->run($routes);
-            
-            if(self::$redis !== null) {
+
+            if (self::$redis !== null) {
                 self::$redis->del('GCWORLD_ROUTER');
             }
         }
@@ -148,20 +151,20 @@ class LoadRoutes
      */
     private static function generateAnnotatedRoutes()
     {
-        $return = array();
-        if (count(self::$paths)>0) {
+        $return = [];
+        if (count(self::$paths) > 0) {
             foreach (self::$paths as $path) {
                 $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
                 foreach ($classFiles as $file) {
                     $namespace = '';
                     $className = '';
-                    $fh = fopen($file, 'r');
+                    $fh        = fopen($file, 'r');
                     while (($buffer = fgets($fh)) !== false) {
-                        if (substr($buffer, 0, 9)=='namespace') {
+                        if (substr($buffer, 0, 9) == 'namespace') {
                             $namespace = substr(trim($buffer), 10, -1);
                         }
-                        if (substr($buffer, 0, 5)=='class') {
-                            $temp = explode(' ', $buffer);
+                        if (substr($buffer, 0, 5) == 'class') {
+                            $temp      = explode(' ', $buffer);
                             $className = $temp[1];
                             break;
                         }
@@ -180,6 +183,7 @@ class LoadRoutes
                 }
             }
         }
+
         return $return;
     }
 
@@ -194,48 +198,66 @@ class LoadRoutes
             return false;
         }
 
-        $routes = array();
+        $routes  = [];
         $pattern = $phpDoc->getTagsByName('router-pattern');
         foreach ($pattern as $patMaster) {
             $pat = $patMaster->getContent();
 
-            $routes[$pat] = array(
-                'class' => $classString,
-                'name'  => $phpDoc->getTagsByName('router-name')[0]->getContent()
-            );
+            $routes[$pat] = [
+                'class'       => $classString,
+                'name'        => $phpDoc->getTagsByName('router-name')[0]->getContent(),
+                'autoWrapper' => false,
+            ];
 
             $session = $phpDoc->getTagsByName('router-session');
             if (count($session) > 0) {
-                $sessionString = strtolower($session[0]->getContent());
-                $routes[$pat]['session'] = in_array($sessionString, array('true', 't', 'y', 'yes'));
+                $sessionString           = strtolower($session[0]->getContent());
+                $routes[$pat]['session'] = in_array($sessionString, ['true', 't', 'y', 'yes']);
             }
 
             // Remaining items that can be both a string or an array.
-            $processingArray = array(
+            $processingArray = [
                 'pexCheck'      => $phpDoc->getTagsByName('router-pexCheck'),
                 'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
                 'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
                 'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
                 'postArgs'      => $phpDoc->getTagsByName('router-postArgs'),
-                'title'         => $phpDoc->getTagsByName('router-title')
-            );
+                'title'         => $phpDoc->getTagsByName('router-title'),
+                'meta'          => $phpDoc->getTagsByName('router-meta'),
+                'autoWrapper'   => $phpDoc->getTagsByName('router-autoWrapper'),
+            ];
             foreach ($processingArray as $key => $var) {
                 /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
 
                 if (count($var) == 1) {
                     $routes[$pat][$key] = trim($var[0]->getContent());
                 } elseif (count($var) > 1) {
-                    $temp = array();
+                    $temp = [];
                     foreach ($var as $t) {
                         $temp[] = trim($t->getContent());
                     }
                     $routes[$pat][$key] = $temp;
                 }
             }
+            if (strlen($routes[$pat]['meta']) > 0) {
+                $tmp = explode(' ', $routes[$pat]['meta']);
+                // Reset and process
+                $routes[$pat]['meta'] = [];
+                foreach ($tmp as $item) {
+                    $tmp2 = explode(':', $item);
+                    if (count($tmp2) == 2) {
+                        $routes[$pat]['meta'][$tmp2[0]] = $tmp2[1];
+                    }
+                }
+            }
+            if (strlen($routes[$pat]['autoWrapper']) > 0) {
+                $routes[$pat]['autoWrapper'] = in_array($routes[$pat]['autoWrapper'], ['true', 't', 'y', 'yes']);
+            }
         }
+
         return $routes;
     }
-    
+
     /**
      * @param \Redis $redis
      */
