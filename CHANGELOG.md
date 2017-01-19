@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.0...3.7.1)
+ - @GameCharmer bring over meta adjustment from other repo
+
+
 ## [3.7.0](https://gitlab.konghack.com/GCWorld/Routing/compare/3.6.2.1...3.7.0)
  - @GameCharmer Added support for "autoWrapper" per new interface
  - @GameCharmer Optimized code

@@ -207,6 +207,7 @@ class LoadRoutes
                 'class'       => $classString,
                 'name'        => $phpDoc->getTagsByName('router-name')[0]->getContent(),
                 'autoWrapper' => false,
+                'meta'        => [],
             ];
 
             $session = $phpDoc->getTagsByName('router-session');
@@ -239,7 +240,7 @@ class LoadRoutes
                     $routes[$pat][$key] = $temp;
                 }
             }
-            if (strlen($routes[$pat]['meta']) > 0) {
+            if (isset($routes[$pat]['meta'])) {
                 $tmp = explode(' ', $routes[$pat]['meta']);
                 // Reset and process
                 $routes[$pat]['meta'] = [];
