@@ -319,7 +319,7 @@ class Router
                 Hook::fire('before_handler',
                     compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
 
-                if($discovered_handler['autoWrapper']) {
+                if(isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
                     if ($handler_instance instanceof HandlerInterface) {
                         $title = $handler_instance->getTitle();
                         $handler_instance->setBreadcrumbs();
