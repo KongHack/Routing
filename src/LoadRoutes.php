@@ -347,6 +347,7 @@ class LoadRoutes
 
 
         $routes = $processor->getReverseRoutes();
+        d($routes);
 
         foreach ($routes as $name => $route) {
             $check      = '';

@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS `_RouteRawList` (
   `route_pexCheckExact` text COLLATE utf8_bin NOT NULL,
   `route_meta` text COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`route_id`),
-  UNIQUE KEY `route_path` (`route_path`)
+  UNIQUE KEY `route_name` (`route_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
