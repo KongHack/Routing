@@ -304,7 +304,7 @@ class LoadRoutes
      */
     public function getVersion()
     {
-        return file_get_contents($this->getOurRoot().'VERSION');
+        return trim(file_get_contents($this->getOurRoot().'VERSION'));
     }
 
     protected function storeRoutes(Processor $processor)

@@ -62,7 +62,7 @@ class Debugger
      */
     public function getVersion()
     {
-        return file_get_contents($this->getOurRoot().'VERSION');
+        return trim(file_get_contents($this->getOurRoot().'VERSION'));
     }
 
     /**
