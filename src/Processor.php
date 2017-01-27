@@ -265,6 +265,14 @@ class Processor
     }
 
     /**
+     * @return array
+     */
+    public function getReverseRoutes()
+    {
+        return $this->routes_reverse;
+    }
+    
+    /**
      * @param $master
      * @return mixed
      */

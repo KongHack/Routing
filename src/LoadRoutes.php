@@ -152,7 +152,7 @@ class LoadRoutes
             }
 
             if (self::$db !== null) {
-                $this->storeRoutes($routes);
+                $this->storeRoutes($processor);
             }
 
         }
@@ -307,7 +307,7 @@ class LoadRoutes
         return file_get_contents($this->getOurRoot().'VERSION');
     }
 
-    protected function storeRoutes($routes)
+    protected function storeRoutes(Processor $processor)
     {
         $table = '_RouteRawList';
         // Make sure our table exists.
@@ -345,7 +345,10 @@ class LoadRoutes
         ';
         $query = self::$db->prepare($sql);
 
-        foreach ($routes as $path => $route) {
+
+        $routes = $processor->getReverseRoutes();
+
+        foreach ($routes as $name => $route) {
             $check      = '';
             $checkAny   = '';
             $checkExact = '';
@@ -377,8 +380,8 @@ class LoadRoutes
             }
 
             $query->execute([
-                ':path'          => $path,
-                ':name'          => $route['name'],
+                ':path'          => $route['pattern'],
+                ':name'          => $name,
                 ':session'       => (isset($route['session']) ? intval($route['session']) : 0),
                 ':autoWrapper'   => (isset($route['autoWrapper']) ? intval($route['autoWrapper']) : 0),
                 ':class'         => $route['class'],
