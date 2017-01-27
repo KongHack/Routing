@@ -344,10 +344,8 @@ class LoadRoutes
               route_meta = VALUES(route_meta)
         ';
         $query = self::$db->prepare($sql);
-
-
+        
         $routes = $processor->getReverseRoutes();
-        d($routes);
 
         foreach ($routes as $name => $route) {
             $check      = '';

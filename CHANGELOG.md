@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.2](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.1.2...3.7.2)
+ - @GameCharmer Upgraded Debugger, added new Raw Route table (nearly identical to debugger) for external manipulation
+
+
 ## [3.7.1.2](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.1.1...3.7.1.2)
  - @GameCharmer resolve legacy issues
 
