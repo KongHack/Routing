@@ -29,7 +29,7 @@ class Debugger
             throw new \Exception('Must implement the GCWorld Database interface');
         }
 
-        $processor = new Processor(false);
+        $processor     = new Processor(false);
         $this->storage = $processor->getStorageLocation();
 
         // Make sure our table exists.
@@ -70,20 +70,22 @@ class Debugger
      */
     public function storeStructure()
     {
-        $sql = 'INSERT INTO '.self::table.'
-            (route_path, route_name, route_session, route_class, route_pre_args, route_post_args,
-              route_pexCheck, route_pexCheckAny, route_pexCheckExact)
+        $sql   = 'INSERT INTO '.self::table.'
+            (route_path, route_name, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
+              route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES
-            (:path, :name, :session, :class, :pre, :post, :pexCheck, :pexCheckAny, :pexCheckExact)
+            (:path, :name, :session, :autoWrapper, :class, :pre, :post, :pexCheck, :pexCheckAny, :pexCheckExact, :meta)
             ON DUPLICATE KEY UPDATE
               route_name = VALUES(route_name),
               route_session = VALUES(route_session),
+              route_autoWrapper = VALUES(route_autoWrapper),
               route_class = VALUES(route_class),
               route_pre_args = VALUES(route_pre_args),
               route_post_args = VALUES(route_post_args),
               route_pexCheck = VALUES(route_pexCheck),
               route_pexCheckAny = VALUES(route_pexCheckAny),
-              route_pexCheckExact = VALUES(route_pexCheckExact)
+              route_pexCheckExact = VALUES(route_pexCheckExact),
+              route_meta = VALUES(route_meta)
         ';
         $query = $this->db->prepare($sql);
 
@@ -91,9 +93,9 @@ class Debugger
         // Do not truncate.  Only on duplicate key update.
         $files = glob($this->storage.'*.php');
         foreach ($files as $file) {
-            $tmp = explode(DIRECTORY_SEPARATOR, $file);
-            $fileName = array_pop($tmp);
-            $tmp = explode('.', $fileName);
+            $tmp       = explode(DIRECTORY_SEPARATOR, $file);
+            $fileName  = array_pop($tmp);
+            $tmp       = explode('.', $fileName);
             $className = array_shift($tmp);
             $className = Processor::cleanClassName($className);
             unset($tmp);
@@ -104,9 +106,11 @@ class Debugger
             $routes = $table->getForwardRoutes();
 
             foreach ($routes as $path => $route) {
-                $check = '';
-                $checkAny = '';
+                $check      = '';
+                $checkAny   = '';
                 $checkExact = '';
+                $meta       = '';
+
                 if (isset($route['pexCheck'])) {
                     if (!is_array($route['pexCheck'])) {
                         $route['pexCheck'] = array($route['pexCheck']);
@@ -125,17 +129,25 @@ class Debugger
                     }
                     $checkExact = json_encode($route['pexCheckExact']);
                 }
+                if (isset($route['meta']) && $route['meta'] != null) {
+                    if (!is_array($route['meta'])) {
+                        $route['meta'] = array($route['meta']);
+                    }
+                    $meta = json_encode($route['meta']);
+                }
 
                 $query->execute(array(
                     ':path'          => $path,
                     ':name'          => $route['name'],
-                    ':session'       => (isset($route['session'])?intval($route['session']):0),
+                    ':session'       => (isset($route['session']) ? intval($route['session']) : 0),
+                    ':autoWrapper'   => (isset($route['autoWrapper']) ? intval($route['autoWrapper']) : 0),
                     ':class'         => $route['class'],
-                    ':pre'           => (isset($route['pre_args'])?json_encode($route['pre_args']):''),
-                    ':post'          => (isset($route['pre_args'])?json_encode($route['post_args']):''),
+                    ':pre'           => (isset($route['pre_args']) ? json_encode($route['pre_args']) : ''),
+                    ':post'          => (isset($route['pre_args']) ? json_encode($route['post_args']) : ''),
                     ':pexCheck'      => $check,
                     ':pexCheckAny'   => $checkAny,
                     ':pexCheckExact' => $checkExact,
+                    ':meta'          => $meta,
                 ));
                 $query->closeCursor();
             }
@@ -149,9 +161,9 @@ class Debugger
      */
     public function logHit($path)
     {
-        $sql = 'UPDATE _RouteDebugData SET route_hits = route_hits + 1 WHERE route_path = :path';
+        $sql   = 'UPDATE _RouteDebugData SET route_hits = route_hits + 1 WHERE route_path = :path';
         $query = $this->db->prepare($sql);
-        $query->execute(array(':path'=>$path));
+        $query->execute(array(':path' => $path));
         $query->closeCursor();
     }
 }

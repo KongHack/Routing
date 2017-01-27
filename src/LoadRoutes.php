@@ -1,6 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Database\Database;
 use GCWorld\Utilities\General;
 use phpDocumentor\Reflection\DocBlock;
 
@@ -37,6 +38,12 @@ class LoadRoutes
      * @var \Redis|null
      */
     private static $redis = null;
+
+    /**
+     * @var  Database|null
+     */
+    private static $db = null;
+
 
     /**
      * Singleton Format
@@ -143,6 +150,11 @@ class LoadRoutes
             if (self::$redis !== null) {
                 self::$redis->del('GCWORLD_ROUTER');
             }
+
+            if (self::$db !== null) {
+                $this->storeRoutes($routes);
+            }
+
         }
     }
 
@@ -269,5 +281,116 @@ class LoadRoutes
     public static function attachRedisCache(\Redis $redis)
     {
         self::$redis = $redis;
+    }
+
+    /**
+     * @param \GCWorld\Database\Database $db
+     */
+    public static function attachDatabase(Database $db)
+    {
+        self::$db = $db;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOurRoot()
+    {
+        return dirname(__FILE__).'/../';
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return file_get_contents($this->getOurRoot().'VERSION');
+    }
+
+    protected function storeRoutes($routes)
+    {
+        $table = '_RouteRawList';
+        // Make sure our table exists.
+        if (!self::$db->tableExists($table)) {
+            $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
+            self::$db->exec($sql);
+            self::$db->setTableComment($table, $this->getVersion());
+        } else {
+            $dbv = self::$db->getTableComment($table);
+            if ($dbv != $this->getVersion()) {
+                $sql = 'DROP TABLE '.$table;
+                self::$db->exec($sql);
+                $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
+                self::$db->exec($sql);
+                self::$db->setTableComment($table, $this->getVersion());
+            }
+        }
+
+        $sql   = 'INSERT INTO `_RouteRawList`
+            (route_path, route_name, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
+              route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
+            VALUES
+            (:path, :name, :session, :autoWrapper, :class, :pre, :post, :pexCheck, :pexCheckAny, :pexCheckExact, :meta)
+            ON DUPLICATE KEY UPDATE
+              route_name = VALUES(route_name),
+              route_session = VALUES(route_session),
+              route_autoWrapper = VALUES(route_autoWrapper),
+              route_class = VALUES(route_class),
+              route_pre_args = VALUES(route_pre_args),
+              route_post_args = VALUES(route_post_args),
+              route_pexCheck = VALUES(route_pexCheck),
+              route_pexCheckAny = VALUES(route_pexCheckAny),
+              route_pexCheckExact = VALUES(route_pexCheckExact),
+              route_meta = VALUES(route_meta)
+        ';
+        $query = self::$db->prepare($sql);
+
+        foreach ($routes as $path => $route) {
+            $check      = '';
+            $checkAny   = '';
+            $checkExact = '';
+            $meta       = '';
+
+            if (isset($route['pexCheck'])) {
+                if (!is_array($route['pexCheck'])) {
+                    $route['pexCheck'] = array($route['pexCheck']);
+                }
+                $check = json_encode($route['pexCheck']);
+            }
+            if (isset($route['pexCheckAny'])) {
+                if (!is_array($route['pexCheckAny'])) {
+                    $route['pexCheckAny'] = array($route['pexCheckAny']);
+                }
+                $checkAny = json_encode($route['pexCheckAny']);
+            }
+            if (isset($route['pexCheckExact'])) {
+                if (!is_array($route['pexCheckExact'])) {
+                    $route['pexCheckExact'] = array($route['pexCheckExact']);
+                }
+                $checkExact = json_encode($route['pexCheckExact']);
+            }
+            if (isset($route['meta']) && $route['meta'] != null) {
+                if (!is_array($route['meta'])) {
+                    $route['meta'] = array($route['meta']);
+                }
+                $meta = json_encode($route['meta']);
+            }
+
+            $query->execute([
+                ':path'          => $path,
+                ':name'          => $route['name'],
+                ':session'       => (isset($route['session']) ? intval($route['session']) : 0),
+                ':autoWrapper'   => (isset($route['autoWrapper']) ? intval($route['autoWrapper']) : 0),
+                ':class'         => $route['class'],
+                ':pre'           => (isset($route['pre_args']) ? json_encode($route['pre_args']) : ''),
+                ':post'          => (isset($route['pre_args']) ? json_encode($route['post_args']) : ''),
+                ':pexCheck'      => $check,
+                ':pexCheckAny'   => $checkAny,
+                ':pexCheckExact' => $checkExact,
+                ':meta'          => $meta,
+            ]);
+            $query->closeCursor();
+        }
+        unset($routes, $route, $table, $fileName, $className);
     }
 }
