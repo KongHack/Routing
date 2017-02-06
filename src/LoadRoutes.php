@@ -414,6 +414,9 @@ class LoadRoutes
             }
         }
 
+        $sql = 'TRUNCATE TABLE `_RouteRawList`';
+        self::$db->exec($sql);
+
         $sql   = 'INSERT INTO `_RouteRawList`
             (route_path, route_name, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)

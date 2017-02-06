@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.3.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.3...3.7.3.1)
+ - @GameCharmer Run a truncate table on the raw route table to prevent stale routes from being listed
+
+
 ## [3.7.3](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.2...3.7.3)
  - @GameCharmer Added support for complex routes per file
 
