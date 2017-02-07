@@ -270,6 +270,13 @@ class LoadRoutes
             } else {
                 $routes[$pat]['meta'] = [];
             }
+            
+            if(isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
+                $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
+            }
+            if(isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
+                $routes[$pat]['postArgs'] = [$routes[$pat]['postArgs']];
+            }
 
             if (strlen($routes[$pat]['autoWrapper']) > 0) {
                 $routes[$pat]['autoWrapper'] = in_array($routes[$pat]['autoWrapper'], ['true', 't', 'y', 'yes']);
@@ -352,6 +359,13 @@ class LoadRoutes
                     }
                 } else {
                     $routes[$pat]['meta'] = [];
+                }
+                
+                if(isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
+                    $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
+                }
+                if(isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
+                    $routes[$pat]['postArgs'] = [$routes[$pat]['postArgs']];
                 }
 
                 if (strlen($routes[$pat]['autoWrapper']) > 0) {
