@@ -363,7 +363,7 @@ class Router
      * @param array $params
      * @return bool|string
      */
-    public static function reverse($name, $params = array())
+    public static function reverse($name, $params = [])
     {
         if (($routeArray = self::reverseAll($name, $params)) === false) {
             return false;
@@ -390,6 +390,19 @@ class Router
         }
 
         return $route;
+    }
+
+    /**
+     * @param array $params
+     * @return bool|string
+     */
+    public static function reverseMe($params = [])
+    {
+        if(empty(self::$foundRouteNameClean)) {
+            return false;
+        }
+        
+        return self::reverse(self::$foundRouteNameClean, $params);
     }
 
     /**

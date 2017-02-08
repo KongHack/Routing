@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.4](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.3.2...3.7.4)
+ - @GameCharmer added a reverseMe function that will use the current foundRouteNameClean
+
+
 ## [3.7.3.2](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.3.1...3.7.3.2)
  - @GameCharmer Force array on pre/post args
 
