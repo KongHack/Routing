@@ -60,6 +60,8 @@ class Router
     public static $foundRouteName      = null;
     public static $foundRouteNameClean = null;
     public static $foundRouteArguments = null;
+    public static $foundRouteData      = [];
+    public static $foundRouteMeta      = [];
 
     /**
      * Processes routes.
@@ -228,6 +230,11 @@ class Router
                     } else {
                         self::$foundRouteNameClean = self::$foundRouteName;
                     }
+                }
+
+                self::$foundRouteData = $discovered_handler;
+                if(isset($discovered_handler['meta'])) {
+                    self::$foundRouteMeta  = $discovered_handler['meta'];
                 }
 
                 //Used for new reverse name search.

@@ -258,15 +258,19 @@ class LoadRoutes
             }
 
             if (isset($routes[$pat]['meta'])) {
-                $tmp = explode(' ', $routes[$pat]['meta']);
-                // Reset and process
-                $routes[$pat]['meta'] = [];
-                foreach ($tmp as $item) {
-                    $tmp2 = explode(':', $item);
-                    if (count($tmp2) == 2) {
-                        $routes[$pat]['meta'][$tmp2[0]] = $tmp2[1];
+                if(!is_array($routes[$pat]['meta'])) {
+                    $routes[$pat]['meta'] = [$routes[$pat]['meta']];
+                }
+                
+                $meta = [];
+                foreach($routes[$pat]['meta'] as $v) {
+                    $tmp = explode(':',$v);
+                    if(count($tmp)==2) {
+                        $meta[$tmp[0]] = $tmp[1];
                     }
                 }
+                $routes[$pat]['meta'] = $meta;
+                
             } else {
                 $routes[$pat]['meta'] = [];
             }
@@ -348,15 +352,18 @@ class LoadRoutes
                 }
 
                 if (isset($routes[$pat]['meta'])) {
-                    $tmp = explode(' ', $routes[$pat]['meta']);
-                    // Reset and process
-                    $routes[$pat]['meta'] = [];
-                    foreach ($tmp as $item) {
-                        $tmp2 = explode(':', $item);
-                        if (count($tmp2) == 2) {
-                            $routes[$pat]['meta'][$tmp2[0]] = $tmp2[1];
+                    if(!is_array($routes[$pat]['meta'])) {
+                        $routes[$pat]['meta'] = [$routes[$pat]['meta']];
+                    }
+                    
+                    $meta = [];
+                    foreach($routes[$pat]['meta'] as $v) {
+                        $tmp = explode(':',$v);
+                        if(count($tmp)==2) {
+                            $meta[$tmp[0]] = $tmp[1];
                         }
                     }
+                    $routes[$pat]['meta'] = $meta;
                 } else {
                     $routes[$pat]['meta'] = [];
                 }

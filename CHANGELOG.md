@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.5](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.4...3.7.5)
+ - @GameCharmer updated Meta to handle key/value pairs in separate lines
+ - @GameCharmer added some more public statics to the router for data/meta access
+
+
 ## [3.7.4](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.3.2...3.7.4)
  - @GameCharmer added a reverseMe function that will use the current foundRouteNameClean
 
