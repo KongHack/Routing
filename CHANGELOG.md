@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [3.7.5.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.5...3.7.5.1)
+ - @GameCharmer remove the meta key from the router, as data contains everything
+
+
 ## [3.7.5](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.4...3.7.5)
  - @GameCharmer updated Meta to handle key/value pairs in separate lines
  - @GameCharmer added some more public statics to the router for data/meta access
