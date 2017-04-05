@@ -9,7 +9,7 @@ use GCWorld\Interfaces\Database;
  */
 class Debugger
 {
-    const table = '_RouteDebugData';
+    const TABLE = '_RouteDebugData';
 
     /**
      * @var \GCWorld\Interfaces\Database|\GCWorld\Database\Database
@@ -33,18 +33,18 @@ class Debugger
         $this->storage = $processor->getStorageLocation();
 
         // Make sure our table exists.
-        if (!$db->tableExists(self::table)) {
-            $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::table.'.sql');
+        if (!$db->tableExists(self::TABLE)) {
+            $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::TABLE.'.sql');
             $this->db->exec($sql);
-            $this->db->setTableComment(self::table, $this->getVersion());
+            $this->db->setTableComment(self::TABLE, $this->getVersion());
         } else {
-            $dbv = $this->db->getTableComment(self::table);
+            $dbv = $this->db->getTableComment(self::TABLE);
             if ($dbv != $this->getVersion()) {
-                $sql = 'DROP TABLE '.self::table;
+                $sql = 'DROP TABLE '.self::TABLE;
                 $this->db->exec($sql);
-                $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::table.'.sql');
+                $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::TABLE.'.sql');
                 $this->db->exec($sql);
-                $this->db->setTableComment(self::table, $this->getVersion());
+                $this->db->setTableComment(self::TABLE, $this->getVersion());
             }
         }
     }
@@ -70,7 +70,7 @@ class Debugger
      */
     public function storeStructure()
     {
-        $sql   = 'INSERT INTO '.self::table.'
+        $sql   = 'INSERT INTO '.self::TABLE.'
             (route_path, route_name, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES
@@ -163,7 +163,7 @@ class Debugger
     {
         $sql   = 'UPDATE _RouteDebugData SET route_hits = route_hits + 1 WHERE route_path = :path';
         $query = $this->db->prepare($sql);
-        $query->execute(array(':path' => $path));
+        $query->execute([':path' => $path]);
         $query->closeCursor();
     }
 }

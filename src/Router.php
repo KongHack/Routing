@@ -91,9 +91,9 @@ class Router
         }
 
         if (self::$routePrefix != null) {
-            $pos = strpos($path_info,self::$routePrefix);
+            $pos = strpos($path_info, self::$routePrefix);
             if ($pos === 0) {
-                $path_info = substr_replace($path_info,'',$pos,strlen(self::$routePrefix));
+                $path_info = substr_replace($path_info, '', $pos, strlen(self::$routePrefix));
             }
         }
 
@@ -116,7 +116,6 @@ class Router
 
 
         if ($discovered_handler == null) {
-
             if (self::$forcedRoutes == null) {
                 $temp = explode('/', $path_info);
                 if (count($temp) > 1) {
@@ -269,11 +268,15 @@ class Router
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
-                                if (self::$user->$type(self::replacePexKeys($discovered_handler[$type],
-                                        $regex_matches)) < 1
+                                if (self::$user->$type(self::replacePexKeys(
+                                    $discovered_handler[$type],
+                                    $regex_matches
+                                )) < 1
                                 ) {
-                                    Hook::fire('403',
-                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                    Hook::fire(
+                                        '403',
+                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches')
+                                    );
                                 }
                             } else {
                                 $good = false;
@@ -284,8 +287,10 @@ class Router
                                     }
                                 }
                                 if (!$good) {
-                                    Hook::fire('403',
-                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                                    Hook::fire(
+                                        '403',
+                                        compact('routes', 'discovered_handler', 'request_method', 'regex_matches')
+                                    );
                                 }
                             }
                         }
@@ -301,28 +306,29 @@ class Router
                         die();
                     }
                 }
-
             } elseif (is_callable($discovered_handler)) {
                 $handler_instance = $discovered_handler($regex_matches);
             }
         }
 
         if ($handler_instance) {
-            if (self::is_xhr_request() && method_exists($handler_instance, $request_method.'_xhr')) {
+            if (self::isXHRRequest() && method_exists($handler_instance, $request_method.'XHR')) {
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                 header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
                 header('Cache-Control: no-store, no-cache, must-revalidate');
                 header('Cache-Control: post-check=0, pre-check=0', false);
                 header('Pragma: no-cache');
-                $request_method .= '_xhr';
+                $request_method .= 'XHR';
             }
 
             if (method_exists($handler_instance, $request_method)) {
-                Hook::fire('before_handler',
-                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
+                Hook::fire(
+                    'before_handler',
+                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches')
+                );
 
-                if(isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
+                if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
                     if ($handler_instance instanceof HandlerInterface) {
                         $title = $handler_instance->getTitle();
                         $handler_instance->setBreadcrumbs();
@@ -347,18 +353,31 @@ class Router
                     $result = $handler_instance->$request_method();
                 }
 
-                Hook::fire('after_handler',
-                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
+                Hook::fire(
+                    'after_handler',
+                    compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result')
+                );
             } else {
                 Hook::fire('404', compact('routes', 'discovered_handler', 'request_method', 'regex_matches'));
             }
         } else {
-            Hook::fire('404',
-                compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'master', 'temp',
-                    'className'));
+            Hook::fire(
+                '404',
+                compact(
+                    'routes',
+                    'discovered_handler',
+                    'request_method',
+                    'regex_matches',
+                    'master',
+                    'temp',
+                    'className'
+                )
+            );
         }
-        Hook::fire('after_request',
-            compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result'));
+        Hook::fire(
+            'after_request',
+            compact('routes', 'discovered_handler', 'request_method', 'regex_matches', 'result')
+        );
     }
 
     /**
@@ -384,7 +403,7 @@ class Router
             }
             $route = implode('/', $temp);
         }
-        if(self::$routePrefix != null) {
+        if (self::$routePrefix != null) {
             $route = self::$routePrefix.$route;
         }
 
@@ -401,7 +420,7 @@ class Router
      */
     public static function reverseMe($params = [])
     {
-        if(empty(self::$foundRouteNameClean)) {
+        if (empty(self::$foundRouteNameClean)) {
             return false;
         }
         
@@ -482,7 +501,7 @@ class Router
     /**
      * @return bool
      */
-    private static function is_xhr_request()
+    private static function isXHRRequest()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
@@ -556,5 +575,4 @@ class Router
     {
         return self::$pageWrapperName;
     }
-
 }

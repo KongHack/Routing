@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.0.0](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.5.1...4.0.0)
+ - @GameCharmer fully PSR2 compliant, ran through PHPCS/CFB, converted _xhr to XHR
+ - WARNING: This is a breaking change!
+
+
 ## [3.7.5.1](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.5...3.7.5.1)
  - @GameCharmer remove the meta key from the router, as data contains everything
 

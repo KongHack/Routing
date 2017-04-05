@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="ACEMAPP_CodeSniffer">
+    <description>ACEMAPP Coding Standard and Config</description>
+
+    <file>src</file>
+    <exclude-pattern>*/Generated/*</exclude-pattern>
+
+    <arg value="nps"/>
+    <arg name="encoding" value="UTF8"/>
+
+    <rule ref="PSR2"/>
+</ruleset>

@@ -154,7 +154,6 @@ class LoadRoutes
             if (self::$db !== null) {
                 $this->storeRoutes($processor);
             }
-
         }
     }
 
@@ -258,27 +257,26 @@ class LoadRoutes
             }
 
             if (isset($routes[$pat]['meta'])) {
-                if(!is_array($routes[$pat]['meta'])) {
+                if (!is_array($routes[$pat]['meta'])) {
                     $routes[$pat]['meta'] = [$routes[$pat]['meta']];
                 }
                 
                 $meta = [];
-                foreach($routes[$pat]['meta'] as $v) {
-                    $tmp = explode(':',$v);
-                    if(count($tmp)==2) {
+                foreach ($routes[$pat]['meta'] as $v) {
+                    $tmp = explode(':', $v);
+                    if (count($tmp)==2) {
                         $meta[$tmp[0]] = $tmp[1];
                     }
                 }
                 $routes[$pat]['meta'] = $meta;
-                
             } else {
                 $routes[$pat]['meta'] = [];
             }
             
-            if(isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
+            if (isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
                 $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
             }
-            if(isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
+            if (isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
                 $routes[$pat]['postArgs'] = [$routes[$pat]['postArgs']];
             }
 
@@ -352,14 +350,14 @@ class LoadRoutes
                 }
 
                 if (isset($routes[$pat]['meta'])) {
-                    if(!is_array($routes[$pat]['meta'])) {
+                    if (!is_array($routes[$pat]['meta'])) {
                         $routes[$pat]['meta'] = [$routes[$pat]['meta']];
                     }
                     
                     $meta = [];
-                    foreach($routes[$pat]['meta'] as $v) {
-                        $tmp = explode(':',$v);
-                        if(count($tmp)==2) {
+                    foreach ($routes[$pat]['meta'] as $v) {
+                        $tmp = explode(':', $v);
+                        if (count($tmp)==2) {
                             $meta[$tmp[0]] = $tmp[1];
                         }
                     }
@@ -368,10 +366,10 @@ class LoadRoutes
                     $routes[$pat]['meta'] = [];
                 }
                 
-                if(isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
+                if (isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
                     $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
                 }
-                if(isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
+                if (isset($routes[$pat]['postArgs']) && !is_array($routes[$pat]['postArgs'])) {
                     $routes[$pat]['postArgs'] = [$routes[$pat]['postArgs']];
                 }
 
