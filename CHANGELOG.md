@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.0.1](https://gitlab.konghack.com/GCWorld/Routing/compare/4.0.0...4.0.1)
+ - @GameCharmer Added pre/post session_start hooks ``pre-session_start`` AND ``post-session_start``
+ - WARNING: Removed routes from the compact in several hook calls, since that's a tad overkill as you can request them when needed
+ 
+ 
 ## [4.0.0](https://gitlab.konghack.com/GCWorld/Routing/compare/3.7.5.1...4.0.0)
  - @GameCharmer fully PSR2 compliant, ran through PHPCS/CFB, converted _xhr to XHR
  - WARNING: This is a breaking change!
