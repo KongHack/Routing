@@ -213,7 +213,7 @@ class Router
 
             if (is_string($discovered_handler)) {
                 if (class_exists($discovered_handler)) {
-                    $handler_instance = new $discovered_handler($regex_matches);
+                    $handler_instance = self::instantiateHandlerClass($discovered_handler,$regex_matches);
                 } else {
                     echo 'Class Not Found: '.$discovered_handler;
                     die();
@@ -302,7 +302,7 @@ class Router
                 if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
                     $discovered_class = $discovered_handler['class'];
                     if (class_exists($discovered_class)) {
-                        $handler_instance = new $discovered_class($regex_matches);
+                        $handler_instance = self::instantiateHandlerClass($discovered_class,$regex_matches);
                     } else {
                         echo 'Class Not Found: '.$discovered_class;
                         die();
@@ -575,5 +575,23 @@ class Router
     public static function getPageWrapperName()
     {
         return self::$pageWrapperName;
+    }
+
+    /**
+     * @param string $className
+     * @param array|null  $args
+     *
+     * @return mixed
+     */
+    private static function instantiateHandlerClass(string $className, array $args = null)
+    {
+        try {
+            $obj = new $className($args);
+        } catch (RouterExceptionInterface $e) {
+            $e->executeLogic();
+            die();
+        }
+
+        return $obj;
     }
 }
