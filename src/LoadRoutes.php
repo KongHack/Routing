@@ -437,12 +437,13 @@ class LoadRoutes
         self::$db->exec($sql);
 
         $sql   = 'INSERT INTO `_RouteRawList`
-            (route_path, route_name, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
+            (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES
-            (:path, :name, :session, :autoWrapper, :class, :pre, :post, :pexCheck, :pexCheckAny, :pexCheckExact, :meta)
+            (:path, :name, :title, :session, :autoWrapper, :class, :pre, :post, :pexCheck, :pexCheckAny, :pexCheckExact, :meta)
             ON DUPLICATE KEY UPDATE
               route_name = VALUES(route_name),
+              route_title = VALUES(route_title),
               route_session = VALUES(route_session),
               route_autoWrapper = VALUES(route_autoWrapper),
               route_class = VALUES(route_class),
@@ -491,6 +492,7 @@ class LoadRoutes
             $query->execute([
                 ':path'          => $route['pattern'],
                 ':name'          => $name,
+                ':title'         => (isset($route['title']) ? json_encode($route['title']) : ''),
                 ':session'       => (isset($route['session']) ? intval($route['session']) : 0),
                 ':autoWrapper'   => (isset($route['autoWrapper']) ? intval($route['autoWrapper']) : 0),
                 ':class'         => $route['class'],

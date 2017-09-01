@@ -3,6 +3,7 @@ CREATE TABLE `_RouteDebugData`
   route_id INT NOT NULL AUTO_INCREMENT,
   route_path VARCHAR(250) NOT NULL,
   route_name VARCHAR(250) NOT NULL,
+  route_title VARCHAR(250) NOT NULL,
   route_session TINYINT DEFAULT 0 NOT NULL,
   route_autoWrapper TINYINT DEFAULT 0 NOT NULL,
   route_hits INT DEFAULT 0 NOT NULL,
