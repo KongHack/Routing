@@ -142,7 +142,7 @@ class LoadRoutes
                 }
             }
 
-            $routes = array_merge($routes, self::generateAnnotatedRoutes());
+            $routes = array_merge($routes, self::generateAnnotatedRoutes($debug));
 
             $processor = new Processor($debug);
             $processor->run($routes);
@@ -158,15 +158,27 @@ class LoadRoutes
     }
 
     /**
+     * @param bool $debug
+     *
      * @return array
      */
-    private static function generateAnnotatedRoutes()
+    private static function generateAnnotatedRoutes(bool $debug = false)
     {
         $return = [];
         if (count(self::$paths) > 0) {
             foreach (self::$paths as $path) {
                 $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
                 foreach ($classFiles as $file) {
+                    $error = '';
+                    if(!php_check_syntax($file, $error)) {
+                        if($debug) {
+                            echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
+                            echo '  - file: ', $file, PHP_EOL;
+                            echo '  - error: ', $error, PHP_EOL;
+                        }
+                        continue;
+                    }
+
                     $namespace = '';
                     $className = '';
                     $fh        = fopen($file, 'r');
