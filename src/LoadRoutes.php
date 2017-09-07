@@ -169,12 +169,12 @@ class LoadRoutes
             foreach (self::$paths as $path) {
                 $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
                 foreach ($classFiles as $file) {
-                    exec("php -l {$file}", $output, $error);
-                    if ($error !== 0) {
+                    exec("php -l {$file}", $execOutput, $execError);
+                    if ($execError !== 0) {
                         if($debug) {
                             echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
                             echo '  - file: ', $file, PHP_EOL;
-                            echo '  - error: ', $output, PHP_EOL;
+                            echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
                         }
                         continue;
                     }
