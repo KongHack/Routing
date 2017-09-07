@@ -216,8 +216,7 @@ class Router
                 if (class_exists($discovered_handler)) {
                     $handler_instance = self::instantiateHandlerClass($discovered_handler, $regex_matches);
                 } else {
-                    echo 'Class Not Found: '.$discovered_handler;
-                    die();
+                    throw new \Exception('Class Not Found: '.$discovered_handler);
                 }
             } elseif (is_array($discovered_handler)) {
                 if (isset($discovered_handler['name'])) {
@@ -305,8 +304,7 @@ class Router
                     if (class_exists($discovered_class)) {
                         $handler_instance = self::instantiateHandlerClass($discovered_class, $regex_matches);
                     } else {
-                        echo 'Class Not Found: '.$discovered_class;
-                        die();
+                        throw new \Exception('Class Not Found: '.$discovered_class);
                     }
                 }
             } elseif (is_callable($discovered_handler)) {
@@ -315,64 +313,72 @@ class Router
         }
 
         if ($handler_instance) {
-            if (self::isXHRRequest() && method_exists($handler_instance, $request_method.'XHR')) {
-                header('Content-type: application/json');
-                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-                header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-                header('Cache-Control: no-store, no-cache, must-revalidate');
-                header('Cache-Control: post-check=0, pre-check=0', false);
-                header('Pragma: no-cache');
-                $request_method .= 'XHR';
-            }
+            try {
 
-            if (method_exists($handler_instance, $request_method)) {
-                Hook::fire(
-                    'before_handler',
-                    compact('discovered_handler', 'request_method', 'regex_matches')
-                );
+                if (self::isXHRRequest() && method_exists($handler_instance, $request_method.'XHR')) {
+                    header('Content-type: application/json');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+                    header('Cache-Control: no-store, no-cache, must-revalidate');
+                    header('Cache-Control: post-check=0, pre-check=0', false);
+                    header('Pragma: no-cache');
+                    $request_method .= 'XHR';
+                }
 
-                if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
-                    if ($handler_instance instanceof HandlerInterface
-                        || $handler_instance instanceof AdvancedHandlerInterface
-                    ) {
-                        $title = $handler_instance->getTitle();
-                        $handler_instance->setBreadcrumbs();
+                if (method_exists($handler_instance, $request_method)) {
+                    Hook::fire(
+                        'before_handler',
+                        compact('discovered_handler', 'request_method', 'regex_matches')
+                    );
+
+                    if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
+                        if ($handler_instance instanceof HandlerInterface
+                            || $handler_instance instanceof AdvancedHandlerInterface
+                        ) {
+                            $title = $handler_instance->getTitle();
+                            $handler_instance->setBreadcrumbs();
 
 
-                        if (self::$pageWrapper == null && self::$pageWrapperName != null) {
-                            /** @var mixed $temp */
-                            $temp = self::$pageWrapperName;
-                            if (class_exists($temp)) {
-                                self::$pageWrapper = $temp::getInstance();
+                            if (self::$pageWrapper == null && self::$pageWrapperName != null) {
+                                /** @var mixed $temp */
+                                $temp = self::$pageWrapperName;
+                                if (class_exists($temp)) {
+                                    self::$pageWrapper = $temp::getInstance();
+                                }
+                            }
+                            if (self::$pageWrapper != null) {
+                                self::$pageWrapper->setTitle($title);
                             }
                         }
-                        if (self::$pageWrapper != null) {
-                            self::$pageWrapper->setTitle($title);
+                    }
+
+                    if (count($regex_matches) > 0) {
+                        $result = $handler_instance->$request_method(...$regex_matches);
+                    } else {
+                        $result = $handler_instance->$request_method();
+                    }
+
+                    if ($handler_instance instanceof AdvancedHandlerInterface) {
+                        if (self::isXHRRequest() && is_array($result)) {
+                            echo json_encode($result);
+                        } else {
+                            echo $result;
                         }
                     }
-                }
 
-                if (count($regex_matches) > 0) {
-                    $result = $handler_instance->$request_method(...$regex_matches);
+                    Hook::fire(
+                        'after_handler',
+                        compact('discovered_handler', 'request_method', 'regex_matches', 'result')
+                    );
                 } else {
-                    $result = $handler_instance->$request_method();
+                    Hook::fire('404', compact('discovered_handler', 'request_method', 'regex_matches'));
                 }
 
-                if ($handler_instance instanceof AdvancedHandlerInterface) {
-                    if (self::isXHRRequest() && is_array($result)) {
-                        echo json_encode($result);
-                    } else {
-                        echo $result;
-                    }
-                }
-
-                Hook::fire(
-                    'after_handler',
-                    compact('discovered_handler', 'request_method', 'regex_matches', 'result')
-                );
-            } else {
-                Hook::fire('404', compact('discovered_handler', 'request_method', 'regex_matches'));
+            } catch(RouterExceptionInterface $e) {
+                $e->executeLogic();
+                die();
             }
+
         } else {
             Hook::fire(
                 '404',
@@ -598,12 +604,9 @@ class Router
     {
         try {
             $obj = new $className($args);
-        } catch(\Exception $e) {
-            if ($e instanceof RouterExceptionInterface) {
-                $e->executeLogic();
-                die();
-            }
-            throw $e;
+        } catch(RouterExceptionInterface $e) {
+            $e->executeLogic();
+            die();
         }
 
         return $obj;
