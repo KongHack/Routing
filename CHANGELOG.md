@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.1.5.2](https://github.com/KongHack/Routing/releases/tag/4.1.5.2)
+ - @GameCharmer Ugh, forgot to rename variables
+
+
 ## [4.1.5.1](https://github.com/KongHack/Routing/releases/tag/4.1.5.1)
  - @GameCharmer fix syntax checking
 
