@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.1.2](https://github.com/KongHack/Routing/releases/tag/4.1.2)
+ - @GameCharmer Advanced Handler
+
+
 ## [4.1.1](https://github.com/KongHack/Routing/releases/tag/4.1.1)
  - @GameCharmer Added title to DDL, DB, and code
 
