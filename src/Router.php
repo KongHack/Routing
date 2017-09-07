@@ -23,11 +23,11 @@ class Router
         ':consume'  => '(.+)',
     ];
 
-    private static $base          = null;
-    private static $userClassName = null;
-    private static $forcedRoutes  = null;
+    private static $base            = null;
+    private static $userClassName   = null;
+    private static $forcedRoutes    = null;
     private static $pageWrapperName = null;
-    
+
     /**
      * @var Debugger|null
      */
@@ -214,7 +214,7 @@ class Router
 
             if (is_string($discovered_handler)) {
                 if (class_exists($discovered_handler)) {
-                    $handler_instance = self::instantiateHandlerClass($discovered_handler,$regex_matches);
+                    $handler_instance = self::instantiateHandlerClass($discovered_handler, $regex_matches);
                 } else {
                     echo 'Class Not Found: '.$discovered_handler;
                     die();
@@ -272,9 +272,9 @@ class Router
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
                                 if (self::$user->$type(self::replacePexKeys(
-                                    $discovered_handler[$type],
-                                    $regex_matches
-                                )) < 1
+                                        $discovered_handler[$type],
+                                        $regex_matches
+                                    )) < 1
                                 ) {
                                     Hook::fire(
                                         '403',
@@ -303,7 +303,7 @@ class Router
                 if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
                     $discovered_class = $discovered_handler['class'];
                     if (class_exists($discovered_class)) {
-                        $handler_instance = self::instantiateHandlerClass($discovered_class,$regex_matches);
+                        $handler_instance = self::instantiateHandlerClass($discovered_class, $regex_matches);
                     } else {
                         echo 'Class Not Found: '.$discovered_class;
                         die();
@@ -358,8 +358,8 @@ class Router
                     $result = $handler_instance->$request_method();
                 }
 
-                if($handler_instance instanceof AdvancedHandlerInterface) {
-                    if(self::isXHRRequest() && is_array($result)) {
+                if ($handler_instance instanceof AdvancedHandlerInterface) {
+                    if (self::isXHRRequest() && is_array($result)) {
                         echo json_encode($result);
                     } else {
                         echo $result;
@@ -435,7 +435,7 @@ class Router
         if (empty(self::$foundRouteNameClean)) {
             return false;
         }
-        
+
         return self::reverse(self::$foundRouteNameClean, $params);
     }
 
@@ -589,8 +589,8 @@ class Router
     }
 
     /**
-     * @param string $className
-     * @param array|null  $args
+     * @param string     $className
+     * @param array|null $args
      *
      * @return mixed
      */
@@ -598,9 +598,12 @@ class Router
     {
         try {
             $obj = new $className($args);
-        } catch (RouterExceptionInterface $e) {
-            $e->executeLogic();
-            die();
+        } catch(\Exception $e) {
+            if ($e instanceof RouterExceptionInterface) {
+                $e->executeLogic();
+                die();
+            }
+            throw $e;
         }
 
         return $obj;
