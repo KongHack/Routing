@@ -1,6 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Interfaces\HandlerInterface;
 use GCWorld\Interfaces\PEX;
 
@@ -13,7 +14,7 @@ class Router
     const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
     const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
-    private static $tokens = [
+    const TOKENS = [
         ':single'   => '([a-zA-Z0-9]{1})',
         ':string'   => '([a-zA-Z]+)',
         ':number'   => '([0-9]+)',
@@ -150,7 +151,7 @@ class Router
                 $discovered_handler = $routes[$path_info];
             } elseif ($routes) {
                 foreach ($routes as $pattern => $routeConfig) {
-                    $pattern = strtr($pattern, self::$tokens);
+                    $pattern = strtr($pattern, self::TOKENS);
                     if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                         $discovered_handler = $routeConfig;
                         $regex_matches      = $matches;
@@ -180,7 +181,7 @@ class Router
                         $discovered_handler = $routes[$path_info];
                     } elseif ($routes) {
                         foreach ($routes as $pattern => $routeConfig) {
-                            $pattern = strtr($pattern, self::$tokens);
+                            $pattern = strtr($pattern, self::TOKENS);
                             if (preg_match('#^/?'.$pattern.'/?$#', $path_info, $matches)) {
                                 $discovered_handler = $routeConfig;
                                 $regex_matches      = $matches;
@@ -331,7 +332,9 @@ class Router
                 );
 
                 if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
-                    if ($handler_instance instanceof HandlerInterface) {
+                    if ($handler_instance instanceof HandlerInterface
+                        || $handler_instance instanceof AdvancedHandlerInterface
+                    ) {
                         $title = $handler_instance->getTitle();
                         $handler_instance->setBreadcrumbs();
 
@@ -353,6 +356,14 @@ class Router
                     $result = $handler_instance->$request_method(...$regex_matches);
                 } else {
                     $result = $handler_instance->$request_method();
+                }
+
+                if($handler_instance instanceof AdvancedHandlerInterface) {
+                    if(self::isXHRRequest() && is_array($result)) {
+                        echo json_encode($result);
+                    } else {
+                        echo $result;
+                    }
                 }
 
                 Hook::fire(
