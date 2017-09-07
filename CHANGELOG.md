@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.1.5](https://github.com/KongHack/Routing/releases/tag/4.1.5)
+ - @GameCharmer Add syntax checking support
+
+
 ## [4.1.4](https://github.com/KongHack/Routing/releases/tag/4.1.4)
  - @GameCharmer Replace DIEs with throw new Exception
  - @GameCharmer broaden the scope of exception catching to include all handler interaction
