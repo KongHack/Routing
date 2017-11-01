@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.1.7](https://github.com/KongHack/Routing/releases/tag/4.1.7)
+ - @GameCharmer add more debugging to the processor
+
+
 ## [4.1.6](https://github.com/KongHack/Routing/releases/tag/4.1.6)
  - @GameCharmer Add support for the http status code as the exception code number
 
