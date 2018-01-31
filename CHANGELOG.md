@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.1.10](https://github.com/KongHack/Routing/releases/tag/4.1.10)
+ - @GameCharmer Update License Entry
+
+
 ## [4.1.9](https://github.com/KongHack/Routing/releases/tag/4.1.9)
  - @GameCharmer Update DocBlock Library
 
