@@ -144,14 +144,33 @@ class LoadRoutes
 
             $routes = array_merge($routes, self::generateAnnotatedRoutes($debug));
 
+            if($debug) {
+                echo 'Starting Processor',PHP_EOL;
+            }
+
             $processor = new Processor($debug);
             $processor->run($routes);
 
+
+            if($debug) {
+                echo 'Processor Complete',PHP_EOL;
+            }
+
             if (self::$redis !== null) {
+
+                if($debug) {
+                    echo 'Redis Found, Deleting GCWORLD_ROUTER key',PHP_EOL;
+                }
+
                 self::$redis->del('GCWORLD_ROUTER');
             }
 
             if (self::$db !== null) {
+
+                if($debug) {
+                    echo 'DB Found, storing routes',PHP_EOL;
+                }
+
                 $this->storeRoutes($processor);
             }
         }

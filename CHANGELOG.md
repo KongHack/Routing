@@ -7,8 +7,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
-## [4.1.7](https://github.com/KongHack/Routing/releases/tag/4.1.7)
+## [4.1.9](https://github.com/KongHack/Routing/releases/tag/4.1.9)
  - @GameCharmer Update DocBlock Library
+
+
+## [4.1.8](https://github.com/KongHack/Routing/releases/tag/4.1.8)
+ - @GameCharmer add more debugging to load routes
+
+
+## [4.1.7](https://github.com/KongHack/Routing/releases/tag/4.1.7)
+ - @GameCharmer add more debugging to the processor
 
 
 ## [4.1.6](https://github.com/KongHack/Routing/releases/tag/4.1.6)

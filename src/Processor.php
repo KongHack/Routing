@@ -124,6 +124,9 @@ class Processor
         $hits = [];
         //Need to build up some bases.
         $bases = [];
+        if($this->debug) {
+            echo PHP_EOL,' - Iterating routes to generate bases',PHP_EOL;
+        }
         foreach ($this->routes_reverse as $path => $junk) {
             $bases[] = $path;
         }
@@ -132,7 +135,15 @@ class Processor
                 $bases[] = $path;
             }
         }
-
+        if($this->debug) {
+            if(function_exists('d')) {
+                d($bases);
+            } else {
+                echo 'Bases',PHP_EOL;
+                print_r($bases);
+            }
+            echo PHP_EOL;
+        }
         foreach ($bases as $path) {
             $temp = explode('/', $path);
             if (isset($temp[1])) {
@@ -142,18 +153,39 @@ class Processor
                 ++$hits[$temp[1]];
             }
         }
+        if($this->debug) {
+            if(function_exists('d')) {
+                d($hits);
+            } else {
+                echo 'Bases',PHP_EOL;
+                print_r($hits);
+            }
+            echo PHP_EOL;
+        }
 
         foreach ($hits as $key => $count) {
             if ($count >= 3) {
+                if($this->debug) {
+                    echo ' - Adding Master Route: ',$key,PHP_EOL;
+                }
                 $this->addMasterRoute($key);
             }
         }
 
         //Generate some files.
         foreach ($this->routes_master as $master) {
+            if($this->debug) {
+                echo ' - Generating Master Route: ',$master,PHP_EOL;
+            }
             $this->generateMaster($master);
         }
+        if($this->debug) {
+            echo ' - Generating MISC Route', PHP_EOL;
+        }
         $this->generateMisc();
+        if($this->debug) {
+            echo ' - [!!] Done generating route files! ', PHP_EOL;
+        }
     }
 
     /**
