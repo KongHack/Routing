@@ -183,11 +183,16 @@ class LoadRoutes
      */
     private static function generateAnnotatedRoutes(bool $debug = false)
     {
+        $cPhpDocFactory  = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
+
         $return = [];
         if (count(self::$paths) > 0) {
             foreach (self::$paths as $path) {
                 $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
                 foreach ($classFiles as $file) {
+                    if($debug) {
+                        echo ' - Processing: ',$file,PHP_EOL;
+                    }
                     exec("php -l {$file}", $execOutput, $execError);
                     if ($execError !== 0) {
                         if($debug) {
@@ -215,7 +220,7 @@ class LoadRoutes
                     if (class_exists($classString)) {
                         $thisClass = new \ReflectionClass($classString);
                         if (($comment = $thisClass->getDocComment()) !== false) {
-                            $phpDoc = new DocBlock($comment);
+                            $phpDoc = $cPhpDocFactory->create($comment);
                             $routes = self::processTags($classString, $phpDoc);
                             if ($routes) {
                                 $return = array_merge($return, $routes);
@@ -244,20 +249,21 @@ class LoadRoutes
             return false;
         }
 
+
         $routes  = [];
         $pattern = $phpDoc->getTagsByName('router-pattern');
         foreach ($pattern as $patMaster) {
-            $pat = $patMaster->getContent();
+            $pat = (string) $patMaster;
 
             $routes[$pat] = [
                 'class'       => $classString,
-                'name'        => $phpDoc->getTagsByName('router-name')[0]->getContent(),
+                'name'        => (string) $phpDoc->getTagsByName('router-name')[0],
                 'autoWrapper' => false,
             ];
 
             $session = $phpDoc->getTagsByName('router-session');
             if (count($session) > 0) {
-                $sessionString           = strtolower($session[0]->getContent());
+                $sessionString           = strtolower((string) $session[0]);
                 $routes[$pat]['session'] = in_array($sessionString, ['true', 't', 'y', 'yes']);
             }
 
@@ -277,11 +283,11 @@ class LoadRoutes
                 /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
 
                 if (count($var) == 1) {
-                    $routes[$pat][$key] = trim($var[0]->getContent());
+                    $routes[$pat][$key] = trim((string) $var[0]);
                 } elseif (count($var) > 1) {
                     $temp = [];
                     foreach ($var as $t) {
-                        $temp[] = trim($t->getContent());
+                        $temp[] = trim((string) $t);
                     }
                     $routes[$pat][$key] = $temp;
                 }
@@ -291,7 +297,7 @@ class LoadRoutes
                 if (!is_array($routes[$pat]['meta'])) {
                     $routes[$pat]['meta'] = [$routes[$pat]['meta']];
                 }
-                
+
                 $meta = [];
                 foreach ($routes[$pat]['meta'] as $v) {
                     $tmp = explode(':', $v);
@@ -303,7 +309,7 @@ class LoadRoutes
             } else {
                 $routes[$pat]['meta'] = [];
             }
-            
+
             if (isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
                 $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
             }
@@ -340,17 +346,17 @@ class LoadRoutes
                 break;
             }
             foreach ($pattern as $patMaster) {
-                $pat = $patMaster->getContent();
+                $pat = (string) $patMaster;
 
                 $routes[$pat] = [
                     'class'       => $classString,
-                    'name'        => $phpDoc->getTagsByName('router-'.$i.'-name')[0]->getContent(),
+                    'name'        => (string) $phpDoc->getTagsByName('router-'.$i.'-name')[0],
                     'autoWrapper' => false,
                 ];
 
                 $session = $phpDoc->getTagsByName('router-'.$i.'-session');
                 if (count($session) > 0) {
-                    $sessionString           = strtolower($session[0]->getContent());
+                    $sessionString           = strtolower((string) $session[0]);
                     $routes[$pat]['session'] = in_array($sessionString, ['true', 't', 'y', 'yes']);
                 }
 
@@ -370,11 +376,11 @@ class LoadRoutes
                     /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
 
                     if (count($var) == 1) {
-                        $routes[$pat][$key] = trim($var[0]->getContent());
+                        $routes[$pat][$key] = trim((string) $var[0]);
                     } elseif (count($var) > 1) {
                         $temp = [];
                         foreach ($var as $t) {
-                            $temp[] = trim($t->getContent());
+                            $temp[] = trim((string) $t);
                         }
                         $routes[$pat][$key] = $temp;
                     }

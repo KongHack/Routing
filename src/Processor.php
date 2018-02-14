@@ -1,6 +1,8 @@
 <?php
 namespace GCWorld\Routing;
 
+use Riimu\Kit\PHPEncoder\PHPEncoder;
+
 /**
  * Class Processor
  * @package GCWorld\Routing
@@ -202,39 +204,59 @@ class Processor
         $php .= "{\n";
 
         //Get File Time Function
-        $php .= "\tpublic function getFileTime()\n";
-        $php .= "\t{\n";
-        $php .= "\t\treturn filemtime(__FILE__);\n";
-        $php .= "\t}\n\n";
+        $php .= "    public function getFileTime()\n";
+        $php .= "    {\n";
+        $php .= "        return filemtime(__FILE__);\n";
+        $php .= "    }\n\n";
 
         //Get Forward Routes Function
-        $php .= "\tpublic function getForwardRoutes()\n";
-        $php .= "\t{\n";
-        $php .= "\t\t return array(\n";
+        $php .= "    public function getForwardRoutes()\n";
+        $php .= "    {\n";
+        $php .= "         return [\n";
         foreach ($this->routes_straight as $k => $v) {
             $temp = explode('/', $k);
             if ($temp[1] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
+            $cEncoder = new PHPEncoder();
+            $encoded  = $cEncoder->encode($v, [
+                'array.base'         => 12,
+                'array.inline'       => false,
+                'array.omit'         => false,
+                'array.align'        => true,
+                'array.indent'       => 4,
+                'boolean.capitalize' => true,
+                'null.capitalize'    => true,
+            ]);
+            $php .= "            '$k' => ".$encoded.",\n";
         }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
+        $php .= "        ];\n";
+        $php .= "    }\n\n";
 
 
         //Get Reverse Routes Function
-        $php .= "\tpublic function getReverseRoutes()\n";
-        $php .= "\t{\n";
-        $php .= "\t\t return array(\n";
+        $php .= "    public function getReverseRoutes()\n";
+        $php .= "    {\n";
+        $php .= "         return [\n";
         foreach ($this->routes_reverse as $k => $v) {
             $temp = explode('_', $k);
             if ($temp[0] != $master) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
+            $cEncoder = new PHPEncoder();
+            $encoded  = $cEncoder->encode($v, [
+                'array.base'         => 12,
+                'array.inline'       => false,
+                'array.omit'         => false,
+                'array.align'        => true,
+                'array.indent'       => 4,
+                'boolean.capitalize' => true,
+                'null.capitalize'    => true,
+            ]);
+            $php .= "            '$k' => ".$encoded.",\n";
         }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
+        $php .= "        ];\n";
+        $php .= "    }\n\n";
 
         //End of file
         $php .= "}\n";
@@ -256,39 +278,59 @@ class Processor
         $php .= "{\n";
 
         //Get File Time Function
-        $php .= "\tpublic function getFileTime()\n";
-        $php .= "\t{\n";
-        $php .= "\t\treturn filemtime(__FILE__);\n";
-        $php .= "\t}\n\n";
+        $php .= "    public function getFileTime()\n";
+        $php .= "    {\n";
+        $php .= "        return filemtime(__FILE__);\n";
+        $php .= "    }\n\n";
 
         //Get Forward Routes Function
-        $php .= "\tpublic function getForwardRoutes()\n";
-        $php .= "\t{\n";
-        $php .= "\t\t return array(\n";
+        $php .= "    public function getForwardRoutes()\n";
+        $php .= "    {\n";
+        $php .= "         return [\n";
         foreach ($this->routes_straight as $k => $v) {
             $temp = explode('/', $k);
             if (in_array($temp[1], $this->routes_master)) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
+            $cEncoder = new PHPEncoder();
+            $encoded  = $cEncoder->encode($v, [
+                'array.base'         => 12,
+                'array.inline'       => false,
+                'array.omit'         => false,
+                'array.align'        => true,
+                'array.indent'       => 4,
+                'boolean.capitalize' => true,
+                'null.capitalize'    => true,
+            ]);
+            $php .= "            '$k' => ".$encoded.",\n";
         }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
+        $php .= "        ];\n";
+        $php .= "    }\n\n";
 
 
         //Get Reverse Routes Function
-        $php .= "\tpublic function getReverseRoutes()\n";
-        $php .= "\t{\n";
-        $php .= "\t\treturn array(\n";
+        $php .= "    public function getReverseRoutes()\n";
+        $php .= "    {\n";
+        $php .= "        return [\n";
         foreach ($this->routes_reverse as $k => $v) {
             $temp = explode('_', $k);
             if (in_array($temp[0], $this->routes_master)) {
                 continue;
             }
-            $php .= "\t\t\t'$k' => ".var_export($v, true).",\n";
+            $cEncoder = new PHPEncoder();
+            $encoded  = $cEncoder->encode($v, [
+                'array.base'         => 12,
+                'array.inline'       => false,
+                'array.omit'         => false,
+                'array.align'        => true,
+                'array.indent'       => 4,
+                'boolean.capitalize' => true,
+                'null.capitalize'    => true,
+            ]);
+            $php .= "            '$k' => ".$encoded.",\n";
         }
-        $php .= "\t\t);\n";
-        $php .= "\t}\n\n";
+        $php .= "        ];\n";
+        $php .= "    }\n\n";
 
         //End of file
         $php .= "}\n";
