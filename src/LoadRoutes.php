@@ -235,6 +235,64 @@ class LoadRoutes
     }
 
     /**
+     * @param string $file
+     * @return array
+     */
+    public static function lintFile(string $file)
+    {
+        $response = [
+            'success'  => true,
+            'message'  => '',
+            'routes'   => false,
+        ];
+
+        exec("php -l {$file}", $execOutput, $execError);
+        if ($execError !== 0) {
+            $response['success'] = false;
+            $response['message'] = 'Failed to pass PHP Lint';
+            return $response;
+        }
+
+        $namespace = '';
+        $className = '';
+        $fh        = fopen($file, 'r');
+        while (($buffer = fgets($fh)) !== false) {
+            if (substr($buffer, 0, 9) == 'namespace') {
+                $namespace = substr(trim($buffer), 10, -1);
+            }
+            if (substr($buffer, 0, 5) == 'class') {
+                $temp      = explode(' ', $buffer);
+                $className = $temp[1];
+                break;
+            }
+        }
+        $classString = trim('\\'.$namespace.'\\'.$className);
+        if (!class_exists($classString)) {
+            $response['success'] = false;
+            $response['message'] = 'Failed to load class';
+            return $response;
+        }
+        try {
+            $thisClass = new \ReflectionClass($classString);
+        } catch (\Exception $e) {
+            $response['success'] = false;
+            $response['message'] = 'Failed to get reflection.'.PHP_EOL.$e->getMessage();
+            return $response;
+        }
+
+        if (($comment = $thisClass->getDocComment()) !== false) {
+            $cPhpDocFactory     = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
+            $phpDoc             = $cPhpDocFactory->create($comment);
+            $response['routes'] = self::processTags($classString, $phpDoc);
+            return $response;
+        }
+        $response['success'] = false;
+        $response['message'] = 'Could not get doc comment';
+        return $response;
+    }
+
+
+    /**
      * @param string                             $classString
      * @param \phpDocumentor\Reflection\DocBlock $phpDoc
      * @return array|bool
