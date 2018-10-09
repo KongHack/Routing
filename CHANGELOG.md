@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.3.1](https://github.com/KongHack/Routing/releases/tag/4.3.1)
+ - @GameCharmer Allow node being passed into router exception pex 403 to be either a string or an array
+
+
+
 ## [4.3.0](https://github.com/KongHack/Routing/releases/tag/4.3.0)
  - @GameCharmer composer update
  - @GameCharmer *New* RouterExceptionPEX403 for throwing custom PEX messages

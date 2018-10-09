@@ -15,12 +15,12 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
 
     /**
      * RouterException403 constructor.
-     * @param string          $node
+     * @param string|array    $node
      * @param string          $message
      * @param int             $code
      * @param \Exception|null $previous
      */
-    public function __construct(string $node, $message = "", $code = 0, Exception $previous = null)
+    public function __construct($node, $message = "", $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->node = $node;
@@ -31,6 +31,10 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
      */
     public function executeLogic(): void
     {
+        if(is_array($this->node)) {
+            Hook::fire('403_pex', ['nodes'=>$this->node]);
+            return;
+        }
         Hook::fire('403_pex', ['node'=>$this->node]);
     }
 }
