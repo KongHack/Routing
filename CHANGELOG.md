@@ -7,6 +7,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.3.0](https://github.com/KongHack/Routing/releases/tag/4.3.0)
+ - @GameCharmer composer update
+ - @GameCharmer *New* RouterExceptionPEX403 for throwing custom PEX messages
+ - gcworld/interfaces updated from 3.1.3 to 3.2.0
+   See changes: https://github.com/KongHack/Interfaces/compare/3.1.3...3.2.0
+   Release notes: https://github.com/KongHack/Interfaces/releases/tag/3.2.0
+
+
+
 ## [4.2.1](https://github.com/KongHack/Routing/releases/tag/4.2.1)
  - @GameCharmer add lintFile function to LoadRoutes class
  

@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d36369efe1a9670a4ef6f4208f7ee6e",
+    "content-hash": "44255b2b910793e7e2cc48739859428a",
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "3.1.3",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "80668984ac79483734c2221d84b8e57c0537f1d0"
+                "reference": "311df843403e0ae236bfe50c883dd6730d3d1211"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/80668984ac79483734c2221d84b8e57c0537f1d0",
-                "reference": "80668984ac79483734c2221d84b8e57c0537f1d0",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/311df843403e0ae236bfe50c883dd6730d3d1211",
+                "reference": "311df843403e0ae236bfe50c883dd6730d3d1211",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 }
             ],
             "description": "GCWorld Industries Interfaces",
-            "time": "2017-09-06T18:12:11+00:00"
+            "time": "2018-07-31T19:44:35+00:00"
         },
         {
             "name": "gcworld/utilities",
