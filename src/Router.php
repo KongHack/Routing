@@ -326,11 +326,6 @@ class Router
                 }
 
                 if (method_exists($handler_instance, $request_method)) {
-                    Hook::fire(
-                        'before_handler',
-                        compact('discovered_handler', 'request_method', 'regex_matches')
-                    );
-
                     if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
                         if ($handler_instance instanceof HandlerInterface
                             || $handler_instance instanceof AdvancedHandlerInterface
@@ -352,11 +347,15 @@ class Router
                         }
                     }
 
+                    Hook::fire('before_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
+
                     if (count($regex_matches) > 0) {
                         $result = $handler_instance->$request_method(...$regex_matches);
                     } else {
                         $result = $handler_instance->$request_method();
                     }
+
+                    Hook::fire('after_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
 
                     if ($handler_instance instanceof AdvancedHandlerInterface) {
                         if (self::isXHRRequest() && is_array($result)) {
@@ -367,7 +366,7 @@ class Router
                     }
 
                     Hook::fire(
-                        'after_handler',
+                        'after_output',
                         compact('discovered_handler', 'request_method', 'regex_matches', 'result')
                     );
                 } else {
@@ -602,12 +601,14 @@ class Router
      */
     private static function instantiateHandlerClass(string $className, array $args = null)
     {
+        Hook::fire('before_handler', $args);
         try {
             $obj = new $className($args);
         } catch(RouterExceptionInterface $e) {
             $e->executeLogic();
             die();
         }
+        Hook::fire('after_handler', $args);
 
         return $obj;
     }

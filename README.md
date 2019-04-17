@@ -14,10 +14,12 @@ The GCWorld Router is intended as a static-only routing system for front control
  - post-session_start
  - 403
  - 403_pex (not automated)
- - before_handler
- - after_handler
+ - before_handler (runs on instantiation)
+ - after_handler (runs after instantiation)
+ - before_request_method
+ - after_request_method
  - 404
- - after_request
+ - after_output
  
 
 ## Todo
@@ -25,7 +27,7 @@ The GCWorld Router is intended as a static-only routing system for front control
   - Add support for tracking route handling time (microtime before instantiation and after request handling)
 
 ### Version
-4.3.1
+4.3.2
 
 ### Additional Information
 
