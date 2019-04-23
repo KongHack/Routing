@@ -7,8 +7,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.3.3](https://github.com/KongHack/Routing/releases/tag/4.3.3)
+ - @GameCharmer Add UUID Token
+
+
+
 ## [4.3.2](https://github.com/KongHack/Routing/releases/tag/4.3.2)
- - @Mitch Updates hooks, add before and after hooks for request method execution
+ - @GameCharmer Updates hooks, add before and after hooks for request method execution
 
 
 

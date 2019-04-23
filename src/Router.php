@@ -18,6 +18,7 @@ class Router
         ':single'   => '([a-zA-Z0-9]{1})',
         ':string'   => '([a-zA-Z]+)',
         ':number'   => '([0-9]+)',
+        ':uuid'     => '([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})',
         ':alpha'    => '([a-zA-Z0-9-_]+)',
         ':anything' => '([^/]+)',
         ':consume'  => '(.+)',
