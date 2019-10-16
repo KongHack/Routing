@@ -2,10 +2,10 @@
 namespace GCWorld\Routing;
 
 use Exception;
-use GCWorld\Interfaces\AdvancedHandlerInterface;
-use GCWorld\Interfaces\HandlerInterface;
 use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
+use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
+use GCWorld\Routing\Interfaces\HandlerInterface;
 use GCWorld\Routing\Interfaces\JSONHandlerInterface;
 use GCWorld\Routing\Interfaces\RoutesInterface;
 use GCWorld\Routing\Interfaces\RouterExceptionInterface;

@@ -5,7 +5,6 @@ use Riimu\Kit\PHPEncoder\PHPEncoder;
 
 /**
  * Class Processor
- * @package GCWorld\Routing
  */
 class Processor
 {

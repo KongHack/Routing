@@ -1,7 +1,7 @@
 <?php
 namespace GCWorld\Routing\Abstracts;
 
-use GCWorld\Interfaces\AdvancedHandlerInterface;
+use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Routing\Exceptions\RouterException404;
 
 /**

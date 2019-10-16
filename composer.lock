@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "969fa20c4278a38ccc781a6c70e1764e",
+    "content-hash": "58c860b72c2c9bce4b03b55ad959ca2b",
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "3.2.1",
+            "version": "3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "553903d78dde8ad21b3f82c6d296ed482055e633"
+                "reference": "1e5d5eaed3644569f12c4d411fb4d99ce46c0762"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/553903d78dde8ad21b3f82c6d296ed482055e633",
-                "reference": "553903d78dde8ad21b3f82c6d296ed482055e633",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/1e5d5eaed3644569f12c4d411fb4d99ce46c0762",
+                "reference": "1e5d5eaed3644569f12c4d411fb4d99ce46c0762",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 }
             ],
             "description": "GCWorld Industries Interfaces",
-            "time": "2019-10-16T12:09:12+00:00"
+            "time": "2019-10-16T12:28:30+00:00"
         },
         {
             "name": "gcworld/utilities",

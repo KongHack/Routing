@@ -7,7 +7,6 @@ use GCWorld\Routing\Interfaces\RoutesInterface;
 
 /**
  * Class Debugger
- * @package GCWorld\Routing
  */
 class Debugger
 {
