@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.1](https://github.com/KongHack/Routing/releases/tag/4.4.1)
+ - @GameCharmer Remove all compacts for PHP 7.3
+
+
+
 ## [4.4.0](https://github.com/KongHack/Routing/releases/tag/4.4.0)
  - @GameCharmer Migrated interfaces from old interfaces package to this package
  - New Interface for JSON only handling and accompanying abstract

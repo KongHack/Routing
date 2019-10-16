@@ -109,7 +109,7 @@ class Router
      */
     public static function forward($path_info = null)
     {
-        Hook::fire('before_request', compact('routes'));
+        Hook::fire('before_request');
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
 
@@ -275,9 +275,9 @@ class Router
                     $discovered_handler['session'] == true &&
                     session_status() == PHP_SESSION_NONE
                 ) {
-                    Hook::fire('pre-session_start', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('pre-session_start');
                     session_start();
-                    Hook::fire('post-session_start', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('post-session_start');
                 }
                 //Handle pre & post handler options
                 if (isset($discovered_handler['preArgs']) && is_array($discovered_handler['preArgs'])) {
@@ -381,7 +381,7 @@ class Router
                         }
                     }
 
-                    Hook::fire('before_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('before_request_method');
 
                     if (count($regex_matches) > 0) {
                         $result = $handler_instance->$request_method(...$regex_matches);
@@ -389,7 +389,7 @@ class Router
                         $result = $handler_instance->$request_method();
                     }
 
-                    Hook::fire('after_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('after_request_method');
 
                     if ($handler_instance instanceof AdvancedHandlerInterface) {
                         if (self::isXHRRequest() && is_array($result)) {
@@ -401,12 +401,9 @@ class Router
                         echo json_encode($result);
                     }
 
-                    Hook::fire(
-                        'after_output',
-                        compact('discovered_handler', 'request_method', 'regex_matches', 'result')
-                    );
+                    Hook::fire('after_output');
                 } else {
-                    Hook::fire('404', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('404');
                 }
 
             } catch(RouterExceptionInterface $e) {
@@ -415,22 +412,9 @@ class Router
             }
 
         } else {
-            Hook::fire(
-                '404',
-                compact(
-                    'discovered_handler',
-                    'request_method',
-                    'regex_matches',
-                    'master',
-                    'temp',
-                    'className'
-                )
-            );
+            Hook::fire('404');
         }
-        Hook::fire(
-            'after_request',
-            compact('discovered_handler', 'request_method', 'regex_matches', 'result')
-        );
+        Hook::fire('after_request');
     }
 
     /**
