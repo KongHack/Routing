@@ -2,6 +2,8 @@
 namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\Database;
+use Exception;
+use GCWorld\Routing\Interfaces\RoutesInterface;
 
 /**
  * Class Debugger
@@ -12,14 +14,14 @@ class Debugger
     const TABLE = '_RouteDebugData';
 
     /**
-     * @var \GCWorld\Interfaces\Database|\GCWorld\Database\Database
+     * @var Database|\GCWorld\Database\Database
      */
     private $db      = null;
     private $storage = null;
 
     /**
      * @param Database $db
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($db)
     {

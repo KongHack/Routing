@@ -2,7 +2,7 @@
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
-use GCWorld\Routing\RouterExceptionInterface;
+use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 
 /**
  * Class RouterExceptionRedirect

@@ -1,17 +1,22 @@
 <?php
 namespace GCWorld\Routing;
 
+use Exception;
 use GCWorld\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Interfaces\HandlerInterface;
+use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
+use GCWorld\Routing\Interfaces\JSONHandlerInterface;
+use GCWorld\Routing\Interfaces\RoutesInterface;
+use GCWorld\Routing\Interfaces\RouterExceptionInterface;
+use Redis;
 
 /**
  * Class Router
- * @package GCWorld\Routing
  */
 class Router
 {
-    const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+    const MISC        = '\GCWorld\Routing\Generated\MasterRoute_MISC';
     const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
     const TOKENS = [
@@ -24,36 +29,36 @@ class Router
         ':consume'  => '(.+)',
     ];
 
-    private static $base            = null;
-    private static $userClassName   = null;
-    private static $forcedRoutes    = null;
-    private static $pageWrapperName = null;
+    protected static $base            = null;
+    protected static $userClassName   = null;
+    protected static $forcedRoutes    = null;
+    protected static $pageWrapperName = null;
 
     /**
      * @var Debugger|null
      */
-    private static $debugger = null;
+    protected static $debugger = null;
 
     /**
-     * @var \Redis|null
+     * @var Redis|null
      */
-    private static $redis = null;
+    protected static $redis = null;
 
     /**
-     * @var \GCWorld\Interfaces\PEX
+     * @var PEX
      */
-    private static $user = null;
+    protected static $user = null;
 
     /**
-     * @var \GCWorld\Interfaces\PageWrapper
+     * @var PageWrapper
      */
-    private static $pageWrapper = null;
+    protected static $pageWrapper = null;
 
     /**
      * When set, will prepend to reversed routes and remove from forward routing
      * @var string|null
      */
-    private static $routePrefix = null;
+    protected static $routePrefix = null;
 
 
     /**
@@ -65,9 +70,42 @@ class Router
     public static $foundRouteData      = [];
 
     /**
+     * @return null|string
+     */
+    public static function getFoundRouteName()
+    {
+        return self::getFoundRouteName();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFoundRouteNameClean()
+    {
+        return self::getFoundRouteNameClean();
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getFoundRouteArguments()
+    {
+        return self::getFoundRouteArguments();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFoundRouteData()
+    {
+        return self::getFoundRouteData();
+    }
+
+
+    /**
      * Processes routes.
      * @param null $path_info
-     * @throws \Exception
+     * @throws Exception
      */
     public static function forward($path_info = null)
     {
@@ -99,7 +137,6 @@ class Router
             }
         }
 
-
         $pattern            = '';
         $discovered_handler = null;
         $regex_matches      = [];
@@ -126,13 +163,13 @@ class Router
                     if (!class_exists($className)) {
                         $className = self::MISC;
                         if (!class_exists($className)) {
-                            throw new \Exception('No Route Class Found For Base (1)');
+                            throw new Exception('No Route Class Found For Base (1)');
                         }
                     }
                 } else {
                     $className = self::MISC;
                     if (!class_exists($className)) {
-                        throw new \Exception('No Route Class Found For Base (2)');
+                        throw new Exception('No Route Class Found For Base (2)');
                     }
                 }
 
@@ -140,7 +177,7 @@ class Router
                 // I hate having to copy/paste large blocks of code like this, but I don't
                 //  have the time to clean & fix right now. :(
 
-                /** @var \GCWorld\Routing\RoutesInterface $loader */
+                /** @var RoutesInterface $loader */
                 $loader = new $className();
                 $routes = $loader->getForwardRoutes();
             } else {
@@ -169,7 +206,7 @@ class Router
                     $className = self::MISC;
                 }
                 if (class_exists($className)) {
-                    /** @var \GCWorld\Routing\RoutesInterface $loader */
+                    /** @var RoutesInterface $loader */
                     $loader = new $className();
                     $routes = $loader->getForwardRoutes();
 
@@ -217,7 +254,7 @@ class Router
                 if (class_exists($discovered_handler)) {
                     $handler_instance = self::instantiateHandlerClass($discovered_handler, $regex_matches);
                 } else {
-                    throw new \Exception('Class Not Found: '.$discovered_handler);
+                    throw new Exception('Class Not Found: '.$discovered_handler);
                 }
             } elseif (is_array($discovered_handler)) {
                 if (isset($discovered_handler['name'])) {
@@ -264,10 +301,10 @@ class Router
 
                 if (self::$user != null) {
                     if (!self::$user instanceof PEX) {
-                        throw new \Exception('The provided user class does not implement PEX. ('.
+                        throw new Exception('The provided user class does not implement PEX. ('.
                             self::$userClassName.')');
                     }
-                    $types = array('pexCheck', 'pexCheckAny', 'pexCheckExact');
+                    $types = ['pexCheck', 'pexCheckAny', 'pexCheckExact', 'pexCheckMax'];
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
@@ -276,10 +313,7 @@ class Router
                                         $regex_matches
                                     )) < 1
                                 ) {
-                                    Hook::fire(
-                                        '403',
-                                        compact('discovered_handler', 'request_method', 'regex_matches')
-                                    );
+                                    Hook::fire('403_pex', ['node' => $discovered_handler[$type]]);
                                 }
                             } else {
                                 $good = false;
@@ -290,10 +324,7 @@ class Router
                                     }
                                 }
                                 if (!$good) {
-                                    Hook::fire(
-                                        '403',
-                                        compact('discovered_handler', 'request_method', 'regex_matches')
-                                    );
+                                    Hook::fire('403_pex', ['nodes' => $discovered_handler[$type]]);
                                 }
                             }
                         }
@@ -305,7 +336,7 @@ class Router
                     if (class_exists($discovered_class)) {
                         $handler_instance = self::instantiateHandlerClass($discovered_class, $regex_matches);
                     } else {
-                        throw new \Exception('Class Not Found: '.$discovered_class);
+                        throw new Exception('Class Not Found: '.$discovered_class);
                     }
                 }
             } elseif (is_callable($discovered_handler)) {
@@ -316,7 +347,9 @@ class Router
         if ($handler_instance) {
             try {
 
-                if (self::isXHRRequest() && method_exists($handler_instance, $request_method.'XHR')) {
+                if ((self::isXHRRequest() || $handler_instance instanceof JSONHandlerInterface)
+                    && method_exists($handler_instance, $request_method.'XHR')
+                ) {
                     header('Content-type: application/json');
                     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                     header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -364,6 +397,8 @@ class Router
                         } else {
                             echo $result;
                         }
+                    } elseif($handler_instance instanceof JSONHandlerInterface) {
+                        echo json_encode($result);
                     }
 
                     Hook::fire(
@@ -461,7 +496,7 @@ class Router
             $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
         }
 
-        /** @var \GCWorld\Routing\RoutesInterface $cTemp */
+        /** @var RoutesInterface $cTemp */
         $cTemp  = new $master();
         $routes = $cTemp->getReverseRoutes();
 
@@ -477,7 +512,7 @@ class Router
      * @param array $params
      * @return mixed
      */
-    public static function reverseObject($name, $params = array())
+    public static function reverseObject($name, $params = [])
     {
         if (($routeArray = self::reverseAll($name, $params)) === false) {
             return false;
@@ -519,7 +554,7 @@ class Router
     /**
      * @return bool
      */
-    private static function isXHRRequest()
+    protected static function isXHRRequest()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
@@ -529,7 +564,7 @@ class Router
      * @param array  $regexMatches
      * @return string
      */
-    private static function replacePexKeys($pexNode, array $regexMatches)
+    protected static function replacePexKeys($pexNode, array $regexMatches)
     {
         foreach ($regexMatches as $k => $v) {
             $pexNode = str_replace('['.$k.']', $v, $pexNode);
@@ -539,7 +574,7 @@ class Router
     }
 
     /**
-     * @param \GCWorld\Routing\Debugger $debugger
+     * @param Debugger $debugger
      */
     public static function attachDebugger(Debugger $debugger)
     {
@@ -555,7 +590,7 @@ class Router
     }
 
     /**
-     * @param \Redis $redis
+     * @param Redis $redis
      */
     public static function attachRedisCache(\Redis $redis)
     {
@@ -600,7 +635,7 @@ class Router
      *
      * @return mixed
      */
-    private static function instantiateHandlerClass(string $className, array $args = null)
+    protected static function instantiateHandlerClass(string $className, array $args = null)
     {
         Hook::fire('before_handler', $args);
         try {

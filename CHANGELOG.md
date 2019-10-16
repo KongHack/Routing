@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+ - gcworld/interfaces updated from 3.2.0 to 3.2.1
+   See changes: https://github.com/KongHack/Interfaces/compare/3.2.0...3.2.1
+   Release notes: https://github.com/KongHack/Interfaces/releases/tag/3.2.1
+
+
 
 ## [4.3.3](https://github.com/KongHack/Routing/releases/tag/4.3.3)
  - @GameCharmer Add UUID Token

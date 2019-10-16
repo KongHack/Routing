@@ -1,13 +1,16 @@
 <?php
 namespace GCWorld\Routing;
 
+use Exception;
 use GCWorld\Database\Database;
+use GCWorld\Routing\Interfaces\RawRoutesInterface;
 use GCWorld\Utilities\General;
 use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\DocBlockFactory;
+use ReflectionClass;
 
 /**
  * Class LoadRoutes
- * @package GCWorld\Routing
  */
 class LoadRoutes
 {
@@ -16,51 +19,51 @@ class LoadRoutes
     /**
      * @var null
      */
-    private static $instance = null;
+    protected static $instance = null;
     /**
      * @var array
      */
-    private static $classes = [];
+    protected static $classes = [];
     /**
      * @var array
      */
-    private static $paths = [];
+    protected static $paths = [];
     /**
      * @var int
      */
-    private static $highestTime = 0;
+    protected static $highestTime = 0;
     /**
      * @var int
      */
-    private static $lastClassTime = PHP_INT_MAX;
+    protected static $lastClassTime = PHP_INT_MAX;
 
     /**
      * @var \Redis|null
      */
-    private static $redis = null;
+    protected static $redis = null;
 
     /**
      * @var  Database|null
      */
-    private static $db = null;
+    protected static $db = null;
 
 
     /**
      * Singleton Format
      */
-    private function __clone()
+    protected function __clone()
     {
     }
 
     /**
      * Singleton Format
      */
-    private function __construct()
+    protected function __construct()
     {
     }
 
     /**
-     * @return \GCWorld\Routing\LoadRoutes|null
+     * @return LoadRoutes|null
      */
     public static function getInstance()
     {
@@ -72,12 +75,12 @@ class LoadRoutes
     }
 
     /**
-     * @param      $fullClass
-     * @param bool $skipCheck
+     * @param string $fullClass
+     * @param bool   $skipCheck
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function addRoute($fullClass, $skipCheck = false)
+    public function addRoute(string $fullClass, bool $skipCheck = false)
     {
         if (!$skipCheck) {
             if (!class_exists($fullClass)) {
@@ -92,10 +95,10 @@ class LoadRoutes
     /**
      * Add a file system path for automatic parsing.
      *
-     * @param $path
+     * @param string $path
      * @return $this
      */
-    public function addPath($path)
+    public function addPath(string $path)
     {
         self::$paths[] = $path;
 
@@ -105,9 +108,9 @@ class LoadRoutes
     /**
      * @param bool $force
      * @param bool $debug
-     * @throws \Exception
+     * @throws Exception
      */
-    public function generateRoutes($force = false, $debug = false)
+    public function generateRoutes(bool $force = false, bool $debug = false)
     {
         foreach (self::$classes as $fullClass) {
             $cTemp = new $fullClass;
@@ -178,12 +181,11 @@ class LoadRoutes
 
     /**
      * @param bool $debug
-     *
      * @return array
      */
-    private static function generateAnnotatedRoutes(bool $debug = false)
+    protected static function generateAnnotatedRoutes(bool $debug = false)
     {
-        $cPhpDocFactory  = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
+        $cPhpDocFactory  = DocBlockFactory::createInstance();
 
         $return = [];
         if (count(self::$paths) > 0) {
@@ -218,7 +220,7 @@ class LoadRoutes
                     }
                     $classString = trim('\\'.$namespace.'\\'.$className);
                     if (class_exists($classString)) {
-                        $thisClass = new \ReflectionClass($classString);
+                        $thisClass = new ReflectionClass($classString);
                         if (($comment = $thisClass->getDocComment()) !== false) {
                             $phpDoc = $cPhpDocFactory->create($comment);
                             $routes = self::processTags($classString, $phpDoc);
@@ -293,11 +295,11 @@ class LoadRoutes
 
 
     /**
-     * @param string                             $classString
-     * @param \phpDocumentor\Reflection\DocBlock $phpDoc
+     * @param string   $classString
+     * @param DocBlock $phpDoc
      * @return array|bool
      */
-    private static function processTags($classString, DocBlock $phpDoc)
+    protected static function processTags($classString, DocBlock $phpDoc)
     {
         if ($phpDoc->hasTag('router-1-pattern') && $phpDoc->hasTag('router-1-name')) {
             return self::processComplexTags($classString, $phpDoc);
@@ -330,6 +332,7 @@ class LoadRoutes
                 'pexCheck'      => $phpDoc->getTagsByName('router-pexCheck'),
                 'pexCheckAny'   => $phpDoc->getTagsByName('router-pexCheckAny'),
                 'pexCheckExact' => $phpDoc->getTagsByName('router-pexCheckExact'),
+                'pexCheckMax'   => $phpDoc->getTagsByName('router-pexCheckMax'),
                 'preArgs'       => $phpDoc->getTagsByName('router-preArgs'),
                 'postArgs'      => $phpDoc->getTagsByName('router-postArgs'),
                 'title'         => $phpDoc->getTagsByName('router-title'),
@@ -338,7 +341,7 @@ class LoadRoutes
             ];
 
             foreach ($processingArray as $key => $var) {
-                /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
+                /** @var DocBlock\Tag[] $var */
 
                 if (count($var) == 1) {
                     $routes[$pat][$key] = trim((string) $var[0]);
@@ -384,11 +387,11 @@ class LoadRoutes
     }
 
     /**
-     * @param string                             $classString
-     * @param \phpDocumentor\Reflection\DocBlock $phpDoc
+     * @param string   $classString
+     * @param DocBlock $phpDoc
      * @return array|bool
      */
-    private static function processComplexTags($classString, DocBlock $phpDoc)
+    protected static function processComplexTags(string $classString, DocBlock $phpDoc)
     {
         if (!$phpDoc->hasTag('router-1-pattern') || !$phpDoc->hasTag('router-1-name')) {
             return false;
@@ -423,6 +426,7 @@ class LoadRoutes
                     'pexCheck'      => $phpDoc->getTagsByName('router-'.$i.'-pexCheck'),
                     'pexCheckAny'   => $phpDoc->getTagsByName('router-'.$i.'-pexCheckAny'),
                     'pexCheckExact' => $phpDoc->getTagsByName('router-'.$i.'-pexCheckExact'),
+                    'pexCheckMax'   => $phpDoc->getTagsByName('router-'.$i.'-pexCheckMax'),
                     'preArgs'       => $phpDoc->getTagsByName('router-'.$i.'-preArgs'),
                     'postArgs'      => $phpDoc->getTagsByName('router-'.$i.'-postArgs'),
                     'title'         => $phpDoc->getTagsByName('router-'.$i.'-title'),
@@ -431,7 +435,7 @@ class LoadRoutes
                 ];
 
                 foreach ($processingArray as $key => $var) {
-                    /** @var \phpDocumentor\Reflection\DocBlock\Tag[] $var */
+                    /** @var DocBlock\Tag[] $var */
 
                     if (count($var) == 1) {
                         $routes[$pat][$key] = trim((string) $var[0]);
@@ -486,7 +490,7 @@ class LoadRoutes
     }
 
     /**
-     * @param \GCWorld\Database\Database $db
+     * @param Database $db
      */
     public static function attachDatabase(Database $db)
     {

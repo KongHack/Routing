@@ -8,9 +8,11 @@
     }
   ],
   "require": {
-    "gcworld/interfaces": ">=3.2.0",
-    "gcworld/utilities": "~1.0",
     "php": ">=7.1",
+    "ext-json": "*",
+    "ext-redis": "*",
+    "gcworld/interfaces": ">=3.2.1",
+    "gcworld/utilities": "~1.0",
     "phpdocumentor/reflection-docblock": "^4.0",
     "riimu/kit-phpencoder": "^2.3"
   },

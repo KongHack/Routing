@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44255b2b910793e7e2cc48739859428a",
+    "content-hash": "969fa20c4278a38ccc781a6c70e1764e",
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "311df843403e0ae236bfe50c883dd6730d3d1211"
+                "reference": "553903d78dde8ad21b3f82c6d296ed482055e633"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/311df843403e0ae236bfe50c883dd6730d3d1211",
-                "reference": "311df843403e0ae236bfe50c883dd6730d3d1211",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/553903d78dde8ad21b3f82c6d296ed482055e633",
+                "reference": "553903d78dde8ad21b3f82c6d296ed482055e633",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 }
             ],
             "description": "GCWorld Industries Interfaces",
-            "time": "2018-07-31T19:44:35+00:00"
+            "time": "2019-10-16T12:09:12+00:00"
         },
         {
             "name": "gcworld/utilities",
@@ -1295,7 +1295,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*",
+        "ext-redis": "*"
     },
     "platform-dev": []
 }

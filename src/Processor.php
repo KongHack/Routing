@@ -200,7 +200,7 @@ class Processor
         $php = "<?php\n";
         $php .= "namespace GCWorld\\Routing\\Generated;\n";
         $php .= "\n";
-        $php .= "class MasterRoute_".self::cleanClassName($master)." Implements \\GCWorld\\Routing\\RoutesInterface\n";
+        $php .= "class MasterRoute_".self::cleanClassName($master)." Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
         $php .= "{\n";
 
         //Get File Time Function
@@ -274,7 +274,7 @@ class Processor
         $php = "<?php\n";
         $php .= "namespace GCWorld\\Routing\\Generated;\n";
         $php .= "\n";
-        $php .= "class MasterRoute_MISC Implements \\GCWorld\\Routing\\RoutesInterface\n";
+        $php .= "class MasterRoute_MISC Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
         $php .= "{\n";
 
         //Get File Time Function
