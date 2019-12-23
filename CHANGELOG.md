@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.2](https://github.com/KongHack/Routing/releases/tag/4.4.2)
+ - @GameCharmer Add Calling Method method
+
+
+
 ## [4.4.1](https://github.com/KongHack/Routing/releases/tag/4.4.1)
  - @GameCharmer Remove all compacts for PHP 7.3
 
