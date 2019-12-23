@@ -33,6 +33,7 @@ class Router
     protected static $userClassName   = null;
     protected static $forcedRoutes    = null;
     protected static $pageWrapperName = null;
+    protected static $callingMethod   = '';
 
     /**
      * @var Debugger|null
@@ -350,6 +351,7 @@ class Router
                 if ((self::isXHRRequest() || $handler_instance instanceof JSONHandlerInterface)
                     && method_exists($handler_instance, $request_method.'XHR')
                 ) {
+                    self::$callingMethod = $request_method.'XHR';
                     header('Content-type: application/json');
                     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                     header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -360,6 +362,7 @@ class Router
                 }
 
                 if (method_exists($handler_instance, $request_method)) {
+                    self::$callingMethod = $request_method;
                     if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
                         if ($handler_instance instanceof HandlerInterface
                             || $handler_instance instanceof AdvancedHandlerInterface
@@ -384,9 +387,11 @@ class Router
                     Hook::fire('before_request_method');
 
                     if (count($regex_matches) > 0) {
-                        $result = $handler_instance->$request_method(...$regex_matches);
+                        self::$callingMethod = $request_method;
+                        $result              = $handler_instance->$request_method(...$regex_matches);
                     } else {
-                        $result = $handler_instance->$request_method();
+                        self::$callingMethod = $request_method;
+                        $result              = $handler_instance->$request_method();
                     }
 
                     Hook::fire('after_request_method');
@@ -611,6 +616,14 @@ class Router
     public static function getPageWrapperName()
     {
         return self::$pageWrapperName;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getCallingMethod()
+    {
+        return self::$callingMethod;
     }
 
     /**
