@@ -21,6 +21,7 @@ class Router
 
     const TOKENS = [
         ':single'   => '([a-zA-Z0-9]{1})',
+        ':combo'    => '([a-zA-Z0-9]-[a-zA-Z0-9])',
         ':string'   => '([a-zA-Z]+)',
         ':number'   => '([0-9]+)',
         ':uuid'     => '([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})',
