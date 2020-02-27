@@ -1,6 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
+use Exception;
 use GCWorld\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Interfaces\HandlerInterface;
 use GCWorld\Interfaces\PEX;
@@ -16,9 +17,10 @@ class Router
 
     const TOKENS = [
         ':single'   => '([a-zA-Z0-9]{1})',
-        ':string'   => '([a-zA-Z]+)',
         ':number'   => '([0-9]+)',
-        ':uuid'     => '([a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})',
+        ':letter'   => '([a-zA-Z]+)',
+        ':string'   => '([a-zA-Z0-9]+)',
+        ':uuid'     => '([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})',
         ':alpha'    => '([a-zA-Z0-9-_]+)',
         ':anything' => '([^/]+)',
         ':consume'  => '(.+)',
@@ -67,7 +69,7 @@ class Router
     /**
      * Processes routes.
      * @param null $path_info
-     * @throws \Exception
+     * @throws Exception
      */
     public static function forward($path_info = null)
     {
@@ -126,13 +128,13 @@ class Router
                     if (!class_exists($className)) {
                         $className = self::MISC;
                         if (!class_exists($className)) {
-                            throw new \Exception('No Route Class Found For Base (1)');
+                            throw new Exception('No Route Class Found For Base (1)');
                         }
                     }
                 } else {
                     $className = self::MISC;
                     if (!class_exists($className)) {
-                        throw new \Exception('No Route Class Found For Base (2)');
+                        throw new Exception('No Route Class Found For Base (2)');
                     }
                 }
 
@@ -217,7 +219,7 @@ class Router
                 if (class_exists($discovered_handler)) {
                     $handler_instance = self::instantiateHandlerClass($discovered_handler, $regex_matches);
                 } else {
-                    throw new \Exception('Class Not Found: '.$discovered_handler);
+                    throw new Exception('Class Not Found: '.$discovered_handler);
                 }
             } elseif (is_array($discovered_handler)) {
                 if (isset($discovered_handler['name'])) {
@@ -264,7 +266,7 @@ class Router
 
                 if (self::$user != null) {
                     if (!self::$user instanceof PEX) {
-                        throw new \Exception('The provided user class does not implement PEX. ('.
+                        throw new Exception('The provided user class does not implement PEX. ('.
                             self::$userClassName.')');
                     }
                     $types = array('pexCheck', 'pexCheckAny', 'pexCheckExact');
@@ -305,7 +307,7 @@ class Router
                     if (class_exists($discovered_class)) {
                         $handler_instance = self::instantiateHandlerClass($discovered_class, $regex_matches);
                     } else {
-                        throw new \Exception('Class Not Found: '.$discovered_class);
+                        throw new Exception('Class Not Found: '.$discovered_class);
                     }
                 }
             } elseif (is_callable($discovered_handler)) {
@@ -360,7 +362,7 @@ class Router
 
                     if ($handler_instance instanceof AdvancedHandlerInterface) {
                         if (self::isXHRRequest() && is_array($result)) {
-                            echo json_encode($result);
+                            echo \json_encode($result);
                         } else {
                             echo $result;
                         }
@@ -376,9 +378,9 @@ class Router
 
             } catch(RouterExceptionInterface $e) {
                 $e->executeLogic();
-                die();
-            }
 
+                return;
+            }
         } else {
             Hook::fire(
                 '404',
@@ -509,7 +511,6 @@ class Router
 
     /**
      * @param string $user
-     * @throws \Exception
      */
     public static function setUserClassName($user)
     {
@@ -612,5 +613,37 @@ class Router
         Hook::fire('after_handler', $args);
 
         return $obj;
+    }
+
+    /**
+     * @return null|array
+     */
+    public static function getFoundRouteNameClean()
+    {
+        return static::$foundRouteNameClean;
+    }
+
+    /**
+     * @return null|array
+     */
+    public static function getFoundRouteName()
+    {
+        return static::$foundRouteNameClean;
+    }
+
+    /**
+     * @return null|array
+     */
+    public static function getFoundRouteArguments()
+    {
+        return static::$foundRouteArguments;
+    }
+
+    /**
+     * @return null|array
+     */
+    public static function getFoundRouteData()
+    {
+        return static::$foundRouteArguments;
     }
 }

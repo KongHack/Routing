@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44255b2b910793e7e2cc48739859428a",
+    "content-hash": "bbd9bd2209895e374a423cb8f8aa4221",
     "packages": [
         {
             "name": "gcworld/interfaces",
@@ -1295,7 +1295,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*"
     },
     "platform-dev": []
 }
