@@ -1,9 +1,8 @@
 <?php
-namespace GCWorld\Routing;
+namespace GCWorld\Routing\Interfaces;
 
 /**
  * Interface RawRoutesInterface
- * @package GCWorld\Routing
  */
 interface RawRoutesInterface
 {

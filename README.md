@@ -5,7 +5,7 @@ The GCWorld Router is intended as a static-only routing system for front control
   - Multi-route management
   - Automatic Session Starting
   - Automated PEX Permissions testing, including access to replacement keys
-  - *NEW* lintFile function to assist in resolving routing issues.
+  - lintFile function to assist in resolving routing issues.
 
 
 ### Hooks
@@ -27,8 +27,4 @@ The GCWorld Router is intended as a static-only routing system for front control
   - Add support for tracking route handling time (microtime before instantiation and after request handling)
 
 ### Version
-4.3.3
-
-### Additional Information
-
-* [GCWorld on GitHub](https://github.com/KongHack)
+4.4.2

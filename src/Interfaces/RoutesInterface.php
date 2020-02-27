@@ -1,6 +1,9 @@
 <?php
-namespace GCWorld\Routing;
+namespace GCWorld\Routing\Interfaces;
 
+/**
+ * Interface RoutesInterface
+ */
 interface RoutesInterface
 {
     /**

@@ -10,7 +10,8 @@
   "require": {
     "php": ">=7.1",
     "ext-json": "*",
-    "gcworld/interfaces": ">=3.2.0",
+    "ext-redis": "*",
+    "gcworld/interfaces": ">=3.3.1",
     "gcworld/utilities": "~1.0",
     "phpdocumentor/reflection-docblock": "^4.0",
     "riimu/kit-phpencoder": "^2.3"

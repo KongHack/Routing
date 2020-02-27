@@ -3,7 +3,6 @@ namespace GCWorld\Routing;
 
 /**
  * Class Hook
- * @package GCWorld\Routing
  */
 class Hook
 {
@@ -56,7 +55,7 @@ class Hook
     }
 
     /**
-     * @return \GCWorld\Routing\Hook
+     * @return Hook
      */
     public static function getInstance()
     {

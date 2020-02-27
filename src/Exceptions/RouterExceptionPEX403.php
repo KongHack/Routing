@@ -3,7 +3,7 @@ namespace GCWorld\Routing\Exceptions;
 
 use Exception;
 use GCWorld\Routing\Hook;
-use GCWorld\Routing\RouterExceptionInterface;
+use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 
 /**
  * Class RouterExceptionPEX403
@@ -14,11 +14,11 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
     protected $node = null;
 
     /**
-     * RouterException403 constructor.
-     * @param string|array    $node
-     * @param string          $message
-     * @param int             $code
-     * @param \Exception|null $previous
+     * RouterExceptionPEX403 constructor.
+     * @param string|array   $node
+     * @param string         $message
+     * @param int            $code
+     * @param Exception|null $previous
      */
     public function __construct($node, $message = "", $code = 0, Exception $previous = null)
     {

@@ -2,21 +2,26 @@
 namespace GCWorld\Routing;
 
 use Exception;
-use GCWorld\Interfaces\AdvancedHandlerInterface;
-use GCWorld\Interfaces\HandlerInterface;
+use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
+use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
+use GCWorld\Routing\Interfaces\HandlerInterface;
+use GCWorld\Routing\Interfaces\JSONHandlerInterface;
+use GCWorld\Routing\Interfaces\RoutesInterface;
+use GCWorld\Routing\Interfaces\RouterExceptionInterface;
+use Redis;
 
 /**
  * Class Router
- * @package GCWorld\Routing
  */
 class Router
 {
-    const MISC = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+    const MISC        = '\GCWorld\Routing\Generated\MasterRoute_MISC';
     const REPLACEMENT = '\GCWorld\Routing\Generated\MasterRoute_REPLACEMENT_KEY';
 
     const TOKENS = [
         ':single'   => '([a-zA-Z0-9]{1})',
+        ':combo'    => '([a-zA-Z0-9]-[a-zA-Z0-9])',
         ':number'   => '([0-9]+)',
         ':letter'   => '([a-zA-Z]+)',
         ':string'   => '([a-zA-Z0-9]+)',
@@ -26,36 +31,37 @@ class Router
         ':consume'  => '(.+)',
     ];
 
-    private static $base            = null;
-    private static $userClassName   = null;
-    private static $forcedRoutes    = null;
-    private static $pageWrapperName = null;
+    protected static $base            = null;
+    protected static $userClassName   = null;
+    protected static $forcedRoutes    = null;
+    protected static $pageWrapperName = null;
+    protected static $callingMethod   = '';
 
     /**
      * @var Debugger|null
      */
-    private static $debugger = null;
+    protected static $debugger = null;
 
     /**
-     * @var \Redis|null
+     * @var Redis|null
      */
-    private static $redis = null;
+    protected static $redis = null;
 
     /**
-     * @var \GCWorld\Interfaces\PEX
+     * @var PEX
      */
-    private static $user = null;
+    protected static $user = null;
 
     /**
-     * @var \GCWorld\Interfaces\PageWrapper
+     * @var PageWrapper
      */
-    private static $pageWrapper = null;
+    protected static $pageWrapper = null;
 
     /**
      * When set, will prepend to reversed routes and remove from forward routing
      * @var string|null
      */
-    private static $routePrefix = null;
+    protected static $routePrefix = null;
 
 
     /**
@@ -67,13 +73,46 @@ class Router
     public static $foundRouteData      = [];
 
     /**
+     * @return null|string
+     */
+    public static function getFoundRouteName()
+    {
+        return self::getFoundRouteName();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFoundRouteNameClean()
+    {
+        return self::getFoundRouteNameClean();
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getFoundRouteArguments()
+    {
+        return self::getFoundRouteArguments();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFoundRouteData()
+    {
+        return self::getFoundRouteData();
+    }
+
+
+    /**
      * Processes routes.
      * @param null $path_info
      * @throws Exception
      */
     public static function forward($path_info = null)
     {
-        Hook::fire('before_request', compact('routes'));
+        Hook::fire('before_request');
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
 
@@ -100,7 +139,6 @@ class Router
                 $path_info = substr_replace($path_info, '', $pos, strlen(self::$routePrefix));
             }
         }
-
 
         $pattern            = '';
         $discovered_handler = null;
@@ -142,7 +180,7 @@ class Router
                 // I hate having to copy/paste large blocks of code like this, but I don't
                 //  have the time to clean & fix right now. :(
 
-                /** @var \GCWorld\Routing\RoutesInterface $loader */
+                /** @var RoutesInterface $loader */
                 $loader = new $className();
                 $routes = $loader->getForwardRoutes();
             } else {
@@ -171,7 +209,7 @@ class Router
                     $className = self::MISC;
                 }
                 if (class_exists($className)) {
-                    /** @var \GCWorld\Routing\RoutesInterface $loader */
+                    /** @var RoutesInterface $loader */
                     $loader = new $className();
                     $routes = $loader->getForwardRoutes();
 
@@ -240,9 +278,9 @@ class Router
                     $discovered_handler['session'] == true &&
                     session_status() == PHP_SESSION_NONE
                 ) {
-                    Hook::fire('pre-session_start', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('pre-session_start');
                     session_start();
-                    Hook::fire('post-session_start', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('post-session_start');
                 }
                 //Handle pre & post handler options
                 if (isset($discovered_handler['preArgs']) && is_array($discovered_handler['preArgs'])) {
@@ -269,7 +307,7 @@ class Router
                         throw new Exception('The provided user class does not implement PEX. ('.
                             self::$userClassName.')');
                     }
-                    $types = array('pexCheck', 'pexCheckAny', 'pexCheckExact');
+                    $types = ['pexCheck', 'pexCheckAny', 'pexCheckExact', 'pexCheckMax'];
                     foreach ($types as $type) {
                         if (isset($discovered_handler[$type])) {
                             if (!is_array($discovered_handler[$type])) {
@@ -278,10 +316,7 @@ class Router
                                         $regex_matches
                                     )) < 1
                                 ) {
-                                    Hook::fire(
-                                        '403',
-                                        compact('discovered_handler', 'request_method', 'regex_matches')
-                                    );
+                                    Hook::fire('403_pex', ['node' => $discovered_handler[$type]]);
                                 }
                             } else {
                                 $good = false;
@@ -292,10 +327,7 @@ class Router
                                     }
                                 }
                                 if (!$good) {
-                                    Hook::fire(
-                                        '403',
-                                        compact('discovered_handler', 'request_method', 'regex_matches')
-                                    );
+                                    Hook::fire('403_pex', ['nodes' => $discovered_handler[$type]]);
                                 }
                             }
                         }
@@ -318,7 +350,10 @@ class Router
         if ($handler_instance) {
             try {
 
-                if (self::isXHRRequest() && method_exists($handler_instance, $request_method.'XHR')) {
+                if ((self::isXHRRequest() || $handler_instance instanceof JSONHandlerInterface)
+                    && method_exists($handler_instance, $request_method.'XHR')
+                ) {
+                    self::$callingMethod = $request_method.'XHR';
                     header('Content-type: application/json');
                     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                     header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
@@ -329,6 +364,7 @@ class Router
                 }
 
                 if (method_exists($handler_instance, $request_method)) {
+                    self::$callingMethod = $request_method;
                     if (isset($discovered_handler['autoWrapper']) && $discovered_handler['autoWrapper']) {
                         if ($handler_instance instanceof HandlerInterface
                             || $handler_instance instanceof AdvancedHandlerInterface
@@ -350,15 +386,17 @@ class Router
                         }
                     }
 
-                    Hook::fire('before_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('before_request_method');
 
                     if (count($regex_matches) > 0) {
-                        $result = $handler_instance->$request_method(...$regex_matches);
+                        self::$callingMethod = $request_method;
+                        $result              = $handler_instance->$request_method(...$regex_matches);
                     } else {
-                        $result = $handler_instance->$request_method();
+                        self::$callingMethod = $request_method;
+                        $result              = $handler_instance->$request_method();
                     }
 
-                    Hook::fire('after_request_method',compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('after_request_method');
 
                     if ($handler_instance instanceof AdvancedHandlerInterface) {
                         if (self::isXHRRequest() && is_array($result)) {
@@ -366,14 +404,13 @@ class Router
                         } else {
                             echo $result;
                         }
+                    } elseif($handler_instance instanceof JSONHandlerInterface) {
+                        echo json_encode($result);
                     }
 
-                    Hook::fire(
-                        'after_output',
-                        compact('discovered_handler', 'request_method', 'regex_matches', 'result')
-                    );
+                    Hook::fire('after_output');
                 } else {
-                    Hook::fire('404', compact('discovered_handler', 'request_method', 'regex_matches'));
+                    Hook::fire('404');
                 }
 
             } catch(RouterExceptionInterface $e) {
@@ -382,22 +419,9 @@ class Router
                 return;
             }
         } else {
-            Hook::fire(
-                '404',
-                compact(
-                    'discovered_handler',
-                    'request_method',
-                    'regex_matches',
-                    'master',
-                    'temp',
-                    'className'
-                )
-            );
+            Hook::fire('404');
         }
-        Hook::fire(
-            'after_request',
-            compact('discovered_handler', 'request_method', 'regex_matches', 'result')
-        );
+        Hook::fire('after_request');
     }
 
     /**
@@ -463,7 +487,7 @@ class Router
             $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
         }
 
-        /** @var \GCWorld\Routing\RoutesInterface $cTemp */
+        /** @var RoutesInterface $cTemp */
         $cTemp  = new $master();
         $routes = $cTemp->getReverseRoutes();
 
@@ -479,7 +503,7 @@ class Router
      * @param array $params
      * @return mixed
      */
-    public static function reverseObject($name, $params = array())
+    public static function reverseObject($name, $params = [])
     {
         if (($routeArray = self::reverseAll($name, $params)) === false) {
             return false;
@@ -520,7 +544,7 @@ class Router
     /**
      * @return bool
      */
-    private static function isXHRRequest()
+    protected static function isXHRRequest()
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
@@ -530,7 +554,7 @@ class Router
      * @param array  $regexMatches
      * @return string
      */
-    private static function replacePexKeys($pexNode, array $regexMatches)
+    protected static function replacePexKeys($pexNode, array $regexMatches)
     {
         foreach ($regexMatches as $k => $v) {
             $pexNode = str_replace('['.$k.']', $v, $pexNode);
@@ -540,7 +564,7 @@ class Router
     }
 
     /**
-     * @param \GCWorld\Routing\Debugger $debugger
+     * @param Debugger $debugger
      */
     public static function attachDebugger(Debugger $debugger)
     {
@@ -556,7 +580,7 @@ class Router
     }
 
     /**
-     * @param \Redis $redis
+     * @param Redis $redis
      */
     public static function attachRedisCache(\Redis $redis)
     {
@@ -596,12 +620,20 @@ class Router
     }
 
     /**
+     * @return string
+     */
+    public static function getCallingMethod()
+    {
+        return self::$callingMethod;
+    }
+
+    /**
      * @param string     $className
      * @param array|null $args
      *
      * @return mixed
      */
-    private static function instantiateHandlerClass(string $className, array $args = null)
+    protected static function instantiateHandlerClass(string $className, array $args = null)
     {
         Hook::fire('before_handler', $args);
         try {
@@ -613,37 +645,5 @@ class Router
         Hook::fire('after_handler', $args);
 
         return $obj;
-    }
-
-    /**
-     * @return null|array
-     */
-    public static function getFoundRouteNameClean()
-    {
-        return static::$foundRouteNameClean;
-    }
-
-    /**
-     * @return null|array
-     */
-    public static function getFoundRouteName()
-    {
-        return static::$foundRouteNameClean;
-    }
-
-    /**
-     * @return null|array
-     */
-    public static function getFoundRouteArguments()
-    {
-        return static::$foundRouteArguments;
-    }
-
-    /**
-     * @return null|array
-     */
-    public static function getFoundRouteData()
-    {
-        return static::$foundRouteArguments;
     }
 }
