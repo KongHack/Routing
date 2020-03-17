@@ -77,7 +77,7 @@ class Router
      */
     public static function getFoundRouteName()
     {
-        return self::getFoundRouteName();
+        return static::$foundRouteName;
     }
 
     /**
@@ -85,7 +85,7 @@ class Router
      */
     public function getFoundRouteNameClean()
     {
-        return self::getFoundRouteNameClean();
+        return static::$foundRouteNameClean;
     }
 
     /**
@@ -93,7 +93,7 @@ class Router
      */
     public function getFoundRouteArguments()
     {
-        return self::getFoundRouteArguments();
+        return static::$foundRouteArguments;
     }
 
     /**
@@ -101,9 +101,8 @@ class Router
      */
     public function getFoundRouteData()
     {
-        return self::getFoundRouteData();
+        return static::$foundRouteData;
     }
-
 
     /**
      * Processes routes.
