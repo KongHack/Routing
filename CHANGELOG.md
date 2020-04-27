@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.5](https://github.com/KongHack/Routing/releases/tag/4.4.5)
+ - @GameCharmer Fix missing static functions
+
+
+
 ## [4.4.4](https://github.com/KongHack/Routing/releases/tag/4.4.4)
  - @GameCharmer fix infinite recursion
 

@@ -83,7 +83,7 @@ class Router
     /**
      * @return null|string
      */
-    public function getFoundRouteNameClean()
+    public static function getFoundRouteNameClean()
     {
         return static::$foundRouteNameClean;
     }
@@ -91,7 +91,7 @@ class Router
     /**
      * @return null|array
      */
-    public function getFoundRouteArguments()
+    public static function getFoundRouteArguments()
     {
         return static::$foundRouteArguments;
     }
@@ -99,7 +99,7 @@ class Router
     /**
      * @return array
      */
-    public function getFoundRouteData()
+    public static function getFoundRouteData()
     {
         return static::$foundRouteData;
     }
