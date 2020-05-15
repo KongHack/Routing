@@ -20,7 +20,7 @@ class RouterExceptionCustom extends Exception implements RouterExceptionInterfac
      * @param int             $code
      * @param \Exception|null $previous
      */
-    public function __construct(string $title = "", string $message = "", int $code = 200, Exception $previous = null)
+    public function __construct(string $title = "", string $message = "", int $code = 400, Exception $previous = null)
     {
         $this->title = $title;
         parent::__construct($message, $code, $previous);
@@ -40,6 +40,10 @@ class RouterExceptionCustom extends Exception implements RouterExceptionInterfac
     public function executeLogic(): void
     {
         http_response_code($this->code);
-        Hook::fire('custom',['title'=>$this->getTitle(),'message'=>$this->getMessage()]);
+        Hook::fire('custom', [
+            'title'   => $this->getTitle(),
+            'message' => $this->getMessage(),
+            'code'    => $this->code,
+        ]);
     }
 }
