@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.6](https://github.com/KongHack/Routing/releases/tag/4.4.6)
+ - @GameCharmer Pass code through in router exception custom, adjust default code to 400
+
+
+
 ## [4.4.5](https://github.com/KongHack/Routing/releases/tag/4.4.5)
  - @GameCharmer Fix missing static functions
 
