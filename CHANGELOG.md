@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.8](https://github.com/KongHack/Routing/releases/tag/4.4.8)
+ - @GameCharmer Add getPath methods to avoid things like `reverseMe(getFoundRouteArgs())`
+
+
+
 ## [4.4.7](https://github.com/KongHack/Routing/releases/tag/4.4.7)
  - @GameCharmer Officially deprecate usage of the public static variables
 

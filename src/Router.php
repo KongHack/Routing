@@ -36,6 +36,8 @@ class Router
     protected static $forcedRoutes    = null;
     protected static $pageWrapperName = null;
     protected static $callingMethod   = '';
+    protected static $foundPathFull   = '';
+    protected static $foundPathClean  = '';
 
     /**
      * @var Debugger|null
@@ -116,6 +118,21 @@ class Router
     }
 
     /**
+     * @return string
+     */
+    public static function getPathFull()
+    {
+        return static::$foundPathFull;
+    }
+    /**
+     * @return string
+     */
+    public static function getPathClean()
+    {
+        return static::$foundPathClean;
+    }
+
+    /**
      * Processes routes.
      * @param null $path_info
      * @throws Exception
@@ -143,12 +160,16 @@ class Router
             }
         }
 
+        self::$foundPathFull = $path_info;
+
         if (self::$routePrefix != null) {
             $pos = strpos($path_info, self::$routePrefix);
             if ($pos === 0) {
                 $path_info = substr_replace($path_info, '', $pos, strlen(self::$routePrefix));
             }
         }
+
+        self::$foundPathClean = $path_info;
 
         $pattern            = '';
         $discovered_handler = null;
