@@ -63,13 +63,24 @@ class Router
      */
     protected static $routePrefix = null;
 
-
     /**
-     * @var mixed
+     * @deprecated Use the getMethod instead.  Will be protected in the next release
      */
     public static $foundRouteName      = null;
+
+    /**
+     * @deprecated Use the getMethod instead.  Will be protected in the next release
+     */
     public static $foundRouteNameClean = null;
+
+    /**
+     * @deprecated Use the getMethod instead.  Will be protected in the next release
+     */
     public static $foundRouteArguments = null;
+
+    /**
+     * @deprecated Use the getMethod instead.  Will be protected in the next release
+     */
     public static $foundRouteData      = [];
 
     /**
