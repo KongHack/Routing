@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.4.7](https://github.com/KongHack/Routing/releases/tag/4.4.7)
+ - @GameCharmer Officially deprecate usage of the public static variables
+
+
+
 ## [4.4.6](https://github.com/KongHack/Routing/releases/tag/4.4.6)
  - @GameCharmer Pass code through in router exception custom, adjust default code to 400
 
