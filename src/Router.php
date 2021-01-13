@@ -139,7 +139,7 @@ class Router
      */
     public static function forward($path_info = null)
     {
-        Hook::fire('before_request');
+        self::fireHook('before_request');
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
 
@@ -309,9 +309,9 @@ class Router
                     $discovered_handler['session'] == true &&
                     session_status() == PHP_SESSION_NONE
                 ) {
-                    Hook::fire('pre-session_start');
+                    self::fireHook('pre-session_start');
                     session_start();
-                    Hook::fire('post-session_start');
+                    self::fireHook('post-session_start');
                 }
                 //Handle pre & post handler options
                 if (isset($discovered_handler['preArgs']) && is_array($discovered_handler['preArgs'])) {
@@ -347,7 +347,9 @@ class Router
                                         $regex_matches
                                     )) < 1
                                 ) {
-                                    Hook::fire('403_pex', ['node' => $discovered_handler[$type]]);
+                                    self::fireHook('403_pex',[
+                                        'node' => $discovered_handler[$type],
+                                    ]);
                                 }
                             } else {
                                 $good = false;
@@ -358,7 +360,9 @@ class Router
                                     }
                                 }
                                 if (!$good) {
-                                    Hook::fire('403_pex', ['nodes' => $discovered_handler[$type]]);
+                                    self::fireHook('403_pex',[
+                                        'node' => $discovered_handler[$type],
+                                    ]);
                                 }
                             }
                         }
@@ -416,8 +420,7 @@ class Router
                             }
                         }
                     }
-
-                    Hook::fire('before_request_method');
+                    self::fireHook('before_request_method');
 
                     if (count($regex_matches) > 0) {
                         self::$callingMethod = $request_method;
@@ -427,7 +430,7 @@ class Router
                         $result              = $handler_instance->$request_method();
                     }
 
-                    Hook::fire('after_request_method');
+                    self::fireHook('after_request_method');
 
                     if ($handler_instance instanceof AdvancedHandlerInterface) {
                         if (self::isXHRRequest() && is_array($result)) {
@@ -439,9 +442,9 @@ class Router
                         echo json_encode($result);
                     }
 
-                    Hook::fire('after_output');
+                    self::fireHook('after_output');
                 } else {
-                    Hook::fire('404');
+                    self::fireHook('404');
                 }
 
             } catch(RouterExceptionInterface $e) {
@@ -450,9 +453,9 @@ class Router
                 return;
             }
         } else {
-            Hook::fire('404');
+            self::fireHook('404');
         }
-        Hook::fire('after_request');
+        self::fireHook('after_request');
     }
 
     /**
@@ -495,11 +498,11 @@ class Router
      */
     public static function reverseMe($params = [])
     {
-        if (empty(self::$foundRouteNameClean)) {
+        if (empty(self::getFoundRouteNameClean())) {
             return false;
         }
 
-        return self::reverse(self::$foundRouteNameClean, $params);
+        return self::reverse(self::getFoundRouteNameClean(), $params);
     }
 
     /**
@@ -666,15 +669,31 @@ class Router
      */
     protected static function instantiateHandlerClass(string $className, array $args = null)
     {
-        Hook::fire('before_handler', $args);
+        self::fireHook('before_handler', $args);
         try {
             $obj = new $className($args);
         } catch(RouterExceptionInterface $e) {
             $e->executeLogic();
             die();
         }
-        Hook::fire('after_handler', $args);
+        self::fireHook('after_handler', $args);
 
         return $obj;
+    }
+
+    /**
+     * @param string     $type
+     * @param array|null $args
+     *
+     * @return void
+     */
+    protected static function fireHook(string $type, array $args = null)
+    {
+        try {
+            Hook::fire($type, $args);
+        } catch (RouterExceptionInterface $e) {
+            $e->executeLogic();
+            die();
+        }
     }
 }
