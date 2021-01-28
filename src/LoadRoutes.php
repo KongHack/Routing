@@ -4,7 +4,7 @@ namespace GCWorld\Routing;
 use Exception;
 use GCWorld\Database\Database;
 use GCWorld\Routing\Interfaces\RawRoutesInterface;
-use GCWorld\Utilities\General;
+use GCWorld\Utilities\Traits\General;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
 use ReflectionClass;
