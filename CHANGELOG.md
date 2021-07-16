@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.5.5](https://github.com/KongHack/Routing/releases/tag/4.5.5)
+ - @GameCharmer Allow disabling PHP Lint process
+
+
+
 ## [4.5.4](https://github.com/KongHack/Routing/releases/tag/4.5.4)
  - @GameCharmer Base64 Token
 
