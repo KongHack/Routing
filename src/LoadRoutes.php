@@ -47,6 +47,11 @@ class LoadRoutes
      */
     protected static $db = null;
 
+    /**
+     * @var bool
+     */
+    protected static $doLint = true;
+
 
     /**
      * Singleton Format
@@ -90,6 +95,14 @@ class LoadRoutes
         self::$classes[] = $fullClass;
 
         return $this;
+    }
+
+    /**
+     * @param bool $lint
+     */
+    public static function setLint(bool $lint)
+    {
+        self::$doLint = $lint;
     }
 
     /**
@@ -195,14 +208,17 @@ class LoadRoutes
                     if($debug) {
                         echo ' - Processing: ',$file,PHP_EOL;
                     }
-                    exec("php -l {$file}", $execOutput, $execError);
-                    if ($execError !== 0) {
-                        if($debug) {
-                            echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
-                            echo '  - file: ', $file, PHP_EOL;
-                            echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
+
+                    if(self::$doLint) {
+                        exec("php -l {$file}", $execOutput, $execError);
+                        if ($execError !== 0) {
+                            if($debug) {
+                                echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
+                                echo '  - file: ', $file, PHP_EOL;
+                                echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
+                            }
+                            continue;
                         }
-                        continue;
                     }
 
                     $namespace = '';
