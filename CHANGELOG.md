@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.6.0](https://github.com/KongHack/Routing/releases/tag/4.6.0)
+ - @GameCharmer Updated Reflection DocBlock
+ - @GameCharmer Bumped PHP min version to 8.0 
+
+
 ## [4.5.5](https://github.com/KongHack/Routing/releases/tag/4.5.5)
  - @GameCharmer Allow disabling PHP Lint process
 
