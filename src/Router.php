@@ -4,6 +4,7 @@ namespace GCWorld\Routing;
 use Exception;
 use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
+use GCWorld\Routing\Exceptions\ReverseRouteNotFoundException;
 use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Routing\Interfaces\HandlerInterface;
 use GCWorld\Routing\Interfaces\JSONHandlerInterface;
@@ -460,14 +461,14 @@ class Router
     }
 
     /**
-     * @param       $name
-     * @param array $params
-     * @return bool|string
+     * @param string $name
+     * @param array  $params
+     * @return string
      */
-    public static function reverse($name, $params = [])
+    public static function reverse(string $name, array $params = [])
     {
         if (($routeArray = self::reverseAll($name, $params)) === false) {
-            return false;
+            throw new ReverseRouteNotFoundException($name, $params);
         }
 
         $route = $routeArray['pattern'];

@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.7.0](https://github.com/KongHack/Routing/releases/tag/4.7.0)
+ - @GameCharmer Implement return types, throw exception on reverse route not found
+
+
+
 ## [4.6.0](https://github.com/KongHack/Routing/releases/tag/4.6.0)
  - @GameCharmer Updated Reflection DocBlock
  - @GameCharmer Bumped PHP min version to 8.0 
