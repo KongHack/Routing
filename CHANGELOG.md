@@ -6,8 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.7.1](https://github.com/KongHack/Routing/releases/tag/4.7.1)
+ - @GameCharmer Update deprecated public properties to non-deprecated protected properties
+ - @GameCharmer More type hints, more `exception`s instead of `return false`s
+
+
+
 ## [4.7.0](https://github.com/KongHack/Routing/releases/tag/4.7.0)
- - @GameCharmer Implement return types, throw exception on reverse route not found
+ - @GameCharmer Implement type hints, throw exception on reverse route not found
 
 
 

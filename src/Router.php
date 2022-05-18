@@ -33,13 +33,13 @@ class Router
         ':consume'  => '(.+)',
     ];
 
-    protected static $base            = null;
-    protected static $userClassName   = null;
-    protected static $forcedRoutes    = null;
-    protected static $pageWrapperName = null;
-    protected static $callingMethod   = '';
-    protected static $foundPathFull   = '';
-    protected static $foundPathClean  = '';
+    protected static ?string $base            = null;
+    protected static ?string $userClassName   = null;
+    protected static ?string $pageWrapperName = null;
+    protected static ?array  $forcedRoutes    = null;
+    protected static string  $callingMethod   = '';
+    protected static string  $foundPathFull   = '';
+    protected static string  $foundPathClean  = '';
 
     /**
      * @var Debugger|null
@@ -67,25 +67,11 @@ class Router
      */
     protected static $routePrefix = null;
 
-    /**
-     * @deprecated Use the getMethod instead.  Will be protected in the next release
-     */
-    public static $foundRouteName      = null;
 
-    /**
-     * @deprecated Use the getMethod instead.  Will be protected in the next release
-     */
-    public static $foundRouteNameClean = null;
-
-    /**
-     * @deprecated Use the getMethod instead.  Will be protected in the next release
-     */
-    public static $foundRouteArguments = null;
-
-    /**
-     * @deprecated Use the getMethod instead.  Will be protected in the next release
-     */
-    public static $foundRouteData      = [];
+    protected static ?string $foundRouteName      = null;
+    protected static ?string $foundRouteNameClean = null;
+    protected static ?array  $foundRouteArguments = null;
+    protected static ?array  $foundRouteData      = [];
 
     /**
      * @return null|string
@@ -464,6 +450,7 @@ class Router
      * @param string $name
      * @param array  $params
      * @return string
+     * @throws ReverseRouteNotFoundException
      */
     public static function reverse(string $name, array $params = [])
     {
@@ -496,23 +483,25 @@ class Router
 
     /**
      * @param array $params
-     * @return bool|string
+     * @return string
+     * @throws \Exception
      */
-    public static function reverseMe($params = [])
+    public static function reverseMe(array $params = [])
     {
         if (empty(self::getFoundRouteNameClean())) {
-            return false;
+            throw new \Exception('Found Route Name Clean is empty!');
         }
 
         return self::reverse(self::getFoundRouteNameClean(), $params);
     }
 
     /**
-     * @param       $name
-     * @param array $params
-     * @return bool|array
+     * @param string $name
+     * @param array  $params
+     * @return array
+     * @throws ReverseRouteNotFoundException
      */
-    public static function reverseAll($name, $params = [])
+    public static function reverseAll(string $name, array $params = [])
     {
         // We now add the count of parameters to the name. See Processor.php for more info.
         $name .= '_'.count($params);
@@ -527,24 +516,23 @@ class Router
         $cTemp  = new $master();
         $routes = $cTemp->getReverseRoutes();
 
-        if (array_key_exists($name, $routes)) {
-            return $routes[$name];
+        if (!array_key_exists($name, $routes)) {
+            throw new ReverseRouteNotFoundException($name, $params);
         }
 
-        return false;
+        return $routes[$name];
     }
 
     /**
-     * @param       $name
-     * @param array $params
+     * @param string $name
+     * @param array  $params
      * @return mixed
      */
-    public static function reverseObject($name, $params = [])
+    public static function reverseObject(string $name, array $params = [])
     {
-        if (($routeArray = self::reverseAll($name, $params)) === false) {
-            return false;
-        }
-        $className = $routeArray['class'];
+        // throws an exception now, woo!
+        $routeArray = self::reverseAll($name, $params);
+        $className  = $routeArray['class'];
 
         if (isset($routeArray['preArgs']) && is_array($routeArray['preArgs'])) {
             $rev = array_reverse($routeArray['preArgs']);
@@ -562,9 +550,9 @@ class Router
     }
 
     /**
-     * @param $base
+     * @param string $base
      */
-    public static function setBase($base)
+    public static function setBase(string $base)
     {
         self::$base = rtrim($base, '/');
     }
@@ -572,7 +560,7 @@ class Router
     /**
      * @param string $user
      */
-    public static function setUserClassName($user)
+    public static function setUserClassName(string $user)
     {
         self::$userClassName = $user;
     }
@@ -624,9 +612,9 @@ class Router
     }
 
     /**
-     * @param $prefix
+     * @param string|null $prefix
      */
-    public static function setRoutePrefix($prefix)
+    public static function setRoutePrefix(string $prefix = null)
     {
         self::$routePrefix = $prefix;
     }
@@ -640,15 +628,15 @@ class Router
     }
 
     /**
-     * @param $name
+     * @param string $name
      */
-    public static function setPageWrapperName($name)
+    public static function setPageWrapperName(string $name)
     {
         self::$pageWrapperName = $name;
     }
 
     /**
-     * @return null
+     * @return null|string
      */
     public static function getPageWrapperName()
     {
