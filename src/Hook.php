@@ -41,8 +41,8 @@ class Hook
     }
 
     /**
-     * @param      $hook_name
-     * @param null $params
+     * @param string $hook_name
+     * @param mixed  $params
      */
     public static function fire($hook_name, $params = null)
     {
