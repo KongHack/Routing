@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [4.7.3](https://github.com/KongHack/Routing/releases/tag/4.7.3)
+- @GameCharmer Ensure session is started before running security checks!
+
+
+
 ## [4.7.2](https://github.com/KongHack/Routing/releases/tag/4.7.2)
 - @GameCharmer Adjust DocBlock
 

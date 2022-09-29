@@ -292,6 +292,7 @@ class Router
 
                 self::$foundRouteData = $discovered_handler;
 
+                $hasSession = false;
                 //Used for new reverse name search.
                 if (isset($discovered_handler['session']) &&
                     $discovered_handler['session'] == true &&
@@ -300,6 +301,7 @@ class Router
                     self::fireHook('pre-session_start');
                     session_start();
                     self::fireHook('post-session_start');
+                    $hasSession = true;
                 }
                 //Handle pre & post handler options
                 if (isset($discovered_handler['preArgs']) && is_array($discovered_handler['preArgs'])) {
@@ -314,47 +316,8 @@ class Router
                     }
                 }
 
-                // Security Testing!
-                if (self::$userClassName != null) {
-                    /** @var mixed $temp */
-                    $temp       = self::$userClassName;
-                    self::$user = $temp::getInstance();
-                }
-
-                if (self::$user != null) {
-                    if (!self::$user instanceof PEX) {
-                        throw new Exception('The provided user class does not implement PEX. ('.
-                            self::$userClassName.')');
-                    }
-                    $types = ['pexCheck', 'pexCheckAny', 'pexCheckExact', 'pexCheckMax'];
-                    foreach ($types as $type) {
-                        if (isset($discovered_handler[$type])) {
-                            if (!is_array($discovered_handler[$type])) {
-                                if (self::$user->$type(self::replacePexKeys(
-                                        $discovered_handler[$type],
-                                        $regex_matches
-                                    )) < 1
-                                ) {
-                                    self::fireHook('403_pex',[
-                                        'node' => $discovered_handler[$type],
-                                    ]);
-                                }
-                            } else {
-                                $good = false;
-                                foreach ($discovered_handler[$type] as $node) {
-                                    if (self::$user->$type(self::replacePexKeys($node, $regex_matches)) > 0) {
-                                        $good = true;
-                                        break;
-                                    }
-                                }
-                                if (!$good) {
-                                    self::fireHook('403_pex',[
-                                        'node' => $discovered_handler[$type],
-                                    ]);
-                                }
-                            }
-                        }
-                    }
+                if($hasSession) {
+                    self::securityCheck($discovered_handler, $regex_matches);
                 }
 
                 if (isset($discovered_handler['class']) && is_string($discovered_handler['class'])) {
@@ -684,6 +647,59 @@ class Router
         } catch (RouterExceptionInterface $e) {
             $e->executeLogic();
             die();
+        }
+    }
+
+    /**
+     * @param mixed $discovered_handler
+     * @param array $regex_matches
+     * @return void
+     * @throws Exception
+     */
+    protected static function securityCheck($discovered_handler, array $regex_matches)
+    {
+
+        // Security Testing!
+        if (self::$userClassName != null) {
+            /** @var mixed $temp */
+            $temp       = self::$userClassName;
+            self::$user = $temp::getInstance();
+        }
+
+        if (self::$user != null) {
+            if (!self::$user instanceof PEX) {
+                throw new Exception('The provided user class does not implement PEX. ('.
+                    self::$userClassName.')');
+            }
+            $types = ['pexCheck', 'pexCheckAny', 'pexCheckExact', 'pexCheckMax'];
+            foreach ($types as $type) {
+                if (isset($discovered_handler[$type])) {
+                    if (!is_array($discovered_handler[$type])) {
+                        if (self::$user->$type(self::replacePexKeys(
+                                $discovered_handler[$type],
+                                $regex_matches
+                            )) < 1
+                        ) {
+                            self::fireHook('403_pex',[
+                                'node' => $discovered_handler[$type],
+                            ]);
+                        }
+                    } else {
+                        $good = false;
+                        foreach ($discovered_handler[$type] as $node) {
+                            if (self::$user->$type(self::replacePexKeys($node, $regex_matches)) > 0) {
+                                $good = true;
+                                break;
+                            }
+                        }
+                        if (!$good) {
+                            self::fireHook('403_pex',[
+                                'node' => $discovered_handler[$type],
+                            ]);
+                        }
+                    }
+                }
+            }
         }
     }
 }
