@@ -1,26 +1,24 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Routing\Interfaces\ConstantsInterface;
+
 /**
  * Class Hook
  */
 class Hook
 {
-    /**
-     * @var
-     */
-    private static $instance;
+    protected static array $instances = [];
+
+    protected string $name;
+    protected array  $hooks = [];
 
     /**
-     * @var array
+     * @param string $name
      */
-    private $hooks = array();
-
-    /**
-     * Singleton Format
-     */
-    private function __construct()
+    protected function __construct(string $name)
     {
+        $this->name = $name;
     }
 
     /**
@@ -31,22 +29,26 @@ class Hook
     }
 
     /**
-     * @param $hook_name
-     * @param $fn
+     * @param string $name
+     * @param string $hook_name
+     * @param string $fn
+     * @return void
      */
-    public static function add($hook_name, $fn)
+    public static function add(string $name, string $hook_name, string $fn)
     {
-        $instance = self::getInstance();
+        $instance = self::getInstance($name);
         $instance->hooks[$hook_name][] = $fn;
     }
 
     /**
+     * @param string $name
      * @param string $hook_name
-     * @param mixed  $params
+     * @param ?array $params
+     * @return void
      */
-    public static function fire($hook_name, $params = null)
+    public static function fire(string $name, string $hook_name, ?array $params = null)
     {
-        $instance = self::getInstance();
+        $instance = self::getInstance($name);
         if (isset($instance->hooks[$hook_name])) {
             foreach ($instance->hooks[$hook_name] as $fn) {
                 call_user_func_array($fn, array(&$params));
@@ -55,13 +57,16 @@ class Hook
     }
 
     /**
-     * @return Hook
+     * @param string $name
+     * @return static
+     *
      */
-    public static function getInstance()
+    public static function getInstance(string $name = ConstantsInterface::DEFAULT_NAME)
     {
-        if (empty(self::$instance)) {
-            self::$instance = new self();
+        if(!isset(self::$instances[$name])) {
+            self::$instances[$name] = new static($name);
         }
-        return self::$instance;
+
+        return self::$instances[$name];
     }
 }

@@ -9,6 +9,7 @@ use Riimu\Kit\PHPEncoder\PHPEncoder;
  */
 class Processor
 {
+    protected string $name;
     protected array  $routes_straight = [];
     protected array  $routes_reverse  = [];
     protected array  $routes_master   = [];
@@ -20,7 +21,12 @@ class Processor
      */
     public function __construct(string $name = ConstantsInterface::DEFAULT_NAME)
     {
-        $this->storage = dirname(__FILE__).'/Generated/';
+        $this->name    = $name;
+        $this->storage = __DIR__.DIRECTORY_SEPARATOR.'Generated'.DIRECTORY_SEPARATOR;
+        if (!is_dir($this->storage)) {
+            mkdir($this->storage, 0755, true);
+        }
+        $this->storage .= $name.DIRECTORY_SEPARATOR;
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
         }
@@ -191,7 +197,7 @@ class Processor
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
 
         $php = "<?php\n";
-        $php .= "namespace GCWorld\\Routing\\Generated;\n";
+        $php .= "namespace GCWorld\\Routing\\Generated\\{$this->name};\n";
         $php .= "\n";
         $php .= "class MasterRoute_".self::cleanClassName($master)." Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
         $php .= "{\n";
@@ -265,7 +271,7 @@ class Processor
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
 
         $php = "<?php\n";
-        $php .= "namespace GCWorld\\Routing\\Generated;\n";
+        $php .= "namespace GCWorld\\Routing\\Generated\\{$this->name};\n";
         $php .= "\n";
         $php .= "class MasterRoute_MISC Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
         $php .= "{\n";
