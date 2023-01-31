@@ -1,6 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
+use GCWorld\Routing\Interfaces\ConstantsInterface;
 use Riimu\Kit\PHPEncoder\PHPEncoder;
 
 /**
@@ -8,37 +9,30 @@ use Riimu\Kit\PHPEncoder\PHPEncoder;
  */
 class Processor
 {
-    /**
-     * @var array
-     */
-    private $routes_straight = [];
-    /**
-     * @var array
-     */
-    private $routes_reverse = [];
-    /**
-     * @var array
-     */
-    private $routes_master = [];
-    /**
-     * @var string
-     */
-    private $storage = null;
-    /**
-     * @var bool
-     */
-    private $debug = false;
+    protected array  $routes_straight = [];
+    protected array  $routes_reverse  = [];
+    protected array  $routes_master   = [];
+    protected string $storage         = '';
+    protected bool   $debug           = false;
 
     /**
      * @param bool $debug
      */
-    public function __construct($debug = false)
+    public function __construct(string $name = ConstantsInterface::DEFAULT_NAME)
     {
-        $this->debug   = $debug;
         $this->storage = dirname(__FILE__).'/Generated/';
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
         }
+    }
+
+    /**
+     * @param bool $debug
+     * @return void
+     */
+    public function setDebug(bool $debug)
+    {
+        $this->debug = $debug;
     }
 
     /**
@@ -192,7 +186,7 @@ class Processor
     /**
      * @param $master
      */
-    private function generateMaster($master)
+    protected function generateMaster($master)
     {
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
 
@@ -266,7 +260,7 @@ class Processor
     /**
      * Generates the MISC route file
      */
-    private function generateMisc()
+    protected function generateMisc()
     {
         //We need to generate both a forward and reverse bank, followed by proper wrappers.
 

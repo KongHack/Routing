@@ -3,6 +3,7 @@ namespace GCWorld\Routing;
 
 use Exception;
 use GCWorld\Database\Database;
+use GCWorld\Routing\Interfaces\ConstantsInterface;
 use GCWorld\Routing\Interfaces\RawRoutesInterface;
 use GCWorld\Utilities\Traits\General;
 use phpDocumentor\Reflection\DocBlock;
@@ -16,42 +17,22 @@ class LoadRoutes
 {
     use General;
 
-    /**
-     * @var null
-     */
-    protected static $instance = null;
-    /**
-     * @var array
-     */
-    protected static $classes = [];
-    /**
-     * @var array
-     */
-    protected static $paths = [];
-    /**
-     * @var int
-     */
-    protected static $highestTime = 0;
-    /**
-     * @var int
-     */
-    protected static $lastClassTime = PHP_INT_MAX;
+    protected static array $instances     = [];
 
-    /**
-     * @var \Redis|null
-     */
-    protected static $redis = null;
+    protected string $instanceName;
 
+    protected ?Database $db            = null;
+    protected ?\Redis   $redis         = null;
+    protected array     $classes       = [];
+    protected array     $paths         = [];
+    protected int       $highestTime   = 0;
+    protected int       $lastClassTime = PHP_INT_MAX;
+    protected bool      $doLint        = true;
     /**
-     * @var  Database|null
+     * @var string
+     * @todo Implement
      */
-    protected static $db = null;
-
-    /**
-     * @var bool
-     */
-    protected static $doLint = true;
-
+    protected string    $dbTableName   = '_RouteRawList';
 
     /**
      * Singleton Format
@@ -61,22 +42,24 @@ class LoadRoutes
     }
 
     /**
-     * Singleton Format
+     * @param string $name
      */
-    protected function __construct()
+    protected function __construct(string $name)
     {
+        $this->instanceName = $name;
     }
 
     /**
-     * @return LoadRoutes|null
+     * @param string $name
+     * @return static
      */
-    public static function getInstance()
+    public static function getInstance(string $name = ConstantsInterface::DEFAULT_NAME)
     {
-        if (self::$instance == null) {
-            self::$instance = new self();
+        if(!isset(self::$instances[$name])) {
+            self::$instances[$name] = new static($name);
         }
 
-        return self::$instance;
+        return self::$instances[$name];
     }
 
     /**
@@ -92,7 +75,7 @@ class LoadRoutes
                 throw new \Exception('Class Not Found: '.$fullClass);
             }
         }
-        self::$classes[] = $fullClass;
+        $this->classes[] = $fullClass;
 
         return $this;
     }
@@ -100,9 +83,9 @@ class LoadRoutes
     /**
      * @param bool $lint
      */
-    public static function setLint(bool $lint)
+    public function setLint(bool $lint)
     {
-        self::$doLint = $lint;
+        $this->doLint = $lint;
     }
 
     /**
@@ -113,7 +96,7 @@ class LoadRoutes
      */
     public function addPath(string $path)
     {
-        self::$paths[] = $path;
+        $this->paths[] = $path;
 
         return $this;
     }
@@ -125,12 +108,12 @@ class LoadRoutes
      */
     public function generateRoutes(bool $force = false, bool $debug = false)
     {
-        foreach (self::$classes as $fullClass) {
+        foreach ($this->classes as $fullClass) {
             $cTemp = new $fullClass;
             if ($cTemp instanceof RawRoutesInterface) {
                 $time = $cTemp->getFileTime();
-                if ($time > self::$highestTime) {
-                    self::$highestTime = $time;
+                if ($time > $this->highestTime) {
+                    $this->highestTime = $time;
                 }
             }
         }
@@ -140,54 +123,55 @@ class LoadRoutes
         foreach ($files as $file) {
             if (is_file($file)) {
                 $time = filemtime($file);
-                if ($time < self::$lastClassTime) {
-                    self::$lastClassTime = $time;
+                if ($time < $this->lastClassTime) {
+                    $this->lastClassTime = $time;
                 }
             }
         }
 
         if ($force
-            || count(self::$paths) || self::$highestTime > self::$lastClassTime
-            || count($files) != count(self::$classes)
+            || count($this->paths) || $this->highestTime > $this->lastClassTime
+            || count($files) != count($this->classes)
         ) {
             $routes = [];
-            foreach (self::$classes as $fullClass) {
+            foreach ($this->classes as $fullClass) {
                 $cTemp = new $fullClass;
                 if ($cTemp instanceof RawRoutesInterface) {
                     $routes = array_merge($routes, $cTemp->getRoutes());
                 }
             }
 
-            $routes = array_merge($routes, self::generateAnnotatedRoutes($debug));
+            $routes = array_merge($routes, $this->generateAnnotatedRoutes($debug));
 
             if($debug) {
                 echo 'Starting Processor',PHP_EOL;
             }
 
-            $processor = new Processor($debug);
-            $processor->run($routes);
+            $cProcessor = new Processor();
+            $cProcessor->setDebug($debug);
+            $cProcessor->run($routes);
 
 
             if($debug) {
                 echo 'Processor Complete',PHP_EOL;
             }
 
-            if (self::$redis !== null) {
+            if ($this->redis !== null) {
 
                 if($debug) {
                     echo 'Redis Found, Deleting GCWORLD_ROUTER key',PHP_EOL;
                 }
 
-                self::$redis->del('GCWORLD_ROUTER');
+                $this->redis->del('GCWORLD_ROUTER');
             }
 
-            if (self::$db !== null) {
+            if ($this->db !== null) {
 
                 if($debug) {
                     echo 'DB Found, storing routes',PHP_EOL;
                 }
 
-                $this->storeRoutes($processor);
+                $this->storeRoutes($cProcessor);
             }
         }
     }
@@ -196,20 +180,20 @@ class LoadRoutes
      * @param bool $debug
      * @return array
      */
-    protected static function generateAnnotatedRoutes(bool $debug = false)
+    protected function generateAnnotatedRoutes(bool $debug = false)
     {
         $cPhpDocFactory  = DocBlockFactory::createInstance();
 
         $return = [];
-        if (count(self::$paths) > 0) {
-            foreach (self::$paths as $path) {
+        if (count($this->paths) > 0) {
+            foreach ($this->paths as $path) {
                 $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
                 foreach ($classFiles as $file) {
                     if($debug) {
                         echo ' - Processing: ',$file,PHP_EOL;
                     }
 
-                    if(self::$doLint) {
+                    if($this->doLint) {
                         exec("php -l {$file}", $execOutput, $execError);
                         if ($execError !== 0) {
                             if($debug) {
@@ -239,7 +223,7 @@ class LoadRoutes
                         $thisClass = new ReflectionClass($classString);
                         if (($comment = $thisClass->getDocComment()) !== false) {
                             $phpDoc = $cPhpDocFactory->create($comment);
-                            $routes = self::processTags($classString, $phpDoc);
+                            $routes = $this->processTags($classString, $phpDoc);
                             if ($routes) {
                                 $return = array_merge($return, $routes);
                             }
@@ -256,7 +240,7 @@ class LoadRoutes
      * @param string $file
      * @return array
      */
-    public static function lintFile(string $file)
+    public function lintFile(string $file)
     {
         $response = [
             'success'  => true,
@@ -299,9 +283,9 @@ class LoadRoutes
         }
 
         if (($comment = $thisClass->getDocComment()) !== false) {
-            $cPhpDocFactory     = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
+            $cPhpDocFactory     = DocBlockFactory::createInstance();
             $phpDoc             = $cPhpDocFactory->create($comment);
-            $response['routes'] = self::processTags($classString, $phpDoc);
+            $response['routes'] = $this->processTags($classString, $phpDoc);
             return $response;
         }
         $response['success'] = false;
@@ -315,10 +299,10 @@ class LoadRoutes
      * @param DocBlock $phpDoc
      * @return array|bool
      */
-    protected static function processTags($classString, DocBlock $phpDoc)
+    protected function processTags($classString, DocBlock $phpDoc)
     {
         if ($phpDoc->hasTag('router-1-pattern') && $phpDoc->hasTag('router-1-name')) {
-            return self::processComplexTags($classString, $phpDoc);
+            return $this->processComplexTags($classString, $phpDoc);
         }
 
         if (!$phpDoc->hasTag('router-pattern') || !$phpDoc->hasTag('router-name')) {
@@ -407,7 +391,7 @@ class LoadRoutes
      * @param DocBlock $phpDoc
      * @return array|bool
      */
-    protected static function processComplexTags(string $classString, DocBlock $phpDoc)
+    protected function processComplexTags(string $classString, DocBlock $phpDoc)
     {
         if (!$phpDoc->hasTag('router-1-pattern') || !$phpDoc->hasTag('router-1-name')) {
             return false;
@@ -500,17 +484,17 @@ class LoadRoutes
     /**
      * @param \Redis $redis
      */
-    public static function attachRedisCache(\Redis $redis)
+    public function attachRedisCache(\Redis $redis)
     {
-        self::$redis = $redis;
+        $this->redis = $redis;
     }
 
     /**
      * @param Database $db
      */
-    public static function attachDatabase(Database $db)
+    public function attachDatabase(Database $db)
     {
-        self::$db = $db;
+        $this->db = $db;
     }
 
     /**
@@ -529,27 +513,34 @@ class LoadRoutes
         return trim(file_get_contents($this->getOurRoot().'VERSION'));
     }
 
-    protected function storeRoutes(Processor $processor)
+    /**
+     * @param Processor $cProcessor
+     * @return void
+     * @throws Exception
+     */
+    protected function storeRoutes(Processor $cProcessor)
     {
+        // TODO: Implement $this->dbTableName
+
         $table = '_RouteRawList';
         // Make sure our table exists.
-        if (!self::$db->tableExists($table)) {
+        if (!$this->db->tableExists($table)) {
             $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
-            self::$db->exec($sql);
-            self::$db->setTableComment($table, $this->getVersion());
+            $this->db->exec($sql);
+            $this->db->setTableComment($table, $this->getVersion());
         } else {
-            $dbv = self::$db->getTableComment($table);
+            $dbv = $this->db->getTableComment($table);
             if ($dbv != $this->getVersion()) {
                 $sql = 'DROP TABLE '.$table;
-                self::$db->exec($sql);
+                $this->db->exec($sql);
                 $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
-                self::$db->exec($sql);
-                self::$db->setTableComment($table, $this->getVersion());
+                $this->db->exec($sql);
+                $this->db->setTableComment($table, $this->getVersion());
             }
         }
 
         $sql = 'TRUNCATE TABLE `_RouteRawList`';
-        self::$db->exec($sql);
+        $this->db->exec($sql);
 
         $sql   = 'INSERT INTO `_RouteRawList`
             (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
@@ -569,9 +560,9 @@ class LoadRoutes
               route_pexCheckExact = VALUES(route_pexCheckExact),
               route_meta = VALUES(route_meta)
         ';
-        $query = self::$db->prepare($sql);
+        $query = $this->db->prepare($sql);
 
-        $routes = $processor->getReverseRoutes();
+        $routes = $cProcessor->getReverseRoutes();
 
         foreach ($routes as $name => $route) {
             $check      = '';
