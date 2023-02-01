@@ -7,8 +7,8 @@ use Redis;
 
 /**
  * Class Router
- * NOTICE: THIS IS DEPRECATED AND IS A COMPLETE SHELL
- * DO NOT USE GOING FORWARD!
+ *
+ * @deprecated Use CoreRouter instead
  */
 class Router
 {
