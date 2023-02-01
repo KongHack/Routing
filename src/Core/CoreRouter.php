@@ -21,10 +21,10 @@ use Redis;
  */
 class CoreRouter implements ConstantsInterface
 {
-    protected static array $instances = [];      
-    
+    protected static array $instances = [];
+
     protected string $name;
-    
+
     protected ?string      $base            = null;
     protected ?string      $userClassName   = null;
     protected ?string      $pageWrapperName = null;
@@ -36,7 +36,7 @@ class CoreRouter implements ConstantsInterface
     protected ?Debugger    $cDebugger       = null;
     protected ?Redis       $cRedis          = null;
     protected ?PageWrapper $cPageWrapper    = null;
-    
+
     protected ?string $foundRouteName      = null;
     protected ?string $foundRouteNameClean = null;
     protected ?array  $foundRouteArguments = null;
@@ -115,7 +115,7 @@ class CoreRouter implements ConstantsInterface
     {
         return  $this->foundPathFull;
     }
-    
+
     /**
      * @return string
      */
@@ -205,7 +205,8 @@ class CoreRouter implements ConstantsInterface
             return;
         }
 
-        $this->foundRouteArguments = $cDiscoveryData->getMatches();
+        $matches                   = $cDiscoveryData->getMatches();
+        $this->foundRouteArguments = $matches;
 
         if ($this->cDebugger !== null) {
             $this->cDebugger->logHit($cDiscoveryData->getPattern());
@@ -580,7 +581,7 @@ class CoreRouter implements ConstantsInterface
     protected function fireHook(string $type, array $args = null)
     {
         try {
-            Hook::fire($type, $args);
+            Hook::fire($this->name, $type, $args);
         } catch (RouterExceptionInterface $e) {
             $e->executeLogic();
             die();
