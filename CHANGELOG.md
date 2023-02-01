@@ -6,6 +6,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.0.0](https://github.com/KongHack/Routing/releases/tag/5.0.0)
+- @GameCharmer Router Rewrite
+  - Runs on an instance array
+  - Loader no longer uses statics
+  - Routing tables are inside of instance name now, so you can have more than 1 router!
+  - Note: This is still undergoing extensive testing!
+
+
+
 ## [4.7.3](https://github.com/KongHack/Routing/releases/tag/4.7.3)
 - @GameCharmer Ensure session is started before running security checks!
 
