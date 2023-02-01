@@ -2,6 +2,7 @@
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
+use GCWorld\Routing\Core\CoreRouter;
 use GCWorld\Routing\Hook;
 use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 
@@ -27,6 +28,6 @@ class RouterException403 extends Exception implements RouterExceptionInterface
      */
     public function executeLogic(): void
     {
-        Hook::fire('403');
+        Hook::fire(CoreRouter::getInstance()->getName(), '403');
     }
 }

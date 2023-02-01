@@ -2,6 +2,7 @@
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
+use GCWorld\Routing\Core\CoreRouter;
 use GCWorld\Routing\Hook;
 use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 
@@ -40,7 +41,7 @@ class RouterExceptionCustom extends Exception implements RouterExceptionInterfac
     public function executeLogic(): void
     {
         http_response_code($this->code);
-        Hook::fire('custom', [
+        Hook::fire(CoreRouter::getInstance()->getName(), 'custom', [
             'title'   => $this->getTitle(),
             'message' => $this->getMessage(),
             'code'    => $this->code,

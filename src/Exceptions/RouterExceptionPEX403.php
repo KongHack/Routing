@@ -2,6 +2,7 @@
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
+use GCWorld\Routing\Core\CoreRouter;
 use GCWorld\Routing\Hook;
 use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 
@@ -32,9 +33,9 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
     public function executeLogic(): void
     {
         if(is_array($this->node)) {
-            Hook::fire('403_pex', ['nodes'=>$this->node]);
+            Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes'=>$this->node]);
             return;
         }
-        Hook::fire('403_pex', ['node'=>$this->node]);
+        Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['node'=>$this->node]);
     }
 }
