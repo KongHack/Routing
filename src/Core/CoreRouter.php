@@ -57,9 +57,25 @@ class CoreRouter implements ConstantsInterface
     {
         $this->name = $name;
     }
-    
-    
-    
+
+    /**
+     * @param string $hookName
+     * @param string $methodName
+     * @return void
+     */
+    public function addHook(string $hookName, string $methodName): void
+    {
+        Hook::add($this->name, $hookName, $methodName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     /**
      * @return null|string
      */
