@@ -6,6 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.0.1](https://github.com/KongHack/Routing/releases/tag/5.0.1)
+- @GameCharmer Add deprecated tag to original Router.
+  - Original Router will still function as a stub that calls the default instance of CoreRouter
+
+
+
 ## [5.0.0](https://github.com/KongHack/Routing/releases/tag/5.0.0)
 - @GameCharmer Router Rewrite
   - Runs on an instance array
