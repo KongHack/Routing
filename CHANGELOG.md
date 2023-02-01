@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.1.0](https://github.com/KongHack/Routing/releases/tag/5.1.0)
+- @GameCharmer !!!Legacy Router Removed!!!
+
+
+
 ## [5.0.2](https://github.com/KongHack/Routing/releases/tag/5.0.2)
 - @GameCharmer Patch Exception Hooks
 
