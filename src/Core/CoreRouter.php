@@ -408,9 +408,9 @@ class CoreRouter implements ConstantsInterface
         $name .= '_'.count($params);
 
         $temp   = explode('_', $name);
-        $master = '\GCWorld\Routing\Generated\MasterRoute_'.Processor::cleanClassName($temp[0]);
+        $master = str_replace('__NAME__',$this->name, self::CLASS_ROUTABLE).Processor::cleanClassName($temp[0]);
         if (!class_exists($master)) {
-            $master = '\GCWorld\Routing\Generated\MasterRoute_MISC';
+            $master = str_replace('__NAME__',$this->name, self::CLASS_MISC);
         }
 
         /** @var RoutesInterface $cTemp */
