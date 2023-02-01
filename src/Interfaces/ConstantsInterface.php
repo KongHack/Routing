@@ -6,6 +6,7 @@ namespace GCWorld\Routing\Interfaces;
  */
 interface ConstantsInterface
 {
+    public const REDIS_PREFIX      = 'GCROUTES:';
     public const DEFAULT_NAME      = 'GCDefault';
     public const CLASS_MISC        = '\GCWorld\Routing\Generated\__NAME__\MasterRoute_MISC';
     public const CLASS_REPLACEMENT = '\GCWorld\Routing\Generated\__NAME__\MasterRoute_REPLACEMENT_KEY';
