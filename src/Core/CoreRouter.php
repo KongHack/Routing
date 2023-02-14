@@ -6,6 +6,7 @@ use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
 use GCWorld\Routing\Debugger;
 use GCWorld\Routing\Exceptions\ReverseRouteNotFoundException;
+use GCWorld\Routing\Exceptions\RouteClassNotFoundException;
 use GCWorld\Routing\Hook;
 use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
 use GCWorld\Routing\Interfaces\ConstantsInterface;
@@ -263,7 +264,7 @@ class CoreRouter implements ConstantsInterface
             if (class_exists($discovered_class)) {
                 $cHandler = $this->instantiateHandlerClass($discovered_class, $matches);
             } else {
-                throw new Exception('Class Not Found: '.$discovered_class);
+                throw new RouteClassNotFoundException($discovered_class, $matches);
             }
         }
 

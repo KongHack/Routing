@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.1.1](https://github.com/KongHack/Routing/releases/tag/5.1.1)
+- @GameCharmer `RouteClassNotFoundException` exception
+
+
 ## [5.1.0](https://github.com/KongHack/Routing/releases/tag/5.1.0)
 - @GameCharmer !!!Legacy Router Removed!!!
 
