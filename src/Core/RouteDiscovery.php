@@ -19,7 +19,7 @@ class RouteDiscovery implements ConstantsInterface
     /**
      * @param string $name
      */
-    public function __construct(string $name)
+    public function __construct(string $name = ConstantsInterface::DEFAULT_NAME)
     {
         $this->name = $name;
     }
@@ -31,6 +31,18 @@ class RouteDiscovery implements ConstantsInterface
     public function setRedis(\Redis $cRedis)
     {
         $this->cRedis = $cRedis;
+    }
+
+    /**
+     * @return void
+     */
+    public function purgeRedis()
+    {
+        if($this->cRedis === null) {
+            return;
+        }
+
+        $this->cRedis->del(self::REDIS_PREFIX.$this->name);
     }
 
     /**
