@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.2.0](https://github.com/KongHack/Routing/releases/tag/5.2.0)
+- @GameCharmer Implement Routing Interface
+
+
+
 ## [5.1.2](https://github.com/KongHack/Routing/releases/tag/5.1.2)
 - @GameCharmer `purgeRedis` method for Route Discovery
 - @GameCharmer Add default name to Route Discovery constructor
