@@ -1,7 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
-use GCWorld\Routing\Interfaces\ConstantsInterface;
+use GCWorld\Interfaces\RoutingInterface;
 
 /**
  * Class Hook
@@ -34,7 +34,7 @@ class Hook
      * @param string $fn
      * @return void
      */
-    public static function add(string $name, string $hook_name, string $fn)
+    public static function add(string $name, string $hook_name, string $fn): void
     {
         $instance = self::getInstance($name);
         $instance->hooks[$hook_name][] = $fn;
@@ -46,7 +46,7 @@ class Hook
      * @param ?array $params
      * @return void
      */
-    public static function fire(string $name, string $hook_name, ?array $params = null)
+    public static function fire(string $name, string $hook_name, ?array $params = null): void
     {
         $instance = self::getInstance($name);
         if (isset($instance->hooks[$hook_name])) {
@@ -61,7 +61,7 @@ class Hook
      * @return static
      *
      */
-    public static function getInstance(string $name = ConstantsInterface::DEFAULT_NAME)
+    public static function getInstance(string $name = RoutingInterface::DEFAULT_NAME): static
     {
         if(!isset(self::$instances[$name])) {
             self::$instances[$name] = new static($name);

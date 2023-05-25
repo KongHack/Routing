@@ -2,6 +2,7 @@
 namespace GCWorld\Routing\Core;
 
 use Exception;
+use GCWorld\Interfaces\RoutingInterface;
 use GCWorld\Routing\Interfaces\ConstantsInterface;
 use GCWorld\Routing\Interfaces\RoutesInterface;
 use GCWorld\Routing\Processor;
@@ -19,7 +20,7 @@ class RouteDiscovery implements ConstantsInterface
     /**
      * @param string $name
      */
-    public function __construct(string $name = ConstantsInterface::DEFAULT_NAME)
+    public function __construct(string $name = RoutingInterface::DEFAULT_NAME)
     {
         $this->name = $name;
     }

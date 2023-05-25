@@ -3,7 +3,7 @@ namespace GCWorld\Routing;
 
 use Exception;
 use GCWorld\Database\Database;
-use GCWorld\Routing\Interfaces\ConstantsInterface;
+use GCWorld\Interfaces\RoutingInterface;
 use GCWorld\Routing\Interfaces\RawRoutesInterface;
 use GCWorld\Utilities\Traits\General;
 use phpDocumentor\Reflection\DocBlock;
@@ -53,7 +53,7 @@ class LoadRoutes
      * @param string $name
      * @return static
      */
-    public static function getInstance(string $name = ConstantsInterface::DEFAULT_NAME)
+    public static function getInstance(string $name = RoutingInterface::DEFAULT_NAME): static
     {
         if(!isset(self::$instances[$name])) {
             self::$instances[$name] = new static($name);
@@ -518,7 +518,7 @@ class LoadRoutes
      * @return void
      * @throws Exception
      */
-    protected function storeRoutes(Processor $cProcessor)
+    protected function storeRoutes(Processor $cProcessor): void
     {
         // TODO: Implement $this->dbTableName
 

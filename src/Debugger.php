@@ -12,24 +12,16 @@ class Debugger
 {
     const TABLE = '_RouteDebugData';
 
-    /**
-     * @var Database|\GCWorld\Database\Database
-     */
-    private $db      = null;
-    private $storage = null;
+    protected Database\DatabaseInterface $db;
+    protected string                     $storage;
 
     /**
-     * @param Database $db
+     * @param Database\DatabaseInterface $db
      * @throws Exception
      */
-    public function __construct($db)
+    public function __construct(Database\DatabaseInterface $db)
     {
-        if ($db instanceof Database) {
-            $this->db = $db;
-        } else {
-            throw new \Exception('Must implement the GCWorld Database interface');
-        }
-
+        $this->db      = $db;
         $processor     = new Processor(false);
         $this->storage = $processor->getStorageLocation();
 
@@ -53,15 +45,15 @@ class Debugger
     /**
      * @return string
      */
-    public function getOurRoot()
+    public function getOurRoot(): string
     {
-        return dirname(__FILE__).'/../';
+        return dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
     }
 
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return trim(file_get_contents($this->getOurRoot().'VERSION'));
     }
@@ -69,7 +61,7 @@ class Debugger
     /**
      * Feeds the entire routing table into the database.
      */
-    public function storeStructure()
+    public function storeStructure(): void
     {
         $sql   = 'INSERT INTO '.self::TABLE.'
             (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
@@ -162,7 +154,7 @@ class Debugger
      * Logs a hit to the database
      * @param string $path
      */
-    public function logHit($path)
+    public function logHit($path): void
     {
         $sql   = 'UPDATE _RouteDebugData SET route_hits = route_hits + 1 WHERE route_path = :path';
         $query = $this->db->prepare($sql);

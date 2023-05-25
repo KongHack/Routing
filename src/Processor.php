@@ -1,7 +1,7 @@
 <?php
 namespace GCWorld\Routing;
 
-use GCWorld\Routing\Interfaces\ConstantsInterface;
+use GCWorld\Interfaces\RoutingInterface;
 use Riimu\Kit\PHPEncoder\PHPEncoder;
 
 /**
@@ -19,7 +19,7 @@ class Processor
     /**
      * @param bool $debug
      */
-    public function __construct(string $name = ConstantsInterface::DEFAULT_NAME)
+    public function __construct(string $name = RoutingInterface::DEFAULT_NAME)
     {
         $this->name    = $name;
         $this->storage = __DIR__.DIRECTORY_SEPARATOR.'Generated'.DIRECTORY_SEPARATOR;
