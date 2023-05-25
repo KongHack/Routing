@@ -4,6 +4,7 @@ namespace GCWorld\Routing\Core;
 use Exception;
 use GCWorld\Interfaces\PageWrapper;
 use GCWorld\Interfaces\PEX;
+use GCWorld\Interfaces\RoutingInterface;
 use GCWorld\Routing\Debugger;
 use GCWorld\Routing\Exceptions\ReverseRouteNotFoundException;
 use GCWorld\Routing\Exceptions\RouteClassNotFoundException;
@@ -18,9 +19,9 @@ use GCWorld\Routing\Processor;
 use Redis;
 
 /**
- * Class Router
+ * Class CoreRouter
  */
-class CoreRouter implements ConstantsInterface
+class CoreRouter implements ConstantsInterface, RoutingInterface
 {
     protected static array $instances = [];
 
@@ -43,7 +44,11 @@ class CoreRouter implements ConstantsInterface
     protected ?array  $foundRouteArguments = null;
     protected ?array  $foundRouteData      = [];
 
-    public static function getInstance(string $name = self::DEFAULT_NAME)
+    /**
+     * @param string $name
+     * @return static
+     */
+    public static function getInstance(string $name = self::DEFAULT_NAME): static
     {
         if(!isset(self::$instances[$name])) {
             self::$instances[$name] = new static($name);
@@ -80,7 +85,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return null|string
      */
-    public function getFoundRouteName()
+    public function getFoundRouteName(): ?string
     {
         return  $this->foundRouteName;
     }
@@ -88,7 +93,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return null|string
      */
-    public function getFoundRouteNameClean()
+    public function getFoundRouteNameClean(): ?string
     {
         return  $this->foundRouteNameClean;
     }
@@ -96,7 +101,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return null|array
      */
-    public function getFoundRouteArguments()
+    public function getFoundRouteArguments(): ?array
     {
         return  $this->foundRouteArguments;
     }
@@ -104,7 +109,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return array
      */
-    public function getFoundRouteData()
+    public function getFoundRouteData(): array
     {
         return  $this->foundRouteData;
     }
@@ -112,7 +117,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return string
      */
-    public function getPathFull()
+    public function getPathFull(): string
     {
         return  $this->foundPathFull;
     }
@@ -120,7 +125,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return string
      */
-    public function getPathClean()
+    public function getPathClean(): string
     {
         return  $this->foundPathClean;
     }
@@ -128,7 +133,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return string
      */
-    protected function getPathInfo()
+    protected function getPathInfo(): string
     {
         if (!empty($_SERVER['PATH_INFO'])) {
             return $_SERVER['PATH_INFO'];
@@ -151,7 +156,7 @@ class CoreRouter implements ConstantsInterface
      * @param string|null $path
      * @return RouteDiscoveryData|null
      */
-    public function discoverRoute(string $path = null)
+    public function discoverRoute(string $path = null): ?RouteDiscoveryData
     {
         $path = $path ?? $this->getPathInfo();
 
@@ -171,7 +176,7 @@ class CoreRouter implements ConstantsInterface
      * @param null $path_info
      * @throws Exception
      */
-    public function forward($path_info = null)
+    public function forward($path_info = null): void
     {
         $this->fireHook('before_request');
 
@@ -354,7 +359,7 @@ class CoreRouter implements ConstantsInterface
      * @return string
      * @throws ReverseRouteNotFoundException
      */
-    public function reverse(string $name, array $params = [])
+    public function reverse(string $name, array $params = []): string
     {
         if (($routeArray = $this->reverseAll($name, $params)) === false) {
             throw new ReverseRouteNotFoundException($name, $params);
@@ -388,7 +393,7 @@ class CoreRouter implements ConstantsInterface
      * @return string
      * @throws \Exception
      */
-    public function reverseMe(array $params = [])
+    public function reverseMe(array $params = []): string
     {
         if (empty($this->getFoundRouteNameClean())) {
             throw new \Exception('Found Route Name Clean is empty!');
@@ -403,7 +408,7 @@ class CoreRouter implements ConstantsInterface
      * @return array
      * @throws ReverseRouteNotFoundException
      */
-    public function reverseAll(string $name, array $params = [])
+    public function reverseAll(string $name, array $params = []): array
     {
         // We now add the count of parameters to the name. See Processor.php for more info.
         $name .= '_'.count($params);
@@ -430,7 +435,7 @@ class CoreRouter implements ConstantsInterface
      * @param array  $params
      * @return mixed
      */
-    public function reverseObject(string $name, array $params = [])
+    public function reverseObject(string $name, array $params = []): mixed
     {
         // throws an exception now, woo!
         $routeArray = $this->reverseAll($name, $params);
@@ -453,16 +458,18 @@ class CoreRouter implements ConstantsInterface
 
     /**
      * @param string $base
+     * @return void
      */
-    public function setBase(string $base)
+    public function setBase(string $base): void
     {
         $this->base = rtrim($base, '/');
     }
 
     /**
      * @param string $user
+     * @return void
      */
-    public function setUserClassName(string $user)
+    public function setUserClassName(string $user): void
     {
         $this->userClassName = $user;
     }
@@ -470,7 +477,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return bool
      */
-    protected function isXHRRequest()
+    public function isXHRRequest(): bool
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
@@ -480,7 +487,7 @@ class CoreRouter implements ConstantsInterface
      * @param array  $regexMatches
      * @return string
      */
-    protected function replacePexKeys($pexNode, array $regexMatches)
+    protected function replacePexKeys($pexNode, array $regexMatches): string
     {
         foreach ($regexMatches as $k => $v) {
             $pexNode = str_replace('['.$k.']', $v, $pexNode);
@@ -491,32 +498,36 @@ class CoreRouter implements ConstantsInterface
 
     /**
      * @param Debugger $cDebugger
+     * @return void
      */
-    public function attachDebugger(Debugger $cDebugger)
+    public function attachDebugger(Debugger $cDebugger): void
     {
         $this->cDebugger = $cDebugger;
     }
 
     /**
      * @param array $routes
+     * @return void
      */
-    public function forceRoutes(array $routes)
+    public function forceRoutes(array $routes): void
     {
         $this->forcedRoutes = $routes;
     }
 
     /**
      * @param Redis $cRedis
+     * @return void
      */
-    public function attachRedisCache(\Redis $cRedis)
+    public function attachRedisCache(\Redis $cRedis): void
     {
         $this->cRedis = $cRedis;
     }
 
     /**
      * @param string|null $prefix
+     * @return void
      */
-    public function setRoutePrefix(string $prefix = null)
+    public function setRoutePrefix(string $prefix = null): void
     {
         $this->routePrefix = $prefix;
     }
@@ -524,15 +535,16 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return null|string
      */
-    public function getRoutePrefix()
+    public function getRoutePrefix(): ?string
     {
         return $this->routePrefix;
     }
 
     /**
      * @param string $name
+     * @return void
      */
-    public function setPageWrapperName(string $name)
+    public function setPageWrapperName(string $name): void
     {
         $this->pageWrapperName = $name;
     }
@@ -540,7 +552,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return null|string
      */
-    public function getPageWrapperName()
+    public function getPageWrapperName(): ?string
     {
         return $this->pageWrapperName;
     }
@@ -548,7 +560,7 @@ class CoreRouter implements ConstantsInterface
     /**
      * @return string
      */
-    public function getCallingMethod()
+    public function getCallingMethod(): string
     {
         return $this->callingMethod;
     }
@@ -559,7 +571,7 @@ class CoreRouter implements ConstantsInterface
      *
      * @return mixed
      */
-    protected function instantiateHandlerClass(string $className, array $args = null)
+    protected function instantiateHandlerClass(string $className, array $args = null): mixed
     {
         $this->fireHook('before_handler', $args);
         try {
