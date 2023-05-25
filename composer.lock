@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "gcworld/interfaces",
-            "version": "4.3.3",
+            "version": "4.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "247eeba3b94a85732bf770762dbe7e87cd77342c"
+                "reference": "d26811721c0945c9ed1c997ad69a2408a0ff137a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/247eeba3b94a85732bf770762dbe7e87cd77342c",
-                "reference": "247eeba3b94a85732bf770762dbe7e87cd77342c",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/d26811721c0945c9ed1c997ad69a2408a0ff137a",
+                "reference": "d26811721c0945c9ed1c997ad69a2408a0ff137a",
                 "shasum": ""
             },
             "require": {
@@ -48,9 +48,9 @@
             "description": "GCWorld Interfaces",
             "support": {
                 "issues": "https://github.com/KongHack/Interfaces/issues",
-                "source": "https://github.com/KongHack/Interfaces/tree/4.3.3"
+                "source": "https://github.com/KongHack/Interfaces/tree/4.3.4"
             },
-            "time": "2023-05-25T00:32:50+00:00"
+            "time": "2023-05-25T00:49:13+00:00"
         },
         {
             "name": "gcworld/utilities",

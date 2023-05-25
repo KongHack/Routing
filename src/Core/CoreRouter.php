@@ -46,14 +46,15 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
 
     /**
      * @param string $name
-     * @return static
+     * @return RoutingInterface
      */
-    public static function getInstance(string $name = self::DEFAULT_NAME): static
+    public static function getInstance(string $name = self::DEFAULT_NAME): RoutingInterface
     {
-        if(!isset(self::$instances[$name])) {
-            self::$instances[$name] = new static($name);
+        if(!isset(static::$instances[$name])) {
+            static::$instances[$name] = new static($name);
         }
-        return self::$instances[$name];
+
+        return static::$instances[$name];
     }
 
     /**
