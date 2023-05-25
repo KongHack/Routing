@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.2.1](https://github.com/KongHack/Routing/releases/tag/5.2.1)
+- @GameCharmer Finish implementing routing interface
+
+
+
 ## [5.2.0](https://github.com/KongHack/Routing/releases/tag/5.2.0)
 - @GameCharmer Implement Routing Interface
 
