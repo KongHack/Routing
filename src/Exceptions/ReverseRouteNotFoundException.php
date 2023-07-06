@@ -23,7 +23,8 @@ class ReverseRouteNotFoundException extends Exception
     public function __construct(string $route, ?array $params = null, string $message = "", int $code = 0, ?Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->route  = $route;
-        $this->params = $params;
+        $this->route   = $route;
+        $this->params  = $params;
+        $this->message = 'Route: "'.$route.'" Not Found';
     }
 }
