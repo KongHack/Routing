@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.2.3](https://github.com/KongHack/Routing/releases/tag/5.2.3)
+- @GameCharmer Improve message of `ReverseRouteNotFoundException`
+
+
+
 ## [5.2.2](https://github.com/KongHack/Routing/releases/tag/5.2.2)
 - @GameCharmer Update return on `CoreRouter::getInstance()` to return `RoutingInterface` instead of `static`
 
