@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.2.4](https://github.com/KongHack/Routing/releases/tag/5.2.4)
+- @GameCharmer Update composer dependencies (Dependabot)
+
+
+
 ## [5.2.3](https://github.com/KongHack/Routing/releases/tag/5.2.3)
 - @GameCharmer Improve message of `ReverseRouteNotFoundException`
 
