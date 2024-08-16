@@ -51,7 +51,7 @@ class Hook
         $instance = self::getInstance($name);
         if (isset($instance->hooks[$hook_name])) {
             foreach ($instance->hooks[$hook_name] as $fn) {
-                if(is_array($params)) {
+                if(!empty($params)) {
                     call_user_func_array($fn, $params);
                 } else {
                     call_user_func($fn);
