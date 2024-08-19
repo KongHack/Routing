@@ -42,9 +42,9 @@ class RouterExceptionCustom extends Exception implements RouterExceptionInterfac
     {
         http_response_code($this->code);
         Hook::fire(CoreRouter::getInstance()->getName(), 'custom', [
-            'title'   => $this->getTitle(),
-            'message' => $this->getMessage(),
-            'code'    => $this->code,
+            'httpResponseCode' => $this->code,
+            'title'            => $this->getTitle(),
+            'message'          => $this->getMessage(),
         ]);
     }
 }

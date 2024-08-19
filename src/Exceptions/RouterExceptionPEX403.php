@@ -12,7 +12,7 @@ use GCWorld\Routing\Interfaces\RouterExceptionInterface;
  */
 class RouterExceptionPEX403 extends Exception implements RouterExceptionInterface
 {
-    protected $node = null;
+    protected string|array $node = [];
 
     /**
      * RouterExceptionPEX403 constructor.
@@ -36,6 +36,6 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
             Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes'=>$this->node]);
             return;
         }
-        Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['node'=>$this->node]);
+        Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes'=>[$this->node]]);
     }
 }
