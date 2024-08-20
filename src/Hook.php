@@ -51,13 +51,24 @@ class Hook
         $instance = self::getInstance($name);
         if (isset($instance->hooks[$hook_name])) {
             foreach ($instance->hooks[$hook_name] as $fn) {
-                if(!empty($params)) {
-                    call_user_func_array($fn, $params);
-                } else {
-                    call_user_func($fn);
-                }
+                self::call($fn, $params??[]);
             }
         }
+    }
+
+    /**
+     * @param string $fn
+     * @param array $params
+     * @return void
+     */
+    protected static function call(string $fn, array $params): void
+    {
+        if(empty($params)) {
+            $fn();
+            return;
+        }
+
+        $fn(...$params);
     }
 
     /**

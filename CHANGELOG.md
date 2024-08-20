@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.3.3](https://github.com/KongHack/Routing/releases/tag/5.3.3)
+- @GameCharmer Eliminate call_user_func/_array entirely
+
+
+
 ## [5.3.2](https://github.com/KongHack/Routing/releases/tag/5.3.2)
 - @GameCharmer Update exceptions to better fall in line with call user func array
 
