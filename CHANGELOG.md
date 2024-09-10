@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.3.4](https://github.com/KongHack/Routing/releases/tag/5.3.4)
+- @GameCharmer Update Twig per CVE-2024-45411
+
+
+
 ## [5.3.3](https://github.com/KongHack/Routing/releases/tag/5.3.3)
 - @GameCharmer Eliminate call_user_func/_array entirely
 
