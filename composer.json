@@ -28,7 +28,7 @@
       "GCWorld\\Routing\\": "src/"
     }
   },
-  "license":"GPL-3.0-only",
+  "license":"MIT",
   "config": {
     "allow-plugins": {
       "composer/installers": true
