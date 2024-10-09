@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.3.6](https://github.com/KongHack/Routing/releases/tag/5.3.6)
+- @GameCharmer Update redirect default so GET is 301 permanent, but anything else (POST/PUT/DELETE/ETC) are 302 while still allowing overrides
+
+
+
 ## [5.3.5](https://github.com/KongHack/Routing/releases/tag/5.3.5)
 - @GameCharmer Default redirects to 301 permanent redirect and allow changing via exception code
 
