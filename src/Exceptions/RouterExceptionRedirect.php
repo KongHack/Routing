@@ -11,7 +11,7 @@ use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 class RouterExceptionRedirect extends Exception implements RouterExceptionInterface
 {
     protected string $redirectUrl = '';
-    protected int    $statusCode  = 301;
+    protected int    $statusCode  = 0;
 
     /**
      * RouterExceptionRedirect constructor.
@@ -27,6 +27,13 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
 
         if($code > 0) {
             $this->statusCode = $code;
+        }
+        if($this->statusCode === 0) {
+            if($_SERVER['REQUEST_METHOD']??'' === 'GET') {
+                $this->statusCode = 301;
+            } else {
+                $this->statusCode = 302;
+            }
         }
     }
 
