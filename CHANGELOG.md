@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.3.5](https://github.com/KongHack/Routing/releases/tag/5.3.5)
+- @GameCharmer Default redirects to 301 permanent redirect and allow changing via exception code
+
+
+
 ## [5.3.4](https://github.com/KongHack/Routing/releases/tag/5.3.4)
 - @GameCharmer Update Twig per CVE-2024-45411
 

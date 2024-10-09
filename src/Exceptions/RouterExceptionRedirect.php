@@ -10,7 +10,8 @@ use GCWorld\Routing\Interfaces\RouterExceptionInterface;
  */
 class RouterExceptionRedirect extends Exception implements RouterExceptionInterface
 {
-    private $redirectUrl = '';
+    protected string $redirectUrl = '';
+    protected int    $statusCode  = 301;
 
     /**
      * RouterExceptionRedirect constructor.
@@ -23,6 +24,10 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
     {
         $this->redirectUrl = $redirectUrl;
         parent::__construct($message, $code, $previous);
+
+        if($code > 0) {
+            $this->statusCode = $code;
+        }
     }
 
     /**
@@ -38,6 +43,6 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
      */
     public function executeLogic(): void
     {
-        header('Location: '.$this->getRedirectUrl());
+        header('Location: '.$this->getRedirectUrl(), true, $this->statusCode);
     }
 }
