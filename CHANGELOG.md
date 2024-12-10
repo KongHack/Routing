@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.3.7](https://github.com/KongHack/Routing/releases/tag/5.3.7)
+- @GameCharmer Update Composer Dependencies
+
+
+
 ## [5.3.6](https://github.com/KongHack/Routing/releases/tag/5.3.6)
 - @GameCharmer Update redirect default so GET is 301 permanent, but anything else (POST/PUT/DELETE/ETC) are 302 while still allowing overrides
 
