@@ -8,15 +8,15 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.4",
     "ext-json": "*",
     "ext-redis": "*",
-    "gcworld/interfaces": ">=3.3.1",
+    "gcworld/interfaces": ">=4.3",
     "gcworld/utilities": ">=2.0",
     "phpdocumentor/reflection-docblock": "^5.3"
   },
   "require-dev": {
-    "gcworld/database": ">=1.1"
+    "gcworld/database": ">=2.3"
   },
   "suggest": {
     "ext-redis":"Redis Caching",

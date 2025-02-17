@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.0](https://github.com/KongHack/Routing/releases/tag/5.4.0)
+- @GameCharmer Remove PHPEncoder, PHP 8.4
+
+
+
 ## [5.3.7](https://github.com/KongHack/Routing/releases/tag/5.3.7)
 - @GameCharmer Update Composer Dependencies
 
