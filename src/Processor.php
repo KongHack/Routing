@@ -2,7 +2,6 @@
 namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\RoutingInterface;
-use Riimu\Kit\PHPEncoder\PHPEncoder;
 
 /**
  * Class Processor
@@ -17,7 +16,7 @@ class Processor
     protected bool   $debug           = false;
 
     /**
-     * @param bool $debug
+     * @param string $name
      */
     public function __construct(string $name = RoutingInterface::DEFAULT_NAME)
     {
@@ -36,7 +35,7 @@ class Processor
      * @param bool $debug
      * @return void
      */
-    public function setDebug(bool $debug)
+    public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
     }
@@ -44,7 +43,7 @@ class Processor
     /**
      * @return string
      */
-    public function getStorageLocation()
+    public function getStorageLocation(): string
     {
         return $this->storage;
     }
@@ -52,7 +51,7 @@ class Processor
     /**
      * @param $key
      */
-    public function addMasterRoute($key)
+    public function addMasterRoute($key): void
     {
         if (!in_array($key, $this->routes_master)) {
             $this->routes_master[] = $key;
@@ -217,16 +216,7 @@ class Processor
             if ($temp[1] != $master) {
                 continue;
             }
-            $cEncoder = new PHPEncoder();
-            $encoded  = $cEncoder->encode($v, [
-                'array.base'         => 12,
-                'array.inline'       => false,
-                'array.omit'         => false,
-                'array.align'        => true,
-                'array.indent'       => 4,
-                'boolean.capitalize' => true,
-                'null.capitalize'    => true,
-            ]);
+            $encoded  = var_export($v, true);
             $php .= "            '$k' => ".$encoded.",\n";
         }
         $php .= "        ];\n";
@@ -242,16 +232,7 @@ class Processor
             if ($temp[0] != $master) {
                 continue;
             }
-            $cEncoder = new PHPEncoder();
-            $encoded  = $cEncoder->encode($v, [
-                'array.base'         => 12,
-                'array.inline'       => false,
-                'array.omit'         => false,
-                'array.align'        => true,
-                'array.indent'       => 4,
-                'boolean.capitalize' => true,
-                'null.capitalize'    => true,
-            ]);
+            $encoded  = var_export($v, true);
             $php .= "            '$k' => ".$encoded.",\n";
         }
         $php .= "        ];\n";
@@ -291,16 +272,7 @@ class Processor
             if (in_array($temp[1], $this->routes_master)) {
                 continue;
             }
-            $cEncoder = new PHPEncoder();
-            $encoded  = $cEncoder->encode($v, [
-                'array.base'         => 12,
-                'array.inline'       => false,
-                'array.omit'         => false,
-                'array.align'        => true,
-                'array.indent'       => 4,
-                'boolean.capitalize' => true,
-                'null.capitalize'    => true,
-            ]);
+            $encoded  = var_export($v, true);
             $php .= "            '$k' => ".$encoded.",\n";
         }
         $php .= "        ];\n";
@@ -316,16 +288,7 @@ class Processor
             if (in_array($temp[0], $this->routes_master)) {
                 continue;
             }
-            $cEncoder = new PHPEncoder();
-            $encoded  = $cEncoder->encode($v, [
-                'array.base'         => 12,
-                'array.inline'       => false,
-                'array.omit'         => false,
-                'array.align'        => true,
-                'array.indent'       => 4,
-                'boolean.capitalize' => true,
-                'null.capitalize'    => true,
-            ]);
+            $encoded  = var_export($v, true);
             $php .= "            '$k' => ".$encoded.",\n";
         }
         $php .= "        ];\n";
@@ -340,7 +303,7 @@ class Processor
     /**
      * @return array
      */
-    public function getReverseRoutes()
+    public function getReverseRoutes(): array
     {
         return $this->routes_reverse;
     }
