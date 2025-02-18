@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c3dd7e4267905bf877bb6f1ea36fa84",
+    "content-hash": "b9df837f72e247b59fe641d05d487bb5",
     "packages": [
         {
             "name": "doctrine/deprecations",
@@ -53,21 +53,21 @@
         },
         {
             "name": "gcworld/interfaces",
-            "version": "4.3.14",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "9d4e847e10fe1f438b4fbfca81daa6495b223e99"
+                "reference": "0f47cd951b8068b2524d254f95315e74bca03835"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/9d4e847e10fe1f438b4fbfca81daa6495b223e99",
-                "reference": "9d4e847e10fe1f438b4fbfca81daa6495b223e99",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/0f47cd951b8068b2524d254f95315e74bca03835",
+                "reference": "0f47cd951b8068b2524d254f95315e74bca03835",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1",
-                "twig/twig": "^3.5"
+                "twig/twig": "^3.19"
             },
             "require-dev": {
                 "gcworld/code_sniffer_contrib": "^2.0.4",
@@ -93,9 +93,9 @@
             "description": "GCWorld Interfaces",
             "support": {
                 "issues": "https://github.com/KongHack/Interfaces/issues",
-                "source": "https://github.com/KongHack/Interfaces/tree/4.3.14"
+                "source": "https://github.com/KongHack/Interfaces/tree/4.4.0"
             },
-            "time": "2024-12-18T19:32:17+00:00"
+            "time": "2025-02-18T13:26:58+00:00"
         },
         {
             "name": "gcworld/utilities",

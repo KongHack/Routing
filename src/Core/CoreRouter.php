@@ -157,7 +157,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      * @param string|null $path
      * @return RouteDiscoveryData|null
      */
-    public function discoverRoute(string $path = null): ?RouteDiscoveryData
+    public function discoverRoute(?string $path = null): ?RouteDiscoveryData
     {
         $path = $path ?? $this->getPathInfo();
 
@@ -174,10 +174,10 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
 
     /**
      * Process & Execute Route. Only call once from a front loader
-     * @param null $path_info
+     * @param null|string $path_info
      * @throws Exception
      */
-    public function forward($path_info = null): void
+    public function forward(?string $path_info = null): void
     {
         $this->fireHook('before_request');
 
@@ -528,7 +528,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      * @param string|null $prefix
      * @return void
      */
-    public function setRoutePrefix(string $prefix = null): void
+    public function setRoutePrefix(?string $prefix = null): void
     {
         $this->routePrefix = $prefix;
     }
@@ -572,7 +572,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      *
      * @return mixed
      */
-    protected function instantiateHandlerClass(string $className, array $args = null): mixed
+    protected function instantiateHandlerClass(string $className, ?array $args = null): mixed
     {
         $this->fireHook('before_handler', $args);
         try {
@@ -592,7 +592,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      *
      * @return void
      */
-    protected function fireHook(string $type, array $args = null)
+    protected function fireHook(string $type, ?array $args = null): void
     {
         try {
             Hook::fire($this->name, $type, $args);
@@ -608,7 +608,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      * @return void
      * @throws Exception
      */
-    protected function securityCheck(array $aHandler, array $matches)
+    protected function securityCheck(array $aHandler, array $matches): void
     {
         // Security Testing!
         if ($this->userClassName != null) {
