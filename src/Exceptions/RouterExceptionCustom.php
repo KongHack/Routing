@@ -12,7 +12,7 @@ use GCWorld\Routing\Interfaces\RouterExceptionInterface;
  */
 class RouterExceptionCustom extends Exception implements RouterExceptionInterface
 {
-    private $title = '';
+    protected string $title = '';
 
     /**
      * RouterExceptionCustom constructor.
@@ -21,7 +21,7 @@ class RouterExceptionCustom extends Exception implements RouterExceptionInterfac
      * @param int             $code
      * @param \Exception|null $previous
      */
-    public function __construct(string $title = "", string $message = "", int $code = 400, Exception $previous = null)
+    public function __construct(string $title = "", string $message = "", int $code = 400, ?Exception $previous = null)
     {
         $this->title = $title;
         parent::__construct($message, $code, $previous);

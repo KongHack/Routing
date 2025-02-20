@@ -20,7 +20,7 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
      * @param int             $code
      * @param \Exception|null $previous
      */
-    public function __construct(string $redirectUrl = "", string $message = "", int $code = 0, Exception $previous = null)
+    public function __construct(string $redirectUrl = "", string $message = "", int $code = 0, ?Exception $previous = null)
     {
         $this->redirectUrl = $redirectUrl;
         parent::__construct($message, $code, $previous);
