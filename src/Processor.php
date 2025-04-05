@@ -68,9 +68,9 @@ class Processor
             if (function_exists('d')) {
                 d($routes);
             } else {
-                echo '<pre><b>$routes</b><br>';
+                echo 'Incoming Routes', PHP_EOL;
                 print_r($routes);
-                echo '</pre>';
+                echo PHP_EOL;
             }
         }
 
@@ -91,9 +91,9 @@ class Processor
                     if (function_exists('d')) {
                         d($this);
                     } else {
-                        echo '<pre>';
+                        echo 'Reverse Routes',PHP_EOL;
                         print_r($this->routes_reverse);
-                        echo '</pre>';
+                        echo PHP_EOL;
                     }
                 }
                 throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
@@ -110,12 +110,12 @@ class Processor
                 d($this->routes_straight);
                 d($this->routes_reverse);
             } else {
-                echo '<pre><b>straight</b><br>';
+                echo 'Straight Routes',PHP_EOL;
                 print_r($this->routes_straight);
-                echo '</pre>';
-                echo '<pre><b>reverse</b><br>';
+                echo PHP_EOL;
+                echo 'Reverse Routes',PHP_EOL;
                 print_r($this->routes_reverse);
-                echo '</pre>';
+                echo PHP_EOL;
             }
         }
 

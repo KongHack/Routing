@@ -4,10 +4,12 @@ namespace GCWorld\Routing;
 use Exception;
 use GCWorld\Database\Database;
 use GCWorld\Interfaces\RoutingInterface;
+use GCWorld\Routing\Attributes\Route;
 use GCWorld\Routing\Interfaces\RawRoutesInterface;
 use GCWorld\Utilities\Traits\General;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
+use ReflectionAttribute;
 use ReflectionClass;
 
 /**
@@ -68,7 +70,7 @@ class LoadRoutes
      * @return $this
      * @throws Exception
      */
-    public function addRoute(string $fullClass, bool $skipCheck = false)
+    public function addRoute(string $fullClass, bool $skipCheck = false): static
     {
         if (!$skipCheck) {
             if (!class_exists($fullClass)) {
@@ -82,8 +84,9 @@ class LoadRoutes
 
     /**
      * @param bool $lint
+     * @return void
      */
-    public function setLint(bool $lint)
+    public function setLint(bool $lint): void
     {
         $this->doLint = $lint;
     }
@@ -94,7 +97,7 @@ class LoadRoutes
      * @param string $path
      * @return $this
      */
-    public function addPath(string $path)
+    public function addPath(string $path): static
     {
         $this->paths[] = $path;
 
@@ -105,8 +108,9 @@ class LoadRoutes
      * @param bool $force
      * @param bool $debug
      * @throws Exception
+     * @return void
      */
-    public function generateRoutes(bool $force = false, bool $debug = false)
+    public function generateRoutes(bool $force = false, bool $debug = false): void
     {
         foreach ($this->classes as $fullClass) {
             $cTemp = new $fullClass;
@@ -129,8 +133,13 @@ class LoadRoutes
             }
         }
 
+        if($debug) {
+            print_r($files);
+        }
+
         if ($force
-            || count($this->paths) || $this->highestTime > $this->lastClassTime
+            || !empty($this->paths)
+            || $this->highestTime > $this->lastClassTime
             || count($files) != count($this->classes)
         ) {
             $routes = [];
@@ -180,58 +189,62 @@ class LoadRoutes
      * @param bool $debug
      * @return array
      */
-    protected function generateAnnotatedRoutes(bool $debug = false)
+    protected function generateAnnotatedRoutes(bool $debug = false): array
     {
+        if(empty($this->paths)) {
+            return [];
+        }
+
         $cPhpDocFactory  = DocBlockFactory::createInstance();
 
         $return = [];
-        if (count($this->paths) > 0) {
-            foreach ($this->paths as $path) {
-                $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
-                foreach ($classFiles as $file) {
-                    if($debug) {
-                        echo ' - Processing: ',$file,PHP_EOL;
-                    }
+        foreach ($this->paths as $path) {
+            $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
+            foreach ($classFiles as $file) {
+                if($debug) {
+                    echo ' - Processing: ',$file,PHP_EOL;
+                }
 
-                    if($this->doLint) {
-                        exec("php -l {$file}", $execOutput, $execError);
-                        if ($execError !== 0) {
-                            if($debug) {
-                                echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
-                                echo '  - file: ', $file, PHP_EOL;
-                                echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
-                            }
+                if($this->doLint) {
+                    if($debug) {
+                        echo '  - Linting File',PHP_EOL;
+                    }
+                    exec("php -l {$file}", $execOutput, $execError);
+                    if ($execError !== 0) {
+                        if($debug) {
+                            echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
+                            echo '  - file: ', $file, PHP_EOL;
+                            echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
+                        }
+                        continue;
+                    }
+                }
+
+                $classString = $this->getClassString($file);
+                if (class_exists($classString)) {
+                    $cReflection = new ReflectionClass($classString);
+                    // Check Attributes First!
+                    $attributes = $cReflection->getAttributes();
+                    if(!empty($attributes)) {
+                        $resp = $this->processAttributes($classString, $attributes);
+                        if($resp) {
+                            $return = array_merge($return, $resp);
                             continue;
                         }
                     }
 
-                    $namespace = '';
-                    $className = '';
-                    $fh        = fopen($file, 'r');
-                    while (($buffer = fgets($fh)) !== false) {
-                        if (substr($buffer, 0, 9) == 'namespace') {
-                            $namespace = substr(trim($buffer), 10, -1);
-                        }
-                        if (substr($buffer, 0, 5) == 'class') {
-                            $temp      = explode(' ', $buffer);
-                            $className = $temp[1];
-                            break;
-                        }
-                    }
-                    $classString = trim('\\'.$namespace.'\\'.$className);
-                    if (class_exists($classString)) {
-                        $thisClass = new ReflectionClass($classString);
-                        if (($comment = $thisClass->getDocComment()) !== false) {
-                            $phpDoc = $cPhpDocFactory->create($comment);
-                            $routes = $this->processTags($classString, $phpDoc);
-                            if ($routes) {
-                                $return = array_merge($return, $routes);
-                            }
+                    if (($comment = $cReflection->getDocComment()) !== false) {
+                        $phpDoc = $cPhpDocFactory->create($comment);
+                        $resp   = $this->processTags($classString, $phpDoc);
+                        if ($resp) {
+                            $return = array_merge($return, $resp);
+                            continue;
                         }
                     }
                 }
             }
         }
+
 
         return $return;
     }
@@ -240,7 +253,7 @@ class LoadRoutes
      * @param string $file
      * @return array
      */
-    public function lintFile(string $file)
+    public function lintFile(string $file): array
     {
         $response = [
             'success'  => true,
@@ -255,34 +268,24 @@ class LoadRoutes
             return $response;
         }
 
-        $namespace = '';
-        $className = '';
-        $fh        = fopen($file, 'r');
-        while (($buffer = fgets($fh)) !== false) {
-            if (substr($buffer, 0, 9) == 'namespace') {
-                $namespace = substr(trim($buffer), 10, -1);
-            }
-            if (substr($buffer, 0, 5) == 'class') {
-                $temp      = explode(' ', $buffer);
-                $className = $temp[1];
-                break;
-            }
-        }
-        $classString = trim('\\'.$namespace.'\\'.$className);
+        $classString = $this->getClassString($file);
         if (!class_exists($classString)) {
             $response['success'] = false;
             $response['message'] = 'Failed to load class';
             return $response;
         }
         try {
-            $thisClass = new \ReflectionClass($classString);
+            $cReflection = new \ReflectionClass($classString);
         } catch (\Exception $e) {
             $response['success'] = false;
             $response['message'] = 'Failed to get reflection.'.PHP_EOL.$e->getMessage();
             return $response;
         }
 
-        if (($comment = $thisClass->getDocComment()) !== false) {
+        $attributes = $cReflection->getAttributes();
+        print_r($attributes);
+
+        if (($comment = $cReflection->getDocComment()) !== false) {
             $cPhpDocFactory     = DocBlockFactory::createInstance();
             $phpDoc             = $cPhpDocFactory->create($comment);
             $response['routes'] = $this->processTags($classString, $phpDoc);
@@ -297,16 +300,16 @@ class LoadRoutes
     /**
      * @param string   $classString
      * @param DocBlock $phpDoc
-     * @return array|bool
+     * @return null|array
      */
-    protected function processTags($classString, DocBlock $phpDoc)
+    protected function processTags(string $classString, DocBlock $phpDoc): ?array
     {
         if ($phpDoc->hasTag('router-1-pattern') && $phpDoc->hasTag('router-1-name')) {
             return $this->processComplexTags($classString, $phpDoc);
         }
 
         if (!$phpDoc->hasTag('router-pattern') || !$phpDoc->hasTag('router-name')) {
-            return false;
+            return null;
         }
 
 
@@ -387,14 +390,43 @@ class LoadRoutes
     }
 
     /**
+     * @param string $className
+     * @param ReflectionAttribute[] $attributes
+     * @return array|null
+     */
+    protected function processAttributes(string $className, array $attributes): ?array
+    {
+        $routes = [];
+        foreach($attributes as $attribute) {
+            if($attribute->getName() !== 'GCWorld\\Routing\\Attributes\\Route') {
+                continue;
+            }
+
+            /** @var Route $cObj */
+            $cObj = $attribute->newInstance();
+            $arr  = $cObj->getRouteArray();
+
+            // Add class string
+            $arr['class'] = $className;
+
+            // Compile the routing definition, then apply to each pattern
+            foreach($cObj->patterns as $pattern) {
+                $routes[$pattern] = $arr;
+            }
+        }
+
+        return $routes;
+    }
+
+    /**
      * @param string   $classString
      * @param DocBlock $phpDoc
-     * @return array|bool
+     * @return null|array
      */
-    protected function processComplexTags(string $classString, DocBlock $phpDoc)
+    protected function processComplexTags(string $classString, DocBlock $phpDoc): ?array
     {
         if (!$phpDoc->hasTag('router-1-pattern') || !$phpDoc->hasTag('router-1-name')) {
-            return false;
+            return null;
         }
 
         $routes = [];
@@ -483,32 +515,35 @@ class LoadRoutes
 
     /**
      * @param \Redis $redis
+     * @return void
      */
-    public function attachRedisCache(\Redis $redis)
+    public function attachRedisCache(\Redis $redis): void
     {
         $this->redis = $redis;
     }
 
     /**
      * @param Database $db
+     * @return void
      */
-    public function attachDatabase(Database $db)
+    public function attachDatabase(Database $db): void
     {
         $this->db = $db;
     }
 
     /**
      * @return string
+     * @return void
      */
-    public function getOurRoot()
+    public function getOurRoot(): string
     {
-        return dirname(__FILE__).'/../';
+        return __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
     }
 
     /**
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return trim(file_get_contents($this->getOurRoot().'VERSION'));
     }
@@ -612,5 +647,27 @@ class LoadRoutes
             $query->closeCursor();
         }
         unset($routes, $route, $table, $fileName, $className);
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    protected function getClassString(string $file): string
+    {
+        $namespace = '';
+        $className = '';
+        $fh = fopen($file, 'r');
+        while (($buffer = fgets($fh)) !== false) {
+            if (str_starts_with($buffer, 'namespace')) {
+                $namespace = substr(trim($buffer), 10, -1);
+            }
+            if (str_starts_with($buffer, 'class')) {
+                $temp = explode(' ', $buffer);
+                $className = $temp[1];
+                break;
+            }
+        }
+        return trim('\\' . $namespace . '\\' . $className);
     }
 }
