@@ -12,7 +12,25 @@ foreach($files as $file) {
     include_once $file;
 }
 
+$timeAnno = 0;
+$timeAttr = 0;
+
+
+$start = microtime(true);
 $cLoader = LoadRoutes::getInstance();
 $cLoader->setLint(false);
-$cLoader->addPath($testDir);
-$cLoader->generateRoutes(true, true);
+$cLoader->addPath($testDir . 'TestAnnotations.php');
+$cLoader->generateRoutes(true, false);
+$timeAnno += microtime(true) - $start;
+
+$start = microtime(true);
+$cLoader = LoadRoutes::getInstance();
+$cLoader->setLint(false);
+$cLoader->addPath($testDir . 'TestAttributes.php');
+$cLoader->generateRoutes(true, false);
+$timeAttr += microtime(true) - $start;
+
+
+echo 'Anno: ',$timeAnno,PHP_EOL;
+echo 'Attr: ',$timeAttr,PHP_EOL;
+

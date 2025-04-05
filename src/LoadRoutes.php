@@ -199,7 +199,14 @@ class LoadRoutes
 
         $return = [];
         foreach ($this->paths as $path) {
-            $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
+            if(is_dir($path)) {
+                $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
+            } elseif(file_exists($path)) {
+                $classFiles = [$path];
+            } else {
+                continue;
+            }
+
             foreach ($classFiles as $file) {
                 if($debug) {
                     echo ' - Processing: ',$file,PHP_EOL;
@@ -555,9 +562,7 @@ class LoadRoutes
      */
     protected function storeRoutes(Processor $cProcessor): void
     {
-        // TODO: Implement $this->dbTableName
-
-        $table = '_RouteRawList';
+        $table = $this->dbTableName;
         // Make sure our table exists.
         if (!$this->db->tableExists($table)) {
             $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
@@ -577,7 +582,7 @@ class LoadRoutes
         $sql = 'TRUNCATE TABLE `_RouteRawList`';
         $this->db->exec($sql);
 
-        $sql   = 'INSERT INTO `_RouteRawList`
+        $sql = 'INSERT INTO `'.$table.'`
             (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES
@@ -595,7 +600,7 @@ class LoadRoutes
               route_pexCheckExact = VALUES(route_pexCheckExact),
               route_meta = VALUES(route_meta)
         ';
-        $query = $this->db->prepare($sql);
+        $qry = $this->db->prepare($sql);
 
         $routes = $cProcessor->getReverseRoutes();
 
@@ -630,7 +635,7 @@ class LoadRoutes
                 $meta = json_encode($route['meta']);
             }
 
-            $query->execute([
+            $qry->execute([
                 ':path'          => $route['pattern'],
                 ':name'          => $name,
                 ':title'         => (isset($route['title']) ? json_encode($route['title']) : ''),
@@ -644,9 +649,8 @@ class LoadRoutes
                 ':pexCheckExact' => $checkExact,
                 ':meta'          => $meta,
             ]);
-            $query->closeCursor();
+            $qry->closeCursor();
         }
-        unset($routes, $route, $table, $fileName, $className);
     }
 
     /**
