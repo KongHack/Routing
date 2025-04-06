@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.3](https://github.com/KongHack/Routing/releases/tag/5.4.3)
+- @GameCharmer Annotation System!
+
+
+
 ## [5.4.2](https://github.com/KongHack/Routing/releases/tag/5.4.2)
 - @GameCharmer PHP 8.4
 
