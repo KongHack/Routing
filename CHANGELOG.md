@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.4](https://github.com/KongHack/Routing/releases/tag/5.4.4)
+- @GameCharmer Limit the route attribute to classes, add IS_REPEATABLE
+
+
+
 ## [5.4.3](https://github.com/KongHack/Routing/releases/tag/5.4.3)
 - @GameCharmer Annotation System!
 
