@@ -4,7 +4,7 @@ namespace GCWorld\Routing\Attributes;
 use Attribute;
 use GCWorld\Routing\Enumerations\RoutePexCheckType;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Route
 {
     /**
