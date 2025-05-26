@@ -12,8 +12,8 @@ class RoutePexCheck
      * @param string $pexString
      */
     public function __construct(
-        public RoutePexCheckType $type,
-        public string $pexString
+        public readonly RoutePexCheckType $type,
+        public readonly string $pexString
     ) {
 
     }

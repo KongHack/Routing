@@ -12,8 +12,8 @@ class Debugger
 {
     const TABLE = '_RouteDebugData';
 
-    protected Database\DatabaseInterface $db;
-    protected string                     $storage;
+    public readonly Database\DatabaseInterface $db;
+    public readonly string                     $storage;
 
     /**
      * @param Database\DatabaseInterface $db

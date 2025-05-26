@@ -8,11 +8,14 @@ use GCWorld\Interfaces\RoutingInterface;
  */
 class Processor
 {
-    protected string $name;
+    public readonly string $name;
+    /** @var array<string, array<string, mixed>> */
     protected array  $routes_straight = [];
+    /** @var array<string, array<string, mixed>> */
     protected array  $routes_reverse  = [];
+    /** @var list<string> */
     protected array  $routes_master   = [];
-    protected string $storage         = '';
+    public readonly string $storage;
     protected bool   $debug           = false;
 
     /**

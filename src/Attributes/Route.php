@@ -11,23 +11,27 @@ class Route
      * @param bool $autoWrapper
      * @param bool $session
      * @param string $name
-     * @param array $patterns
+     * @param array<int, string> $patterns  // Kept as array as per specific instruction, though list<string> might fit
      * @param string $title
-     * @param RouteMeta[] $meta
-     * @param string[] $preArgs
-     * @param string[] $postArgs
-     * @param RoutePexCheck[] $pex
+     * @param array<int, RouteMeta> $meta
+     * @param array<int, string> $preArgs
+     * @param array<int, string> $postArgs
+     * @param array<int, RoutePexCheck> $pex
      */
     public function __construct(
-        public bool $autoWrapper = false,
-        public bool $session     = false,
-        public string $name      = '',
-        public array  $patterns  = [],
-        public string $title     = '',
-        public array  $meta      = [],
-        public array  $preArgs   = [],
-        public array  $postArgs  = [],
-        public array  $pex       = [],
+        public readonly bool $autoWrapper = false,
+        public readonly bool $session     = false,
+        public readonly string $name      = '',
+        public readonly array  $patterns  = [],
+        public readonly string $title     = '',
+        /** @var array<int, RouteMeta> */
+        public readonly array  $meta      = [],
+        /** @var array<int, string> */
+        public readonly array  $preArgs   = [],
+        /** @var array<int, string> */
+        public readonly array  $postArgs  = [],
+        /** @var array<int, RoutePexCheck> */
+        public readonly array  $pex       = [],
     ) {
 
     }

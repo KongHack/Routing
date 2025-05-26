@@ -23,6 +23,7 @@ use Redis;
  */
 class CoreRouter implements ConstantsInterface, RoutingInterface
 {
+    /** @var array<string, static> */
     protected static array $instances = [];
 
     protected string $name;
@@ -30,6 +31,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     protected ?string      $base            = null;
     protected ?string      $userClassName   = null;
     protected ?string      $pageWrapperName = null;
+    /** @var null|array<string, array<string, mixed>> */
     protected ?array       $forcedRoutes    = null;
     protected string       $callingMethod   = '';
     protected string       $foundPathFull   = '';
@@ -41,7 +43,9 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
 
     protected ?string $foundRouteName      = null;
     protected ?string $foundRouteNameClean = null;
+    /** @var null|array<array-key, string|int> */
     protected ?array  $foundRouteArguments = null;
+    /** @var null|array<string, mixed> */
     protected ?array  $foundRouteData      = [];
 
     /**

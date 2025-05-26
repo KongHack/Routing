@@ -6,14 +6,14 @@ namespace GCWorld\Routing\Core;
  */
 class RouteDiscoveryData
 {
-    protected string $pattern;
-    protected array  $handler;
-    protected array  $matches;
+    public readonly string $pattern;
+    public readonly array  $handler;
+    public readonly array  $matches;
 
     /**
      * @param string $pattern
-     * @param array  $handler
-     * @param array  $matches
+     * @param array<string, mixed>  $handler  // Handler definition, typically from Route::getRouteArray()
+     * @param array<array-key, string|int>  $matches  // Regex matches
      */
     public function __construct(string $pattern, array $handler, array $matches = [])
     {

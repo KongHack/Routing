@@ -11,8 +11,8 @@ class RouteMeta
      * @param string $value
      */
     public function __construct(
-        public string $key,
-        public string $value,
+        public readonly string $key,
+        public readonly string $value,
     ) {
 
     }
