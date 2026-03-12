@@ -480,7 +480,8 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      */
     public function isXHRRequest(): bool
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest')
+            || !empty($_REQUEST['gc_ajax']);
     }
 
     /**
@@ -488,7 +489,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      * @param array  $regexMatches
      * @return string
      */
-    protected function replacePexKeys($pexNode, array $regexMatches): string
+    protected function replacePexKeys(string $pexNode, array $regexMatches): string
     {
         foreach ($regexMatches as $k => $v) {
             $pexNode = str_replace('['.$k.']', $v, $pexNode);

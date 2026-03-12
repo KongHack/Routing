@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.5](https://github.com/KongHack/Routing/releases/tag/5.4.5)
+- @GameCharmer add `gc_ajax` REQUEST param to trigger XHR. Useful for Cross-Domain calls that don't include the `X-Requested-With` header
+
+
+
 ## [5.4.4](https://github.com/KongHack/Routing/releases/tag/5.4.4)
 - @GameCharmer Limit the route attribute to classes, add IS_REPEATABLE
 
