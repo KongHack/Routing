@@ -362,7 +362,8 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      */
     public function reverse(string $name, array $params = []): string
     {
-        if (($routeArray = $this->reverseAll($name, $params)) === false) {
+        $routeArray = $this->reverseAll($name, $params);
+        if (empty($routeArray)) {
             throw new ReverseRouteNotFoundException($name, $params);
         }
 
@@ -371,7 +372,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
             $temp  = explode('/', $route);
             $index = 0;
             foreach ($temp as $k => $v) {
-                if (substr($v, 0, 1) == ':') {
+                if (str_starts_with($v, ':')) {
                     $temp[$k] = $params[$index];
                     ++$index;
                 }
@@ -464,6 +465,14 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     public function setBase(string $base): void
     {
         $this->base = rtrim($base, '/');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBase(): ?string
+    {
+        return $this->base;
     }
 
     /**
