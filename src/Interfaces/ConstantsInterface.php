@@ -18,7 +18,7 @@ interface ConstantsInterface
         ':string'   => '([a-zA-Z0-9]+)',
         ':uuid'     => '([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})',
         ':alpha'    => '([a-zA-Z0-9-_]+)',
-        ':base64'   => '([a-zA-Z0-9-_\+\=]+)',
+        ':base64'   => '([A-Za-z0-9+\/=_-]+)',
         ':anything' => '([^/]+)',
         ':consume'  => '(.+)',
     ];
