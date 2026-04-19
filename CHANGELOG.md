@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.7](https://github.com/KongHack/Routing/releases/tag/5.4.7)
+- @GameCharmer Base64URL Support
+
+
+
 ## [5.4.6](https://github.com/KongHack/Routing/releases/tag/5.4.6)
 - @GameCharmer Update base64 regex
 
