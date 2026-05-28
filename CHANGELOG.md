@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+## [5.4.8](https://github.com/KongHack/Routing/releases/tag/5.4.8)
+- @GameCharmer Update Composer Dependencies
+
+
+
 ## [5.4.7](https://github.com/KongHack/Routing/releases/tag/5.4.7)
 - @GameCharmer Base64URL Support
 
