@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
@@ -26,8 +27,8 @@ class RouteClassNotFoundException extends Exception
         $this->route  = $class;
         $this->params = $params;
 
-        if(empty($message)) {
-            $message = 'Routed Class Not Found: '.$class;
+        if (empty($message)) {
+            $message = 'Routed Class Not Found: ' . $class;
         }
     }
 }

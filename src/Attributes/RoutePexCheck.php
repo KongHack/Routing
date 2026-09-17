@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Attributes;
 
 use Attribute;
@@ -15,6 +16,5 @@ class RoutePexCheck
         public RoutePexCheckType $type,
         public string $pexString
     ) {
-
     }
 }

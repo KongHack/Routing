@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;

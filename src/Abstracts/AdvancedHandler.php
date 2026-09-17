@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Abstracts;
 
 use GCWorld\Routing\Interfaces\AdvancedHandlerInterface;
@@ -196,5 +197,4 @@ abstract class AdvancedHandler implements AdvancedHandlerInterface
     {
         throw new RouterException404();
     }
-
 }

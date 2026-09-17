@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
@@ -11,7 +12,7 @@ use GCWorld\Routing\Interfaces\RouterExceptionInterface;
 class RouterExceptionRedirect extends Exception implements RouterExceptionInterface
 {
     protected string $redirectUrl = '';
-    protected int    $statusCode  = 0;
+    protected int $statusCode  = 0;
 
     /**
      * RouterExceptionRedirect constructor.
@@ -25,11 +26,11 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
         $this->redirectUrl = $redirectUrl;
         parent::__construct($message, $code, $previous);
 
-        if($code > 0) {
+        if ($code > 0) {
             $this->statusCode = $code;
         }
-        if($this->statusCode === 0) {
-            if($_SERVER['REQUEST_METHOD']??'' === 'GET') {
+        if ($this->statusCode === 0) {
+            if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
                 $this->statusCode = 301;
             } else {
                 $this->statusCode = 302;
@@ -50,6 +51,6 @@ class RouterExceptionRedirect extends Exception implements RouterExceptionInterf
      */
     public function executeLogic(): void
     {
-        header('Location: '.$this->getRedirectUrl(), true, $this->statusCode);
+        header('Location: ' . $this->getRedirectUrl(), true, $this->statusCode);
     }
 }

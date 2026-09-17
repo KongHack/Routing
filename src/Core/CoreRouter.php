@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Core;
 
 use Exception;
@@ -27,22 +28,22 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
 
     protected string $name;
 
-    protected ?string      $base            = null;
-    protected ?string      $userClassName   = null;
-    protected ?string      $pageWrapperName = null;
-    protected ?array       $forcedRoutes    = null;
-    protected string       $callingMethod   = '';
-    protected string       $foundPathFull   = '';
-    protected string       $foundPathClean  = '';
-    protected ?string      $routePrefix     = null;
-    protected ?Debugger    $cDebugger       = null;
-    protected ?Redis       $cRedis          = null;
+    protected ?string $base            = null;
+    protected ?string $userClassName   = null;
+    protected ?string $pageWrapperName = null;
+    protected ?array $forcedRoutes    = null;
+    protected string $callingMethod   = '';
+    protected string $foundPathFull   = '';
+    protected string $foundPathClean  = '';
+    protected ?string $routePrefix     = null;
+    protected ?Debugger $cDebugger       = null;
+    protected ?Redis $cRedis          = null;
     protected ?PageWrapper $cPageWrapper    = null;
 
     protected ?string $foundRouteName      = null;
     protected ?string $foundRouteNameClean = null;
-    protected ?array  $foundRouteArguments = null;
-    protected ?array  $foundRouteData      = [];
+    protected ?array $foundRouteArguments = null;
+    protected ?array $foundRouteData      = [];
 
     /**
      * @param string $name
@@ -50,7 +51,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
      */
     public static function getInstance(string $name = self::DEFAULT_NAME): RoutingInterface
     {
-        if(!isset(static::$instances[$name])) {
+        if (!isset(static::$instances[$name])) {
             static::$instances[$name] = new static($name);
         }
 
@@ -161,7 +162,8 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     {
         $path = $path ?? $this->getPathInfo();
 
-        if ($this->routePrefix != null &&
+        if (
+            $this->routePrefix != null &&
             str_starts_with($path, $this->routePrefix)
         ) {
             $path = substr($path, strlen($this->routePrefix));
@@ -190,7 +192,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
         $this->foundPathFull = $path_info;
 
         if ($this->routePrefix != null) {
-            if(str_starts_with($path_info, $this->routePrefix)) {
+            if (str_starts_with($path_info, $this->routePrefix)) {
                 $path_info = substr($path_info, strlen($this->routePrefix));
             }
         }
@@ -198,15 +200,15 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
         $this->foundPathClean = $path_info;
 
         $cDiscovery = new RouteDiscovery($this->name);
-        if($this->cRedis) {
+        if ($this->cRedis) {
             $cDiscovery->setRedis($this->cRedis);
         }
-        if(!empty($this->forcedRoutes)) {
+        if (!empty($this->forcedRoutes)) {
             $cDiscovery->forceRoutes($this->forcedRoutes);
         }
         $cDiscoveryData = $cDiscovery->execute($path_info);
 
-        if($cDiscoveryData === null) {
+        if ($cDiscoveryData === null) {
             $this->fireHook('404');
             $this->fireHook('after_request');
             return;
@@ -237,7 +239,8 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
 
         $hasSession = false;
         //Used for new reverse name search.
-        if (isset($aHandler['session']) &&
+        if (
+            isset($aHandler['session']) &&
             $aHandler['session'] == true &&
             session_status() == PHP_SESSION_NONE
         ) {
@@ -261,7 +264,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
             }
         }
 
-        if($hasSession) {
+        if ($hasSession) {
             $this->securityCheck($aHandler, $matches);
         }
 
@@ -274,21 +277,21 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
             }
         }
 
-        if(!$cHandler) {
+        if (!$cHandler) {
             $this->fireHook('404');
             $this->fireHook('after_request');
             return;
         }
 
         try {
-
-            if (($this->isXHRRequest() || $cHandler instanceof JSONHandlerInterface)
-                && method_exists($cHandler, $request_method.'XHR')
+            if (
+                ($this->isXHRRequest() || $cHandler instanceof JSONHandlerInterface)
+                && method_exists($cHandler, $request_method . 'XHR')
             ) {
-                $this->callingMethod = $request_method.'XHR';
+                $this->callingMethod = $request_method . 'XHR';
                 header('Content-type: application/json');
                 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-                header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
                 header('Cache-Control: no-store, no-cache, must-revalidate');
                 header('Cache-Control: post-check=0, pre-check=0', false);
                 header('Pragma: no-cache');
@@ -302,7 +305,8 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
             }
 
             $this->callingMethod = $request_method;
-            if (isset($aHandler['autoWrapper'])
+            if (
+                isset($aHandler['autoWrapper'])
                 && $aHandler['autoWrapper']
                 && ($cHandler instanceof HandlerInterface
                     || $cHandler instanceof AdvancedHandlerInterface
@@ -312,7 +316,6 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
                 $cHandler->setBreadcrumbs();
 
                 if ($this->cPageWrapper == null && $this->pageWrapperName != null) {
-                    /** @var mixed $temp */
                     $temp = $this->pageWrapperName;
                     if (class_exists($temp)) {
                         $this->cPageWrapper = $temp::getInstance();
@@ -342,12 +345,12 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
                 } else {
                     echo $result;
                 }
-            } elseif($cHandler instanceof JSONHandlerInterface) {
+            } elseif ($cHandler instanceof JSONHandlerInterface) {
                 echo json_encode($result);
             }
 
             $this->fireHook('after_output');
-        } catch(RouterExceptionInterface $e) {
+        } catch (RouterExceptionInterface $e) {
             $e->executeLogic();
         }
 
@@ -380,11 +383,11 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
             $route = implode('/', $temp);
         }
         if ($this->routePrefix != null) {
-            $route = $this->routePrefix.$route;
+            $route = $this->routePrefix . $route;
         }
 
         if ($this->base != null) {
-            $route = $this->base.$route;
+            $route = $this->base . $route;
         }
 
         return $route;
@@ -413,12 +416,12 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     public function reverseAll(string $name, array $params = []): array
     {
         // We now add the count of parameters to the name. See Processor.php for more info.
-        $name .= '_'.count($params);
+        $name .= '_' . count($params);
 
         $temp   = explode('_', $name);
-        $master = str_replace('__NAME__',$this->name, self::CLASS_ROUTABLE).Processor::cleanClassName($temp[0]);
+        $master = str_replace('__NAME__', $this->name, self::CLASS_ROUTABLE) . Processor::cleanClassName($temp[0]);
         if (!class_exists($master)) {
-            $master = str_replace('__NAME__',$this->name, self::CLASS_MISC);
+            $master = str_replace('__NAME__', $this->name, self::CLASS_MISC);
         }
 
         /** @var RoutesInterface $cTemp */
@@ -501,7 +504,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     protected function replacePexKeys(string $pexNode, array $regexMatches): string
     {
         foreach ($regexMatches as $k => $v) {
-            $pexNode = str_replace('['.$k.']', $v, $pexNode);
+            $pexNode = str_replace('[' . $k . ']', $v, $pexNode);
         }
 
         return $pexNode;
@@ -587,7 +590,7 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
         $this->fireHook('before_handler', $args);
         try {
             $obj = new $className($args);
-        } catch(RouterExceptionInterface $e) {
+        } catch (RouterExceptionInterface $e) {
             $e->executeLogic();
             die();
         }
@@ -621,16 +624,16 @@ class CoreRouter implements ConstantsInterface, RoutingInterface
     protected function securityCheck(array $aHandler, array $matches): void
     {
         // Security Testing!
+        $cUser = null;
         if ($this->userClassName != null) {
-            /** @var mixed $temp */
             $temp  = $this->userClassName;
             $cUser = $temp::getInstance();
         }
 
         if ($cUser != null) {
             if (!$cUser instanceof PEX) {
-                throw new Exception('The provided cUser class does not implement PEX. ('.
-                    $this->userClassName.')');
+                throw new Exception('The provided cUser class does not implement PEX. (' .
+                    $this->userClassName . ')');
             }
             $types = ['pexCheck', 'pexCheckAny', 'pexCheckExact', 'pexCheckMax'];
             foreach ($types as $type) {

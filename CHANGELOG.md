@@ -1,9 +1,49 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased](https://github.com/KongHack/Routing)
+## [Unreleased](https://github.com/KongHack/Routing/commits/master)
 
+
+
+## [5.5.0](https://github.com/KongHack/Routing/releases/tag/5.5.0)
+
+### Added
+
+- Added a Docker Compose development environment using the same KongHack PHP
+  image family as CI.
+- Added Composer scripts for syntax checks, PHPStan, PHPCS, PHPUnit, and the
+  combined quality suite.
+- Added PHPStan level 5, PSR-12, and PHPUnit configuration with regression
+  coverage for route attributes, legacy docblocks, route discovery, hooks,
+  redirects, and generated class names.
+- Added GitHub Actions quality checks on PHP 8.4 and 8.5, strict Composer
+  validation, dependency auditing, release metadata validation, and
+  tag-driven GitHub Release creation.
+- Added weekly Dependabot checks for Composer lockfile and non-major GitHub
+  Actions updates.
+
+### Changed
+
+- Replaced the timing-only route compilation script with an automated PHPUnit
+  test suite.
+- Applied PSR-12 formatting across the package and enabled PHPCS enforcement
+  for source and test files.
+- Replaced unbounded internal package constraints with compatible release
+  ranges and refreshed the Composer lockfile.
+- Expanded the README with installation, route compilation, attributes,
+  docblocks, route tokens, dispatch, reverse routing, permissions, hooks,
+  caching, development, and release documentation.
+
+### Fixed
+
+- Corrected default redirects so GET requests use HTTP 301 and other request
+  methods use HTTP 302 when no explicit status code is supplied.
+- Initialized the permission user before conditional lookup, preventing an
+  undefined-variable path when no user class is configured.
+- Corrected `Debugger` initialization so it passes a valid router instance
+  name to `Processor`.
 
 
 ## [5.4.8](https://github.com/KongHack/Routing/releases/tag/5.4.8)
@@ -447,4 +487,3 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.5.0](https://github.com/KongHack/Routing/releases/tag/3.5.0)
 - Fixed @GameCharmer Massive issue with permissions
-

@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Abstracts;
 
 use GCWorld\Routing\Exceptions\RouterException404;
@@ -100,5 +101,4 @@ abstract class JSONHandler implements JSONHandlerInterface
     {
         throw new RouterException404();
     }
-
 }

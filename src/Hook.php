@@ -1,17 +1,20 @@
 <?php
+
 namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\RoutingInterface;
 
 /**
  * Class Hook
+ *
+ * @phpstan-consistent-constructor
  */
 class Hook
 {
     protected static array $instances = [];
 
     protected string $name;
-    protected array  $hooks = [];
+    protected array $hooks = [];
 
     /**
      * @param string $name
@@ -51,7 +54,7 @@ class Hook
         $instance = self::getInstance($name);
         if (isset($instance->hooks[$hook_name])) {
             foreach ($instance->hooks[$hook_name] as $fn) {
-                self::call($fn, $params??[]);
+                self::call($fn, $params ?? []);
             }
         }
     }
@@ -63,7 +66,7 @@ class Hook
      */
     protected static function call(string $fn, array $params): void
     {
-        if(empty($params)) {
+        if (empty($params)) {
             $fn();
             return;
         }
@@ -78,7 +81,7 @@ class Hook
      */
     public static function getInstance(string $name = RoutingInterface::DEFAULT_NAME): static
     {
-        if(!isset(self::$instances[$name])) {
+        if (!isset(self::$instances[$name])) {
             self::$instances[$name] = new static($name);
         }
 

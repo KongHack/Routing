@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\RoutingInterface;
@@ -9,11 +10,11 @@ use GCWorld\Interfaces\RoutingInterface;
 class Processor
 {
     protected string $name;
-    protected array  $routes_straight = [];
-    protected array  $routes_reverse  = [];
-    protected array  $routes_master   = [];
+    protected array $routes_straight = [];
+    protected array $routes_reverse  = [];
+    protected array $routes_master   = [];
     protected string $storage         = '';
-    protected bool   $debug           = false;
+    protected bool $debug           = false;
 
     /**
      * @param string $name
@@ -21,11 +22,11 @@ class Processor
     public function __construct(string $name = RoutingInterface::DEFAULT_NAME)
     {
         $this->name    = $name;
-        $this->storage = __DIR__.DIRECTORY_SEPARATOR.'Generated'.DIRECTORY_SEPARATOR;
+        $this->storage = __DIR__ . DIRECTORY_SEPARATOR . 'Generated' . DIRECTORY_SEPARATOR;
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
         }
-        $this->storage .= $name.DIRECTORY_SEPARATOR;
+        $this->storage .= $name . DIRECTORY_SEPARATOR;
         if (!is_dir($this->storage)) {
             mkdir($this->storage, 0755, true);
         }
@@ -79,12 +80,12 @@ class Processor
                 throw new \Exception('Null Route');
             }
             if (array_key_exists($k, $this->routes_straight)) {
-                throw new \Exception('Route Already Exists: '.$k);
+                throw new \Exception('Route Already Exists: ' . $k);
             }
 
             // We need to re-write name based on the number of options.  This way we can use the same name for paging
             // $v['name'].=  '_' . substr_count($v['name'],':'); And this doesn't work why?
-            $v['name'] = $v['name'].'_'.substr_count($k, ':');
+            $v['name'] = $v['name'] . '_' . substr_count($k, ':');
 
             if (array_key_exists($v['name'], $this->routes_reverse)) {
                 if ($this->debug) {
@@ -96,7 +97,7 @@ class Processor
                         echo PHP_EOL;
                     }
                 }
-                throw new \Exception('Named Route Already Exists: '.$v['name'].' - '.$v['class']);
+                throw new \Exception('Named Route Already Exists: ' . $v['name'] . ' - ' . $v['class']);
             }
 
             $this->routes_straight[$k] = $v;
@@ -124,7 +125,7 @@ class Processor
         $hits = [];
         //Need to build up some bases.
         $bases = [];
-        if($this->debug) {
+        if ($this->debug) {
             echo PHP_EOL,' - Iterating routes to generate bases',PHP_EOL;
         }
         foreach ($this->routes_reverse as $path => $junk) {
@@ -135,8 +136,8 @@ class Processor
                 $bases[] = $path;
             }
         }
-        if($this->debug) {
-            if(function_exists('d')) {
+        if ($this->debug) {
+            if (function_exists('d')) {
                 d($bases);
             } else {
                 echo 'Bases',PHP_EOL;
@@ -153,8 +154,8 @@ class Processor
                 ++$hits[$temp[1]];
             }
         }
-        if($this->debug) {
-            if(function_exists('d')) {
+        if ($this->debug) {
+            if (function_exists('d')) {
                 d($hits);
             } else {
                 echo 'Bases',PHP_EOL;
@@ -165,7 +166,7 @@ class Processor
 
         foreach ($hits as $key => $count) {
             if ($count >= 3) {
-                if($this->debug) {
+                if ($this->debug) {
                     echo ' - Adding Master Route: ',$key,PHP_EOL;
                 }
                 $this->addMasterRoute($key);
@@ -174,16 +175,16 @@ class Processor
 
         //Generate some files.
         foreach ($this->routes_master as $master) {
-            if($this->debug) {
+            if ($this->debug) {
                 echo ' - Generating Master Route: ',$master,PHP_EOL;
             }
             $this->generateMaster($master);
         }
-        if($this->debug) {
+        if ($this->debug) {
             echo ' - Generating MISC Route', PHP_EOL;
         }
         $this->generateMisc();
-        if($this->debug) {
+        if ($this->debug) {
             echo ' - [!!] Done generating route files! ', PHP_EOL;
         }
     }
@@ -198,7 +199,7 @@ class Processor
         $php = "<?php\n";
         $php .= "namespace GCWorld\\Routing\\Generated\\{$this->name};\n";
         $php .= "\n";
-        $php .= "class MasterRoute_".self::cleanClassName($master)." Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
+        $php .= "class MasterRoute_" . self::cleanClassName($master) . " Implements \\GCWorld\\Routing\\Interfaces\\RoutesInterface\n";
         $php .= "{\n";
 
         //Get File Time Function
@@ -217,7 +218,7 @@ class Processor
                 continue;
             }
             $encoded  = var_export($v, true);
-            $php .= "            '$k' => ".$encoded.",\n";
+            $php .= "            '$k' => " . $encoded . ",\n";
         }
         $php .= "        ];\n";
         $php .= "    }\n\n";
@@ -233,7 +234,7 @@ class Processor
                 continue;
             }
             $encoded  = var_export($v, true);
-            $php .= "            '$k' => ".$encoded.",\n";
+            $php .= "            '$k' => " . $encoded . ",\n";
         }
         $php .= "        ];\n";
         $php .= "    }\n\n";
@@ -241,7 +242,7 @@ class Processor
         //End of file
         $php .= "}\n";
 
-        file_put_contents($this->storage.'MasterRoute_'.self::cleanClassName($master).'.php', $php);
+        file_put_contents($this->storage . 'MasterRoute_' . self::cleanClassName($master) . '.php', $php);
     }
 
     /**
@@ -273,7 +274,7 @@ class Processor
                 continue;
             }
             $encoded  = var_export($v, true);
-            $php .= "            '$k' => ".$encoded.",\n";
+            $php .= "            '$k' => " . $encoded . ",\n";
         }
         $php .= "        ];\n";
         $php .= "    }\n\n";
@@ -289,7 +290,7 @@ class Processor
                 continue;
             }
             $encoded  = var_export($v, true);
-            $php .= "            '$k' => ".$encoded.",\n";
+            $php .= "            '$k' => " . $encoded . ",\n";
         }
         $php .= "        ];\n";
         $php .= "    }\n\n";
@@ -297,7 +298,7 @@ class Processor
         //End of file
         $php .= "}\n";
 
-        file_put_contents($this->storage.'MasterRoute_MISC.php', $php);
+        file_put_contents($this->storage . 'MasterRoute_MISC.php', $php);
     }
 
     /**
@@ -307,7 +308,7 @@ class Processor
     {
         return $this->routes_reverse;
     }
-    
+
     /**
      * @param $master
      * @return mixed

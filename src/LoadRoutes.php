@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing;
 
 use Exception;
@@ -14,6 +15,8 @@ use ReflectionClass;
 
 /**
  * Class LoadRoutes
+ *
+ * @phpstan-consistent-constructor
  */
 class LoadRoutes
 {
@@ -24,17 +27,17 @@ class LoadRoutes
     protected string $instanceName;
 
     protected ?Database $db            = null;
-    protected ?\Redis   $redis         = null;
-    protected array     $classes       = [];
-    protected array     $paths         = [];
-    protected int       $highestTime   = 0;
-    protected int       $lastClassTime = PHP_INT_MAX;
-    protected bool      $doLint        = true;
+    protected ?\Redis $redis         = null;
+    protected array $classes       = [];
+    protected array $paths         = [];
+    protected int $highestTime   = 0;
+    protected int $lastClassTime = PHP_INT_MAX;
+    protected bool $doLint        = true;
     /**
      * @var string
      * @todo Implement
      */
-    protected string    $dbTableName   = '_RouteRawList';
+    protected string $dbTableName   = '_RouteRawList';
 
     /**
      * Singleton Format
@@ -57,7 +60,7 @@ class LoadRoutes
      */
     public static function getInstance(string $name = RoutingInterface::DEFAULT_NAME): static
     {
-        if(!isset(self::$instances[$name])) {
+        if (!isset(self::$instances[$name])) {
             self::$instances[$name] = new static($name);
         }
 
@@ -74,7 +77,7 @@ class LoadRoutes
     {
         if (!$skipCheck) {
             if (!class_exists($fullClass)) {
-                throw new \Exception('Class Not Found: '.$fullClass);
+                throw new \Exception('Class Not Found: ' . $fullClass);
             }
         }
         $this->classes[] = $fullClass;
@@ -113,7 +116,7 @@ class LoadRoutes
     public function generateRoutes(bool $force = false, bool $debug = false): void
     {
         foreach ($this->classes as $fullClass) {
-            $cTemp = new $fullClass;
+            $cTemp = new $fullClass();
             if ($cTemp instanceof RawRoutesInterface) {
                 $time = $cTemp->getFileTime();
                 if ($time > $this->highestTime) {
@@ -122,7 +125,7 @@ class LoadRoutes
             }
         }
 
-        $base  = dirname(__FILE__).'/Generated/*';
+        $base  = dirname(__FILE__) . '/Generated/*';
         $files = self::glob_recursive($base);
         foreach ($files as $file) {
             if (is_file($file)) {
@@ -133,18 +136,19 @@ class LoadRoutes
             }
         }
 
-        if($debug) {
+        if ($debug) {
             print_r($files);
         }
 
-        if ($force
+        if (
+            $force
             || !empty($this->paths)
             || $this->highestTime > $this->lastClassTime
             || count($files) != count($this->classes)
         ) {
             $routes = [];
             foreach ($this->classes as $fullClass) {
-                $cTemp = new $fullClass;
+                $cTemp = new $fullClass();
                 if ($cTemp instanceof RawRoutesInterface) {
                     $routes = array_merge($routes, $cTemp->getRoutes());
                 }
@@ -152,7 +156,7 @@ class LoadRoutes
 
             $routes = array_merge($routes, $this->generateAnnotatedRoutes($debug));
 
-            if($debug) {
+            if ($debug) {
                 echo 'Starting Processor',PHP_EOL;
             }
 
@@ -161,13 +165,12 @@ class LoadRoutes
             $cProcessor->run($routes);
 
 
-            if($debug) {
+            if ($debug) {
                 echo 'Processor Complete',PHP_EOL;
             }
 
             if ($this->redis !== null) {
-
-                if($debug) {
+                if ($debug) {
                     echo 'Redis Found, Deleting GCWORLD_ROUTER key',PHP_EOL;
                 }
 
@@ -175,8 +178,7 @@ class LoadRoutes
             }
 
             if ($this->db !== null) {
-
-                if($debug) {
+                if ($debug) {
                     echo 'DB Found, storing routes',PHP_EOL;
                 }
 
@@ -191,7 +193,7 @@ class LoadRoutes
      */
     protected function generateAnnotatedRoutes(bool $debug = false): array
     {
-        if(empty($this->paths)) {
+        if (empty($this->paths)) {
             return [];
         }
 
@@ -199,26 +201,26 @@ class LoadRoutes
 
         $return = [];
         foreach ($this->paths as $path) {
-            if(is_dir($path)) {
-                $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'*.php');
-            } elseif(file_exists($path)) {
+            if (is_dir($path)) {
+                $classFiles = self::glob_recursive(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*.php');
+            } elseif (file_exists($path)) {
                 $classFiles = [$path];
             } else {
                 continue;
             }
 
             foreach ($classFiles as $file) {
-                if($debug) {
+                if ($debug) {
                     echo ' - Processing: ',$file,PHP_EOL;
                 }
 
-                if($this->doLint) {
-                    if($debug) {
+                if ($this->doLint) {
+                    if ($debug) {
                         echo '  - Linting File',PHP_EOL;
                     }
                     exec("php -l {$file}", $execOutput, $execError);
                     if ($execError !== 0) {
-                        if($debug) {
+                        if ($debug) {
                             echo 'ERROR IN FILE DETECTED, SKIPPING', PHP_EOL;
                             echo '  - file: ', $file, PHP_EOL;
                             echo '  - error: ', implode(PHP_EOL, $execOutput), PHP_EOL;
@@ -232,9 +234,9 @@ class LoadRoutes
                     $cReflection = new ReflectionClass($classString);
                     // Check Attributes First!
                     $attributes = $cReflection->getAttributes();
-                    if(!empty($attributes)) {
+                    if (!empty($attributes)) {
                         $resp = $this->processAttributes($classString, $attributes);
-                        if($resp) {
+                        if ($resp) {
                             $return = array_merge($return, $resp);
                             continue;
                         }
@@ -281,13 +283,7 @@ class LoadRoutes
             $response['message'] = 'Failed to load class';
             return $response;
         }
-        try {
-            $cReflection = new \ReflectionClass($classString);
-        } catch (\Exception $e) {
-            $response['success'] = false;
-            $response['message'] = 'Failed to get reflection.'.PHP_EOL.$e->getMessage();
-            return $response;
-        }
+        $cReflection = new \ReflectionClass($classString);
 
         $attributes = $cReflection->getAttributes();
         print_r($attributes);
@@ -372,7 +368,7 @@ class LoadRoutes
                 $meta = [];
                 foreach ($routes[$pat]['meta'] as $v) {
                     $tmp = explode(':', $v);
-                    if (count($tmp)==2) {
+                    if (count($tmp) == 2) {
                         $meta[$tmp[0]] = $tmp[1];
                     }
                 }
@@ -404,8 +400,8 @@ class LoadRoutes
     protected function processAttributes(string $className, array $attributes): ?array
     {
         $routes = [];
-        foreach($attributes as $attribute) {
-            if($attribute->getName() !== 'GCWorld\\Routing\\Attributes\\Route') {
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() !== 'GCWorld\\Routing\\Attributes\\Route') {
                 continue;
             }
 
@@ -417,7 +413,7 @@ class LoadRoutes
             $arr['class'] = $className;
 
             // Compile the routing definition, then apply to each pattern
-            foreach($cObj->patterns as $pattern) {
+            foreach ($cObj->patterns as $pattern) {
                 $routes[$pattern] = $arr;
             }
         }
@@ -441,7 +437,7 @@ class LoadRoutes
 
         while ($i < 1000) {   // Just to be safe...
             ++$i;
-            $pattern = $phpDoc->getTagsByName('router-'.$i.'-pattern');
+            $pattern = $phpDoc->getTagsByName('router-' . $i . '-pattern');
             if (!$pattern) {
                 break;
             }
@@ -450,11 +446,11 @@ class LoadRoutes
 
                 $routes[$pat] = [
                     'class'       => $classString,
-                    'name'        => (string) $phpDoc->getTagsByName('router-'.$i.'-name')[0],
+                    'name'        => (string) $phpDoc->getTagsByName('router-' . $i . '-name')[0],
                     'autoWrapper' => false,
                 ];
 
-                $session = $phpDoc->getTagsByName('router-'.$i.'-session');
+                $session = $phpDoc->getTagsByName('router-' . $i . '-session');
                 if (count($session) > 0) {
                     $sessionString           = strtolower((string) $session[0]);
                     $routes[$pat]['session'] = in_array($sessionString, ['true', 't', 'y', 'yes']);
@@ -462,15 +458,15 @@ class LoadRoutes
 
                 // Remaining items that can be both a string or an array.
                 $processingArray = [
-                    'pexCheck'      => $phpDoc->getTagsByName('router-'.$i.'-pexCheck'),
-                    'pexCheckAny'   => $phpDoc->getTagsByName('router-'.$i.'-pexCheckAny'),
-                    'pexCheckExact' => $phpDoc->getTagsByName('router-'.$i.'-pexCheckExact'),
-                    'pexCheckMax'   => $phpDoc->getTagsByName('router-'.$i.'-pexCheckMax'),
-                    'preArgs'       => $phpDoc->getTagsByName('router-'.$i.'-preArgs'),
-                    'postArgs'      => $phpDoc->getTagsByName('router-'.$i.'-postArgs'),
-                    'title'         => $phpDoc->getTagsByName('router-'.$i.'-title'),
-                    'meta'          => $phpDoc->getTagsByName('router-'.$i.'-meta'),
-                    'autoWrapper'   => $phpDoc->getTagsByName('router-'.$i.'-autoWrapper'),
+                    'pexCheck'      => $phpDoc->getTagsByName('router-' . $i . '-pexCheck'),
+                    'pexCheckAny'   => $phpDoc->getTagsByName('router-' . $i . '-pexCheckAny'),
+                    'pexCheckExact' => $phpDoc->getTagsByName('router-' . $i . '-pexCheckExact'),
+                    'pexCheckMax'   => $phpDoc->getTagsByName('router-' . $i . '-pexCheckMax'),
+                    'preArgs'       => $phpDoc->getTagsByName('router-' . $i . '-preArgs'),
+                    'postArgs'      => $phpDoc->getTagsByName('router-' . $i . '-postArgs'),
+                    'title'         => $phpDoc->getTagsByName('router-' . $i . '-title'),
+                    'meta'          => $phpDoc->getTagsByName('router-' . $i . '-meta'),
+                    'autoWrapper'   => $phpDoc->getTagsByName('router-' . $i . '-autoWrapper'),
                 ];
 
                 foreach ($processingArray as $key => $var) {
@@ -491,11 +487,11 @@ class LoadRoutes
                     if (!is_array($routes[$pat]['meta'])) {
                         $routes[$pat]['meta'] = [$routes[$pat]['meta']];
                     }
-                    
+
                     $meta = [];
                     foreach ($routes[$pat]['meta'] as $v) {
                         $tmp = explode(':', $v);
-                        if (count($tmp)==2) {
+                        if (count($tmp) == 2) {
                             $meta[$tmp[0]] = $tmp[1];
                         }
                     }
@@ -503,7 +499,7 @@ class LoadRoutes
                 } else {
                     $routes[$pat]['meta'] = [];
                 }
-                
+
                 if (isset($routes[$pat]['preArgs']) && !is_array($routes[$pat]['preArgs'])) {
                     $routes[$pat]['preArgs'] = [$routes[$pat]['preArgs']];
                 }
@@ -540,11 +536,10 @@ class LoadRoutes
 
     /**
      * @return string
-     * @return void
      */
     public function getOurRoot(): string
     {
-        return __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -552,7 +547,7 @@ class LoadRoutes
      */
     public function getVersion(): string
     {
-        return trim(file_get_contents($this->getOurRoot().'VERSION'));
+        return trim(file_get_contents($this->getOurRoot() . 'VERSION'));
     }
 
     /**
@@ -565,15 +560,15 @@ class LoadRoutes
         $table = $this->dbTableName;
         // Make sure our table exists.
         if (!$this->db->tableExists($table)) {
-            $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
+            $sql = file_get_contents($this->getOurRoot() . 'datamodel/' . $table . '.sql');
             $this->db->exec($sql);
             $this->db->setTableComment($table, $this->getVersion());
         } else {
             $dbv = $this->db->getTableComment($table);
             if ($dbv != $this->getVersion()) {
-                $sql = 'DROP TABLE '.$table;
+                $sql = 'DROP TABLE ' . $table;
                 $this->db->exec($sql);
-                $sql = file_get_contents($this->getOurRoot().'datamodel/'.$table.'.sql');
+                $sql = file_get_contents($this->getOurRoot() . 'datamodel/' . $table . '.sql');
                 $this->db->exec($sql);
                 $this->db->setTableComment($table, $this->getVersion());
             }
@@ -582,7 +577,7 @@ class LoadRoutes
         $sql = 'TRUNCATE TABLE `_RouteRawList`';
         $this->db->exec($sql);
 
-        $sql = 'INSERT INTO `'.$table.'`
+        $sql = 'INSERT INTO `' . $table . '`
             (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES

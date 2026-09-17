@@ -1,3 +1,5 @@
 .idea/*
+.phpunit.cache/
+docker-compose.override.yml
 src/Generated/*
 vendor/*

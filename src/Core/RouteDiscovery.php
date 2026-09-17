@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Core;
 
 use Exception;
@@ -12,11 +13,11 @@ use GCWorld\Routing\Processor;
  */
 class RouteDiscovery implements ConstantsInterface
 {
-    protected string  $name;
+    protected string $name;
 
     protected ?\Redis $cRedis       = null;
-    protected ?array  $forcedRoutes = null;
-    
+    protected ?array $forcedRoutes = null;
+
     /**
      * @param string $name
      */
@@ -39,11 +40,11 @@ class RouteDiscovery implements ConstantsInterface
      */
     public function purgeRedis()
     {
-        if($this->cRedis === null) {
+        if ($this->cRedis === null) {
             return;
         }
 
-        $this->cRedis->del(self::REDIS_PREFIX.$this->name);
+        $this->cRedis->del(self::REDIS_PREFIX . $this->name);
     }
 
     /**
@@ -62,10 +63,10 @@ class RouteDiscovery implements ConstantsInterface
     public function execute(string $path)
     {
         if ($this->cRedis) {
-            $data = $this->cRedis->hGet(self::REDIS_PREFIX.$this->name, $path);
+            $data = $this->cRedis->hGet(self::REDIS_PREFIX . $this->name, $path);
             if ($data) {
                 $cData = \unserialize($data);
-                if($cData instanceof RouteDiscoveryData) {
+                if ($cData instanceof RouteDiscoveryData) {
                     return $cData;
                 }
             }
@@ -75,7 +76,7 @@ class RouteDiscovery implements ConstantsInterface
             $temp = explode('/', $path);
             if (count($temp) > 1) {
                 $master    = Processor::cleanClassName($temp[1]);
-                $className = str_replace('__NAME__', $this->name, self::CLASS_ROUTABLE).$master;
+                $className = str_replace('__NAME__', $this->name, self::CLASS_ROUTABLE) . $master;
                 if (!class_exists($className)) {
                     $className = str_replace('__NAME__', $this->name, self::CLASS_MISC);
                     if (!class_exists($className)) {
@@ -97,10 +98,11 @@ class RouteDiscovery implements ConstantsInterface
         }
 
         $cData = $this->matchRoute($routes, $path);
-        if($cData === null)  {
+        if ($cData === null) {
             $className = str_replace('__NAME__', $this->name, self::CLASS_REPLACEMENT);
             if (!class_exists($className)) {
-                $className = str_replace('__NAME__', $this->name, self::CLASS_MISC);;
+                $className = str_replace('__NAME__', $this->name, self::CLASS_MISC);
+                ;
             }
             if (class_exists($className)) {
                 /** @var RoutesInterface $loader */
@@ -111,8 +113,8 @@ class RouteDiscovery implements ConstantsInterface
             }
         }
 
-        if($cData !== null && $this->cRedis !== null) {
-            $this->cRedis->hSet(self::REDIS_PREFIX.$this->name, $path, serialize($cData));
+        if ($cData !== null && $this->cRedis !== null) {
+            $this->cRedis->hSet(self::REDIS_PREFIX . $this->name, $path, serialize($cData));
         }
 
         return $cData;
@@ -130,7 +132,7 @@ class RouteDiscovery implements ConstantsInterface
         }
         foreach ($routes as $pattern => $routeConfig) {
             $pattern = strtr($pattern, self::ROUTING_TOKENS);
-            if (preg_match('#^/?'.$pattern.'/?$#', $path, $matches)) {
+            if (preg_match('#^/?' . $pattern . '/?$#', $path, $matches)) {
                 unset($matches[0]);
                 $matches = array_values($matches);
                 return new RouteDiscoveryData($pattern, $routeConfig, $matches);
@@ -139,5 +141,4 @@ class RouteDiscovery implements ConstantsInterface
 
         return null;
     }
-
 }

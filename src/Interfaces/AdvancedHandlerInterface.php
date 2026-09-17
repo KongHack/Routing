@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Interfaces;
 
 /**
@@ -104,5 +105,5 @@ interface AdvancedHandlerInterface
     /**
      * @return string
      */
-    public function patchXHR(): string;    
+    public function patchXHR(): string;
 }

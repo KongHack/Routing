@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Core;
 
 /**
@@ -7,8 +8,8 @@ namespace GCWorld\Routing\Core;
 class RouteDiscoveryData
 {
     protected string $pattern;
-    protected array  $handler;
-    protected array  $matches;
+    protected array $handler;
+    protected array $matches;
 
     /**
      * @param string $pattern

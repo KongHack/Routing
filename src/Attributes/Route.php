@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Attributes;
 
 use Attribute;
@@ -20,16 +21,15 @@ class Route
      */
     public function __construct(
         public bool $autoWrapper = false,
-        public bool $session     = false,
-        public string $name      = '',
-        public array  $patterns  = [],
-        public string $title     = '',
-        public array  $meta      = [],
-        public array  $preArgs   = [],
-        public array  $postArgs  = [],
-        public array  $pex       = [],
+        public bool $session = false,
+        public string $name = '',
+        public array $patterns = [],
+        public string $title = '',
+        public array $meta = [],
+        public array $preArgs = [],
+        public array $postArgs = [],
+        public array $pex = [],
     ) {
-
     }
 
     /**
@@ -46,20 +46,20 @@ class Route
             'postArgs'    => $this->postArgs,
         ];
 
-        if(!empty($this->meta)) {
+        if (!empty($this->meta)) {
             $output['meta'] = [];
-            foreach($this->meta as $meta) {
+            foreach ($this->meta as $meta) {
                 $output['meta'][$meta->key] = $meta->value;
             }
         }
-        foreach($this->pex as $pex) {
-            $key = match($pex->type) {
+        foreach ($this->pex as $pex) {
+            $key = match ($pex->type) {
                 RoutePexCheckType::STANDARD => 'pexCheck',
                 RoutePexCheckType::ANY      => 'pexCheckAny',
                 RoutePexCheckType::EXACT    => 'pexCheckExact',
                 RoutePexCheckType::MAX      => 'pexCheckMax',
             };
-            if(!isset($output[$key])) {
+            if (!isset($output[$key])) {
                 $output[$key] = [];
             }
             $output[$key][] = $pex->pexString;

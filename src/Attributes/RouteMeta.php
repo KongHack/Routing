@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Attributes;
 
 use Attribute;
@@ -14,6 +15,5 @@ class RouteMeta
         public string $key,
         public string $value,
     ) {
-
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
@@ -25,6 +26,6 @@ class ReverseRouteNotFoundException extends Exception
         parent::__construct($message, $code, $previous);
         $this->route   = $route;
         $this->params  = $params;
-        $this->message = 'Route: "'.$route.'" Not Found';
+        $this->message = 'Route: "' . $route . '" Not Found';
     }
 }

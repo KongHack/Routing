@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing;
 
 use GCWorld\Interfaces\Database;
@@ -13,7 +14,7 @@ class Debugger
     const TABLE = '_RouteDebugData';
 
     protected Database\DatabaseInterface $db;
-    protected string                     $storage;
+    protected string $storage;
 
     /**
      * @param Database\DatabaseInterface $db
@@ -22,20 +23,20 @@ class Debugger
     public function __construct(Database\DatabaseInterface $db)
     {
         $this->db      = $db;
-        $processor     = new Processor(false);
+        $processor     = new Processor();
         $this->storage = $processor->getStorageLocation();
 
         // Make sure our table exists.
         if (!$db->tableExists(self::TABLE)) {
-            $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::TABLE.'.sql');
+            $sql = file_get_contents($this->getOurRoot() . 'datamodel/' . self::TABLE . '.sql');
             $this->db->exec($sql);
             $this->db->setTableComment(self::TABLE, $this->getVersion());
         } else {
             $dbv = $this->db->getTableComment(self::TABLE);
             if ($dbv != $this->getVersion()) {
-                $sql = 'DROP TABLE '.self::TABLE;
+                $sql = 'DROP TABLE ' . self::TABLE;
                 $this->db->exec($sql);
-                $sql = file_get_contents($this->getOurRoot().'datamodel/'.self::TABLE.'.sql');
+                $sql = file_get_contents($this->getOurRoot() . 'datamodel/' . self::TABLE . '.sql');
                 $this->db->exec($sql);
                 $this->db->setTableComment(self::TABLE, $this->getVersion());
             }
@@ -47,7 +48,7 @@ class Debugger
      */
     public function getOurRoot(): string
     {
-        return dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+        return dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -55,7 +56,7 @@ class Debugger
      */
     public function getVersion(): string
     {
-        return trim(file_get_contents($this->getOurRoot().'VERSION'));
+        return trim(file_get_contents($this->getOurRoot() . 'VERSION'));
     }
 
     /**
@@ -63,7 +64,7 @@ class Debugger
      */
     public function storeStructure(): void
     {
-        $sql   = 'INSERT INTO '.self::TABLE.'
+        $sql   = 'INSERT INTO ' . self::TABLE . '
             (route_path, route_name, route_title, route_session, route_autoWrapper, route_class, route_pre_args, route_post_args,
               route_pexCheck, route_pexCheckAny, route_pexCheckExact, route_meta)
             VALUES
@@ -85,7 +86,7 @@ class Debugger
 
 
         // Do not truncate.  Only on duplicate key update.
-        $files = glob($this->storage.'*.php');
+        $files = glob($this->storage . '*.php');
         foreach ($files as $file) {
             $tmp       = explode(DIRECTORY_SEPARATOR, $file);
             $fileName  = array_pop($tmp);
@@ -93,7 +94,7 @@ class Debugger
             $className = array_shift($tmp);
             $className = Processor::cleanClassName($className);
             unset($tmp);
-            $fqcn = '\\GCWorld\\Routing\\Generated\\'.$className;
+            $fqcn = '\\GCWorld\\Routing\\Generated\\' . $className;
 
             /** @var RoutesInterface $table */
             $table  = new $fqcn();

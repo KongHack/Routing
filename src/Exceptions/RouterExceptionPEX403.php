@@ -1,4 +1,5 @@
 <?php
+
 namespace GCWorld\Routing\Exceptions;
 
 use Exception;
@@ -32,10 +33,10 @@ class RouterExceptionPEX403 extends Exception implements RouterExceptionInterfac
      */
     public function executeLogic(): void
     {
-        if(is_array($this->node)) {
-            Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes'=>$this->node]);
+        if (is_array($this->node)) {
+            Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes' => $this->node]);
             return;
         }
-        Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes'=>[$this->node]]);
+        Hook::fire(CoreRouter::getInstance()->getName(), '403_pex', ['nodes' => [$this->node]]);
     }
 }
