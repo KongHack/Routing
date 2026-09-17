@@ -1,5 +1,12 @@
 # GCWorld Routing
 
+![Packagist](https://img.shields.io/packagist/dm/gcworld/routing.svg)
+![Packagist](https://img.shields.io/packagist/dt/gcworld/routing.svg)
+
+![Packagist PHP](https://img.shields.io/packagist/php-v/gcworld/routing.svg)
+![Packagist](https://img.shields.io/packagist/v/gcworld/routing.svg)
+![GitHub](https://img.shields.io/github/tag/konghack/routing.svg)
+
 GCWorld Routing is a PHP routing library for front-controller applications. It
 discovers handler classes from PHP attributes or legacy docblocks, compiles
 their definitions into PHP routing tables, dispatches requests by HTTP method,
@@ -11,7 +18,7 @@ application remains responsible for its front controller, dependency setup,
 authentication model, response layout, and error rendering.
 
 ### Version
-5.4.8
+5.5.0
 
 ## Requirements
 
