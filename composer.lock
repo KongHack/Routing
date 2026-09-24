@@ -116,16 +116,16 @@
         },
         {
             "name": "gcworld/interfaces",
-            "version": "4.4.14",
+            "version": "4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "a0003e8688b21299ecf3b65d96f8bb03841455df"
+                "reference": "2fa56a68af67245eabfbd01aee1291e69c7d2440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/a0003e8688b21299ecf3b65d96f8bb03841455df",
-                "reference": "a0003e8688b21299ecf3b65d96f8bb03841455df",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/2fa56a68af67245eabfbd01aee1291e69c7d2440",
+                "reference": "2fa56a68af67245eabfbd01aee1291e69c7d2440",
                 "shasum": ""
             },
             "require": {
@@ -133,9 +133,8 @@
                 "twig/twig": "^3.19"
             },
             "require-dev": {
-                "gcworld/code_sniffer_contrib": "^2.2.0",
-                "phpmd/phpmd": ">=2.11",
-                "phpstan/phpstan": "^1.1.2"
+                "phpstan/phpstan": "^2.1",
+                "squizlabs/php_codesniffer": "^3.13"
             },
             "type": "library",
             "autoload": {
@@ -156,9 +155,9 @@
             "description": "GCWorld Interfaces",
             "support": {
                 "issues": "https://github.com/KongHack/Interfaces/issues",
-                "source": "https://github.com/KongHack/Interfaces/tree/4.4.14"
+                "source": "https://github.com/KongHack/Interfaces/tree/4.5.0"
             },
-            "time": "2026-05-28T13:13:43+00:00"
+            "time": "2026-09-17T00:36:35+00:00"
         },
         {
             "name": "gcworld/utilities",
@@ -820,16 +819,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.28.0",
+            "version": "v3.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b"
+                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
-                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
+                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
                 "shasum": ""
             },
             "require": {
@@ -884,7 +883,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.28.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.29.0"
             },
             "funding": [
                 {
@@ -896,7 +895,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-03T20:44:34+00:00"
+            "time": "2026-09-18T09:10:14+00:00"
         },
         {
             "name": "webmozart/assert",
