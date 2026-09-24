@@ -116,16 +116,16 @@
         },
         {
             "name": "gcworld/interfaces",
-            "version": "4.4.14",
+            "version": "4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Interfaces.git",
-                "reference": "a0003e8688b21299ecf3b65d96f8bb03841455df"
+                "reference": "2fa56a68af67245eabfbd01aee1291e69c7d2440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/a0003e8688b21299ecf3b65d96f8bb03841455df",
-                "reference": "a0003e8688b21299ecf3b65d96f8bb03841455df",
+                "url": "https://api.github.com/repos/KongHack/Interfaces/zipball/2fa56a68af67245eabfbd01aee1291e69c7d2440",
+                "reference": "2fa56a68af67245eabfbd01aee1291e69c7d2440",
                 "shasum": ""
             },
             "require": {
@@ -133,9 +133,8 @@
                 "twig/twig": "^3.19"
             },
             "require-dev": {
-                "gcworld/code_sniffer_contrib": "^2.2.0",
-                "phpmd/phpmd": ">=2.11",
-                "phpstan/phpstan": "^1.1.2"
+                "phpstan/phpstan": "^2.1",
+                "squizlabs/php_codesniffer": "^3.13"
             },
             "type": "library",
             "autoload": {
@@ -156,9 +155,9 @@
             "description": "GCWorld Interfaces",
             "support": {
                 "issues": "https://github.com/KongHack/Interfaces/issues",
-                "source": "https://github.com/KongHack/Interfaces/tree/4.4.14"
+                "source": "https://github.com/KongHack/Interfaces/tree/4.5.0"
             },
-            "time": "2026-05-28T13:13:43+00:00"
+            "time": "2026-09-17T00:36:35+00:00"
         },
         {
             "name": "gcworld/utilities",
@@ -820,16 +819,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.28.0",
+            "version": "v3.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b"
+                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
-                "reference": "597c12ed286fb9d1701a36684ce6e0cbe28ebc8b",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
+                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
                 "shasum": ""
             },
             "require": {
@@ -884,7 +883,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.28.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.29.0"
             },
             "funding": [
                 {
@@ -896,7 +895,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-03T20:44:34+00:00"
+            "time": "2026-09-18T09:10:14+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -1730,30 +1729,29 @@
         },
         {
             "name": "gcworld/database",
-            "version": "2.7.7",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KongHack/Database.git",
-                "reference": "74d11d44b5313a242d9231fa810649ed0a4c08c5"
+                "reference": "33b10d5c7142ab628c36c02c5aa8945f9918c182"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KongHack/Database/zipball/74d11d44b5313a242d9231fa810649ed0a4c08c5",
-                "reference": "74d11d44b5313a242d9231fa810649ed0a4c08c5",
+                "url": "https://api.github.com/repos/KongHack/Database/zipball/33b10d5c7142ab628c36c02c5aa8945f9918c182",
+                "reference": "33b10d5c7142ab628c36c02c5aa8945f9918c182",
                 "shasum": ""
             },
             "require": {
-                "composer/composer": "^2.8",
-                "composer/installers": ">=2.3",
+                "composer/composer": "^2.9",
+                "composer/installers": "^2.3",
                 "ext-pdo": "*",
-                "gcworld/interfaces": ">=4.4.8",
+                "gcworld/interfaces": "^4.4.8",
                 "php": ">=8.4"
             },
             "require-dev": {
-                "gcworld/code_sniffer_contrib": "^1.0",
-                "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "2.1.11",
-                "phpstan/phpstan-deprecation-rules": "2.0.1"
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^12.0",
+                "squizlabs/php_codesniffer": "^3.13"
             },
             "type": "library",
             "autoload": {
@@ -1774,22 +1772,22 @@
             "description": "GCWorld Industries Database",
             "support": {
                 "issues": "https://github.com/KongHack/Database/issues",
-                "source": "https://github.com/KongHack/Database/tree/2.7.7"
+                "source": "https://github.com/KongHack/Database/tree/2.8.0"
             },
-            "time": "2026-05-28T13:15:31+00:00"
+            "time": "2026-09-17T02:37:31+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "6.12.0",
+            "version": "6.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jsonrainbow/json-schema.git",
-                "reference": "8ef236a1a37df364b518b7411a4b5bb95b040d79"
+                "reference": "30de5e9b3fa04253af272a7d932a38cd026c311b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/8ef236a1a37df364b518b7411a4b5bb95b040d79",
-                "reference": "8ef236a1a37df364b518b7411a4b5bb95b040d79",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/30de5e9b3fa04253af272a7d932a38cd026c311b",
+                "reference": "30de5e9b3fa04253af272a7d932a38cd026c311b",
                 "shasum": ""
             },
             "require": {
@@ -1839,9 +1837,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jsonrainbow/json-schema/issues",
-                "source": "https://github.com/jsonrainbow/json-schema/tree/6.12.0"
+                "source": "https://github.com/jsonrainbow/json-schema/tree/6.13.0"
             },
-            "time": "2026-09-04T12:54:20+00:00"
+            "time": "2026-09-23T19:46:42+00:00"
         },
         {
             "name": "marc-mabe/php-enum",
