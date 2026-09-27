@@ -26,13 +26,13 @@ class LoadRoutes
 
     protected string $instanceName;
 
-    protected ?Database $db            = null;
-    protected ?\Redis $redis         = null;
-    protected array $classes       = [];
-    protected array $paths         = [];
+    protected ?Database $db      = null;
+    protected ?\Redis $redis     = null;
+    protected array $classes     = [];
+    protected array $paths       = [];
     protected int $highestTime   = 0;
     protected int $lastClassTime = PHP_INT_MAX;
-    protected bool $doLint        = true;
+    protected bool $doLint       = true;
     /**
      * @var string
      * @todo Implement
@@ -232,6 +232,10 @@ class LoadRoutes
                 $classString = $this->getClassString($file);
                 if (class_exists($classString)) {
                     $cReflection = new ReflectionClass($classString);
+                    if (!$cReflection->isInstantiable()) {
+                        continue;
+                    }
+
                     // Check Attributes First!
                     $attributes = $cReflection->getAttributes();
                     if (!empty($attributes)) {
@@ -654,19 +658,65 @@ class LoadRoutes
      */
     protected function getClassString(string $file): string
     {
-        $namespace = '';
-        $className = '';
-        $fh = fopen($file, 'r');
-        while (($buffer = fgets($fh)) !== false) {
-            if (str_starts_with($buffer, 'namespace')) {
-                $namespace = substr(trim($buffer), 10, -1);
+        $namespace  = '';
+        $tokens     = token_get_all(file_get_contents($file));
+        $tokenCount = count($tokens);
+
+        for ($i = 0; $i < $tokenCount; ++$i) {
+            $token = $tokens[$i];
+            if (!is_array($token)) {
+                continue;
             }
-            if (str_starts_with($buffer, 'class')) {
-                $temp = explode(' ', $buffer);
-                $className = $temp[1];
+
+            if ($token[0] === T_NAMESPACE) {
+                $namespace = '';
+                while (++$i < $tokenCount) {
+                    $namespaceToken = $tokens[$i];
+                    if ($namespaceToken === ';' || $namespaceToken === '{') {
+                        break;
+                    }
+                    if (
+                        is_array($namespaceToken)
+                        && in_array($namespaceToken[0], [T_STRING, T_NAME_QUALIFIED, T_NS_SEPARATOR], true)
+                    ) {
+                        $namespace .= $namespaceToken[1];
+                    }
+                }
+                continue;
+            }
+
+            if ($token[0] !== T_CLASS) {
+                continue;
+            }
+
+            for ($previous = $i - 1; $previous >= 0; --$previous) {
+                $previousToken = $tokens[$previous];
+                if (
+                    is_array($previousToken)
+                    && in_array($previousToken[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)
+                ) {
+                    continue;
+                }
+                if (
+                    is_array($previousToken)
+                    && in_array($previousToken[0], [T_NEW, T_DOUBLE_COLON], true)
+                ) {
+                    continue 2;
+                }
                 break;
             }
+
+            while (++$i < $tokenCount) {
+                $classToken = $tokens[$i];
+                if (is_array($classToken) && $classToken[0] === T_STRING) {
+                    return '\\' . ($namespace !== '' ? $namespace . '\\' : '') . $classToken[1];
+                }
+                if (!is_array($classToken) && $classToken === '{') {
+                    break;
+                }
+            }
         }
-        return trim('\\' . $namespace . '\\' . $className);
+
+        return '';
     }
 }

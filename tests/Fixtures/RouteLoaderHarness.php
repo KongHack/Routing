@@ -11,6 +11,17 @@ use ReflectionClass;
 final class RouteLoaderHarness extends LoadRoutes
 {
     /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function discoverPath(string $path): array
+    {
+        $this->setLint(false);
+        $this->addPath($path);
+
+        return $this->generateAnnotatedRoutes();
+    }
+
+    /**
      * @param class-string $className
      * @return array<string, array<string, mixed>>|null
      */

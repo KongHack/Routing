@@ -11,6 +11,43 @@ use PHPUnit\Framework\TestCase;
 
 final class LoadRoutesTest extends TestCase
 {
+    public function testDiscoversFinalClassAndSkipsAbstractClass(): void
+    {
+        $loader = RouteLoaderHarness::getInstance('filesystem-discovery-test');
+
+        self::assertSame(
+            [
+                '/dashboard' => [
+                    'name' => 'dashboard',
+                    'autoWrapper' => true,
+                    'session' => false,
+                    'title' => '',
+                    'preArgs' => [],
+                    'postArgs' => [],
+                    'meta' => ['section' => 'dashboard'],
+                    'class' => '\\' . AttributedHandler::class,
+                ],
+                '/home' => [
+                    'name' => 'dashboard',
+                    'autoWrapper' => true,
+                    'session' => false,
+                    'title' => '',
+                    'preArgs' => [],
+                    'postArgs' => [],
+                    'meta' => ['section' => 'dashboard'],
+                    'class' => '\\' . AttributedHandler::class,
+                ],
+            ],
+            $loader->discoverPath(__DIR__ . '/Fixtures/AttributedHandler.php'),
+        );
+
+        $abstractLoader = RouteLoaderHarness::getInstance('abstract-filesystem-discovery-test');
+        self::assertSame(
+            [],
+            $abstractLoader->discoverPath(__DIR__ . '/Fixtures/AbstractAttributedHandler.php'),
+        );
+    }
+
     public function testCompilesRouteAttributesForEveryPattern(): void
     {
         $loader = RouteLoaderHarness::getInstance('attribute-test');
