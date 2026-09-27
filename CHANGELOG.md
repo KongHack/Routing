@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 
 
+## [5.5.1](https://github.com/KongHack/Routing/releases/tag/5.5.1)
+- Route Loader now properly detects final and readonly classes via token parsing instead of string inspection
+
+
+
 ## [5.5.0](https://github.com/KongHack/Routing/releases/tag/5.5.0)
 
 ### Added

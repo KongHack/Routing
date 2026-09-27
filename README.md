@@ -18,7 +18,7 @@ application remains responsible for its front controller, dependency setup,
 authentication model, response layout, and error rendering.
 
 ### Version
-5.5.0
+5.5.1
 
 ## Requirements
 
